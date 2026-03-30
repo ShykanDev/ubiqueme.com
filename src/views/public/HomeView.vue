@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import StepByStep from '@/components/home/StepByStep.vue';
 import HomeLayout from '@/layouts/HomeLayout.vue';
 
 
@@ -7,7 +8,7 @@ import HomeLayout from '@/layouts/HomeLayout.vue';
 <template>
   <HomeLayout>
     <template #main>
-      <section class="px-8 md:px-24 max-w-screen-2xl mx-auto mb-32 pt-32 bg-surface-container">
+      <section class="px-8 md:px-24 max-w-screen-2xl mx-auto pt-32 bg-surface-container">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
 
           <!-- Text -->
@@ -40,20 +41,18 @@ import HomeLayout from '@/layouts/HomeLayout.vue';
           <div class="relative">
             <div class="absolute -inset-10 bg-primary/20 blur-[120px] rounded-full"></div>
 
-            <div class="relative glass-panel p-8 rounded-xl border border-outline-variant/10">
-              <img class="rounded-xl object-cover w-full h-[400px]"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPJSSM7CC2Z4cvKSgZOxycifTLLlTF8i719sOSMzqk1aBntYe-zHgYMc-5XAEuo6sKe2rW--FJjxKlPBRhw_EyZBxLYMi0bvv-KMCXZ_UADVsQCpUYMb8zBaazPgGzINr7Z_XAk60s6Jfv3MuOwzJFuLKsg4e-NXKZ46jeWgvElEKeQkmjb2lYtRPOKM6y9kJc-vS8zIYXmyZp7iXweUFbJ0W8kOTrTdP2YF3jea160E_Pjy5lfI9D1BlCtewc-F-N_h9fbU-6PqX6"
-                alt="QR Scan" />
+            <div class="relative p-2 rounded-xl border px-0 mx-0">
+              <img class="rounded-xl  w-10/12 mx-auto" src="../../assets/qr-code.png" alt="qr-code">
 
               <!-- Floating Card -->
-              <div
-                class="absolute -bottom-6 -left-6 glass-panel p-6 rounded-lg border border-outline-variant/20 max-w-[240px]">
+              <div class="absolute -bottom-6 -left-6 glass-panel p-6 rounded-3xl border border-sky-700  max-w-[240px]">
                 <div class="flex items-center space-x-3 mb-2">
                   <span class="material-symbols-outlined text-primary">lock</span>
-                  <span class="text-sm font-bold">Secure Transfer</span>
+
+                  <span class="text-sm font-bold text-sky-300">Datos Seguros</span>
                 </div>
                 <p class="text-xs text-on-surface-variant">
-                  Encrypted connection active. No data shared.
+                  Conexión segura activa. No se comparten datos.
                 </p>
               </div>
 
@@ -62,6 +61,9 @@ import HomeLayout from '@/layouts/HomeLayout.vue';
 
         </div>
       </section>
+
+      <StepByStep />
+
     </template>
   </HomeLayout>
 </template>
@@ -85,5 +87,31 @@ import HomeLayout from '@/layouts/HomeLayout.vue';
 
 .btn-primary {
   background: linear-gradient(135deg, #7bd0ff 0%, #008abb 100%);
+}
+
+.material-icons {
+  font-family: 'Material Icons';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  /* Preferred icon size */
+  display: inline-block;
+  line-height: 1;
+  text-transform: none;
+  letter-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  direction: ltr;
+
+  /* Support for all WebKit browsers. */
+  -webkit-font-smoothing: antialiased;
+  /* Support for Safari and Chrome. */
+  text-rendering: optimizeLegibility;
+
+  /* Support for Firefox. */
+  -moz-osx-font-smoothing: grayscale;
+
+  /* Support for IE. */
+  font-feature-settings: 'liga';
 }
 </style>
