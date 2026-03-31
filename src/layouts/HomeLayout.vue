@@ -23,6 +23,9 @@ const navLinks = [
     href: '#',
   },
 ]
+
+
+
 </script>
 
 <template>
@@ -33,7 +36,7 @@ const navLinks = [
 
         <!-- Logo -->
         <div class="text-xl font-bold text-slate-100 font-headline tracking-tight">
-          Ubiqueme
+          Ubiqueme.com
         </div>
 
         <!-- Menu -->

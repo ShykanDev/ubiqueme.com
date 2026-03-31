@@ -1,14 +1,22 @@
 <script lang="ts" setup>
-import StepByStep from '@/components/home/StepByStep.vue';
+import FeaturesComponent from '@/components/home/Features/FeaturesComponent.vue';
+import StepByStep from '@/components/home/StepByStep/StepByStep.vue';
 import HomeLayout from '@/layouts/HomeLayout.vue';
 
+import AOS from 'aos';
+import 'aos/dist/aos.css';
+import { onMounted } from 'vue';
+
+onMounted(() => {
+  AOS.init();
+});
 
 </script>
 
 <template>
   <HomeLayout>
     <template #main>
-      <section class="px-8 md:px-24 max-w-screen-2xl mx-auto pt-32 bg-surface-container">
+      <section class="px-8 md:px-24 mx-auto pt-32 bg-surface-container">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
 
           <!-- Text -->
@@ -19,20 +27,27 @@ import HomeLayout from '@/layouts/HomeLayout.vue';
             </span>
 
             <h1 class="font-headline text-white text-5xl md:text-7xl font-extrabold tracking-tight mb-8 leading-[1.1]">
-              Cómo funciona <span class="text-gradient ">Ubiqueme</span>
+              Reciba alertas sobre sus <span class="text-gradient">pertenencias</span>
             </h1>
 
-            <p class="text-on-surface-variant text-xl leading-relaxed mb-10 max-w-xl">
-              Una forma sencilla y segura para que cualquier persona te notifique si algo le sucede a tu vehículo o
-              propiedad.
-            </p>
+            <div class="text-on-surface-variant text-xl leading-relaxed mb-10 max-w-xl">
+              Una forma sencilla y segura para que cualquier persona le notifique si algo le sucede a su
+              <span class="inline-flex relative overflow-hidden align-bottom w-[180px] h-[1.5em] fade-edges mx-1">
+                <div class="flex animate-marquee-text whitespace-nowrap">
+                  <span class="text-gradient font-bold px-2">Automóvil &bull; Propiedad &bull; Bicicleta &bull; Scooter
+                    &bull; Motocicleta &bull; Equipaje &bull; Automóvil &bull; Propiedad &bull; Bicicleta &bull; Scooter
+                    &bull; Motocicleta &bull; Equipaje &bull; </span>
+                </div>
+              </span>
+              sin compartir su información personal, todo de forma anónima y segura.
+            </div>
 
             <div class="flex flex-wrap gap-4">
               <button class="btn-primary text-on-primary font-bold px-8 py-4 rounded-full text-lg">
-                Obtén tu QR
+                Obtenga su QR
               </button>
               <button class="bg-surface-container-highest text-on-surface font-semibold px-8 py-4 rounded-full text-lg">
-                Watch Demo
+                Ver Demo
               </button>
             </div>
           </div>
@@ -63,6 +78,8 @@ import HomeLayout from '@/layouts/HomeLayout.vue';
       </section>
 
       <StepByStep />
+
+      <FeaturesComponent />
 
     </template>
   </HomeLayout>
@@ -113,5 +130,24 @@ import HomeLayout from '@/layouts/HomeLayout.vue';
 
   /* Support for IE. */
   font-feature-settings: 'liga';
+}
+
+.fade-edges {
+  mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
+}
+
+.animate-marquee-text {
+  animation: marquee 10s linear infinite;
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
 }
 </style>
