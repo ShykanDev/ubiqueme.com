@@ -47,11 +47,7 @@ const features = [
           perfectamente localizable en los momentos que más importan.</p>
       </div>
       <div class="pb-2">
-        <a class="text-primary font-bold flex items-center group" href="#">
-          Explorar todas las funciones
-          <span class="material-symbols-outlined ml-2 group-hover:translate-x-1 transition-transform"
-            data-icon="arrow_forward">arrow_forward</span>
-        </a>
+
       </div>
     </div>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">

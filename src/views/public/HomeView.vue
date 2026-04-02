@@ -42,12 +42,12 @@ onMounted(() => {
               sin compartir su información personal, todo de forma anónima y segura.
             </div>
 
-            <div class="flex flex-wrap gap-4">
+            <div class="flex flex-wrap gap-4 py-1.5">
               <button class="btn-primary text-on-primary font-bold px-8 py-4 rounded-full text-lg">
                 Obtenga su QR
               </button>
               <button class="bg-surface-container-highest text-on-surface font-semibold px-8 py-4 rounded-full text-lg">
-                Ver Demo
+                Iniciar Sesión
               </button>
             </div>
           </div>

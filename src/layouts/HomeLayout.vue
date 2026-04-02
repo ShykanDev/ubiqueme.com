@@ -54,11 +54,11 @@ const navLinks = [
         <!-- Buttons -->
         <div class="flex items-center space-x-6 font-rubik">
           <button class="text-slate-400  hover:text-slate-100 transition-all text-sm font-semibold">
-            Sign In
+            Iniciar Sesión
           </button>
           <button
             class="bg-sky-400 text-on-primary-fixed  px-6 py-2.5 rounded-full text-sm font-bold hover:opacity-80 active:scale-95 transition-all">
-            Get Started
+            Obtener QR
           </button>
         </div>
 
@@ -69,8 +69,21 @@ const navLinks = [
       <slot name="main"></slot>
     </main>
 
-    <footer>
-
+    <footer
+      class="bg-slate-950 backdrop-blur-xl shadow-2xl shadow-slate-950/50  w-full flex justify-center gap-8 px-12 py-8 z-40  text-blue-400 dark:text-sky-300">
+      <div
+        class="flex flex-col md:flex-row gap-4 md:gap-12 items-center opacity-80 hover:opacity-100 transition-opacity">
+        <span class="font-body text-xs uppercase tracking-widest text-slate-500">©{{ new Date().getFullYear() }}
+          ubiqueme.com</span>
+        <div class="flex gap-6">
+          <a class="font-body text-xs uppercase tracking-widest text-slate-500 hover:text-slate-300 transition-colors"
+            href="#">Política de Privacidad</a>
+          <a class="font-body text-xs uppercase tracking-widest text-slate-500 hover:text-slate-300 transition-colors"
+            href="#">Términos de Servicio</a>
+          <a class="font-body text-xs uppercase tracking-widest text-slate-500 hover:text-slate-300 transition-colors"
+            href="#">Contacto</a>
+        </div>
+      </div>
     </footer>
   </div>
 </template>
