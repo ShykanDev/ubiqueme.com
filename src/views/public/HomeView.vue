@@ -56,11 +56,13 @@ onMounted(() => {
           <div class="relative">
             <div class="absolute -inset-10 bg-primary/20 blur-[120px] rounded-full"></div>
 
-            <div class="relative p-2 rounded-xl border px-0 mx-0">
-              <img class="rounded-xl  w-10/12 mx-auto" src="../../assets/qr-code.png" alt="qr-code">
-
+            <div class="relative p-0 rounded-xl border px-0 mx-0">
+              <img class="rounded-xl  w-10/12 mx-auto hidden" src="../../assets/qr-code.png" alt="qr-code">
+              <video class="rounded-xl  h-full w-full mx-auto" src="../../assets/videos/laptop.mp4" autoplay loop
+                muted></video>
               <!-- Floating Card -->
-              <div class="absolute -bottom-6 -left-6 glass-panel p-6 rounded-3xl border border-sky-700  max-w-[240px]">
+              <div
+                class="absolute -bottom-6 -right-6 backdrop-blur-sm p-3 rounded-3xl border border-sky-100/45  max-w-[240px]">
                 <div class="flex items-center space-x-3 mb-2">
                   <span class="material-symbols-outlined text-primary">lock</span>
 
