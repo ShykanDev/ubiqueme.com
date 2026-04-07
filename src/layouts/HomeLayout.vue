@@ -8,9 +8,9 @@ const navLinks = [
     href: '#',
   },
   {
-    name: 'Como funciona',
-    pathName: 'home',
-    href: '#',
+    name: 'Dashboard',
+    pathName: 'dashboard',
+    href: '/dashboard',
   },
   {
     name: 'Ayuda',
