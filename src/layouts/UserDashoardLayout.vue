@@ -60,12 +60,12 @@ const navLinks = [
       </div>
     </nav>
 
-    <main>
-      <slot name="main"></slot>
+    <main class="scrollbar-hide">
+      <slot class="scrollbar-hide" name="main"></slot>
     </main>
 
     <footer
-      class="bg-slate-950 backdrop-blur-xl shadow-2xl shadow-slate-950/50  w-full flex justify-center gap-8 px-12 py-8 z-40  text-blue-400 dark:text-sky-300">
+      class="bg-slate-950 hidden backdrop-blur-xl shadow-2xl shadow-slate-950/50  w-full justify-center gap-8 px-12 py-8 z-40  text-blue-400 dark:text-sky-300">
       <div
         class="flex flex-col md:flex-row gap-4 md:gap-12 items-center opacity-80 hover:opacity-100 transition-opacity">
         <span class="font-body text-xs uppercase tracking-widest text-slate-500">©{{ new Date().getFullYear() }}
@@ -83,4 +83,15 @@ const navLinks = [
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
+}
+</style>

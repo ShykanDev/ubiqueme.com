@@ -17,6 +17,10 @@ import {
   BiQuestionCircle,
   FaBell,
   IoLogIn,
+  MdHomeRound,
+  MdQrcodescannerRound,
+  MdNotificationsnoneOutlined,
+  MdSettings,
 } from 'oh-vue-icons/icons'
 
 addIcons(
@@ -30,6 +34,10 @@ addIcons(
   BiQuestionCircle,
   FaBell,
   IoLogIn,
+  MdHomeRound,
+  MdQrcodescannerRound,
+  MdNotificationsnoneOutlined,
+  MdSettings,
 )
 
 const app = createApp(App)

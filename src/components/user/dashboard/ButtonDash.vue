@@ -14,6 +14,10 @@ const props = defineProps({
   icon: {
     type: String,
     required: true
+  },
+  active: {
+    type: Boolean,
+    required: true
   }
 
 })
@@ -21,11 +25,12 @@ const props = defineProps({
 
 <template>
   <button
-    class="w-full  text-white overflow-hidden  flex  p-5  items-center justify-start gap-3 hover:bg-[#0e1a34] rounded-md relative cursor-pointer">
+    class="w-full  text-white overflow-hidden  flex  p-5  items-center justify-start gap-3 hover:bg-[#0f2657] rounded-md relative cursor-pointer"
+    :class="{ 'bg-[#0f2657]': active }">
     <v-icon :name="props.icon" scale="1.5" class="absolute left-4" />
     <span v-show="isHover"
-      class="animate__animated animate__fadeInRight whitespace-nowrap animate-duration-[.1s] w-full  transition-colors duration-200 ease-out "
-      :style="{ 'animation-delay': `${index * 50}ms` }">{{
+      class="animate__animated animate__flipInX whitespace-nowrap animate-duration-[.1s] w-full  transition-colors duration-200 ease-out text-lg"
+      :style="{ 'animation-delay': `${index * 55}ms` }">{{
         props.name }}</span>
   </button>
 </template>
