@@ -153,7 +153,7 @@ const closePrompts = () => {
     <!-- Prompt Cancelar -->
     <div v-if="showCancelPrompt"
       class="absolute inset-x-0 bottom-0 top-0 bg-[#0F1222]/95 backdrop-blur-md rounded-2xl p-5 flex flex-col justify-center z-50">
-      <h3 class="text-white text-lg font-semibold mb-2 text-center leading-tight">¿Desea cancelar este código QR?</h3>
+      <h3 class="text-white text-sm  mb-2 text-center leading-tight">¿Desea cancelar este código QR?</h3>
       <p
         class="text-red-400 text-sm text-center mb-5 border border-red-500/20 bg-red-500/10 p-3 rounded-lg leading-snug">
         Al hacer esto, su código dejará de funcionar y será inutilizable permanentemente.

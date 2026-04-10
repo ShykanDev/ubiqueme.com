@@ -36,13 +36,13 @@ const userQRs = [
 <template>
   <!--Section principal-->
   <section class="mb-12">
-    <h1 class="text-6xl font-bold  text-on-surface mb-6  font-google-sans">
-      Gestión de<br />
-      <span class="bg-linear-to-r from-sky-500 to-primary bg-clip-text text-transparent">
+    <h1 class="text-2xl font-bold  text-slate-100 mb-2  font-google-sans text-center">
+      Gestión de
+      <span class="text-primary">
         Códigos QR
       </span>
     </h1>
-    <p class="text-md text-on-surface-variant max-w-2xl font-google-sans">
+    <p class=" text-on-surface-variant  font-google-sans text-center">
       Cree, administre y monitoree el rendimiento de sus etiquetas QR en tiempo real.
       Toda la información y control centralizados en un solo lugar.
     </p>

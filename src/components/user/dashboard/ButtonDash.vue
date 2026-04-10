@@ -29,7 +29,7 @@ const props = defineProps({
     :class="{ 'bg-[#002462]': active }">
     <v-icon :name="props.icon" scale="1.5" class="absolute left-4" />
     <span v-show="isHover"
-      class="animate__animated animate__flipInX whitespace-nowrap animate-duration-[.1s] w-full  transition-colors duration-200 ease-out text-lg"
+      class="animate__animated animate__flipInX whitespace-nowrap animate-duration-[.1s] w-full  transition-colors duration-200 ease-out text-lg font-google-sans"
       :style="{ 'animation-delay': `${index * 55}ms` }">{{
         props.name }}</span>
   </button>
