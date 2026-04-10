@@ -6,7 +6,7 @@
       <section class="min-h-screen w-full flex flex-col md:flex-row bg-surface font-body overflow-hidden pt-20">
 
         <div
-          class="hidden md:flex md:w-1/2 lg:w-3/5 bg-obsidian-gradient relative items-center justify-center p-12 lg:p-24">
+          class="hidden md:flex md:w-1/2 lg:w-3/5 bg-obsidian-gradient relative items-start justify-center p-12 lg:p-7">
           <div class="absolute inset-0 opacity-10 pointer-events-none">
             <div
               class="absolute top-0 left-0 w-full h-full border border-primary/5 [mask-:linear-gradient(to_bottom,black,transparent)]">
@@ -15,20 +15,20 @@
 
           <div class="relative z-10 max-w-xl">
             <div
-              class="mb-8 inline-flex items-center gap-3 px-4 py-2 rounded-full bg-surface-container-high border border-outline-variant/20">
-              <span class="material-symbols-outlined text-primary text-[20px]">verified_user</span>
-              <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-primary-fixed">Criptografía
+              class="mb-8 inline-flex items-center gap-3 px-4 py-2 rounded-full bg-blue-300 border border-outline-variant/20">
+              <span class="material-symbols-outlined text-blue-900 text-[20px]">verified_user</span>
+              <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-primary-fixed text-blue-900">Privacidad
                 Avanzada</span>
             </div>
 
             <h1
               class="font-headline text-5xl lg:text-7xl font-extrabold tracking-tight text-on-surface leading-[1.1] mb-8">
-              Mantente localizable.<br />
-              <span class="text-primary">Mantente protegido.</span>
+              Mantengase localizable.<br />
+              <span class="text-primary">Mantengase protegido.</span>
             </h1>
 
             <p class="text-on-surface-variant text-lg lg:text-xl font-light leading-relaxed mb-12 max-w-md">
-              Notificaciones seguras sin exponer tu información personal. Elegante, privado y rápido.
+              Notificaciones seguras sin exponer su información personal. Seguro privado y rápido.
             </p>
 
             <div class="p-6 rounded-2xl bg-surface-container-low border border-outline-variant/20 shadow-2xl">
@@ -54,7 +54,7 @@
         </div>
 
         <div
-          class="flex-grow md:w-1/2 lg:w-2/5 flex items-center justify-center p-6 sm:p-12 bg-surface border-l border-outline-variant/10">
+          class="grow md:w-1/2 lg:w-2/5 flex items-center justify-center p-6 sm:p-12 bg-surface border-l border-outline-variant/10">
           <div class="w-full max-w-md">
 
             <div class="md:hidden flex flex-col items-center mb-10 text-center">
@@ -155,17 +155,37 @@
 
 <script setup lang="ts">
 import { ref, reactive } from 'vue'
+const router = useRouter();
 
 import HomeLayout from '@/layouts/HomeLayout.vue'
+import { getAuth, signInWithEmailAndPassword } from 'firebase/auth'
+import { useRouter } from 'vue-router'
+import { useUserStore } from '@/stores/user';
 
 const showPassword = ref(false)
 const form = reactive({
   email: '',
   password: ''
 })
+const auth = getAuth();
 
-const handleLogin = () => {
-  console.log('Logging in with:', form)
+const userStore = useUserStore();
+
+const handleLogin = async () => {
+  try {
+    const user = await signInWithEmailAndPassword(auth, form.email, form.password);
+    if (!user.user.displayName && !user.user.metadata.creationTime) {
+      router.push({ name: 'register' });
+      console.log('User has no display name, user deleted');
+      return;
+    }
+    userStore.setFullName(user.user.displayName || '');
+    userStore.setCreationDate(user.user.metadata?.creationTime || '');
+    alert(user.user.metadata?.creationTime);
+    router.push({ name: 'dashboard' });
+  } catch (error) {
+    console.log(`Error while trying to login: ${error}`);
+  }
 }
 </script>
 

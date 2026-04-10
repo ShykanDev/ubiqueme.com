@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { useUserStore } from '@/stores/user';
 import VentoCard from '../homeDash/VentoCard.vue';
 const ventoCards = [
   {
@@ -31,6 +32,7 @@ const ventoCards = [
   },
 ]
 
+const userStore = useUserStore();
 </script>
 
 <template>
@@ -40,7 +42,8 @@ const ventoCards = [
     <div>
       <p class="text-primary font-semibold tracking-widest text-xs mb-2 font-google-sans">Inicio
       </p>
-      <h2 class="text-3xl font-bold font-headline text-on-surface font-google-sans">Bienvenido de nuevo, Alexander</h2>
+      <h2 class="text-3xl font-bold font-headline text-on-surface font-google-sans">Bienvenido de nuevo, {{
+        userStore.getFirstName ?? 'User' }}</h2>
     </div>
     <button
       class="flex items-center gap-2 px-8 py-4 rounded-lg bg-linear-to-br from-primary to-sky-600 cursor-pointer text-on-primary font-bold shadow-xl hover:brightness-110 transition-all active:scale-95">
