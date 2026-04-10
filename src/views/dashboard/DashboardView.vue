@@ -53,6 +53,9 @@ type ComponentName = 'Inicio' | 'Mis QR' | 'Notificaciones' | 'Configuración' |
 const componentsMap: Record<string, ReturnType<typeof defineAsyncComponent>> = {
   'Inicio': defineAsyncComponent(() => import('../../components/user/dashboard/async/HomeDash.vue')),
   'Mis QR': defineAsyncComponent(() => import('../../components/user/dashboard/QRDash/MyQrDash.vue')),
+  'Notificaciones': defineAsyncComponent(() => import('../../components/user/dashboard/notifications/NotificationsDash.vue')),
+  'Configuración': defineAsyncComponent(() => import('../../components/user/dashboard/settings/SettingsDash.vue')),
+  'Soporte': defineAsyncComponent(() => import('../../components/user/dashboard/support/SupportDash.vue')),
 }
 const currentComponent = shallowRef(componentsMap['Inicio']);
 
@@ -80,9 +83,11 @@ const changeComponent = (component: ComponentName) => {
         </aside>
 
         <!-- Right Side -->
-        <div class="w-full bg-[#0F1324] h-screen pl-20 pt-24 pr-10 overflow-y-scroll overflow-hidden scrollbar-hide ">
+        <section
+          class="w-full bg-[#0F1324] h-screen pl-20 pt-24 pr-10 overflow-y-scroll overflow-hidden scrollbar-hide ">
           <component :is="currentComponent"></component>
-        </div>
+        </section>
+
       </div>
     </template>
   </UserDashoardLayout>

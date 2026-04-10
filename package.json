@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite --host",
+    "dev": "vite",
     "build": "run-p type-check \"build-only {@}\" --",
     "preview": "vite preview",
     "test:unit": "vitest",
@@ -24,6 +24,7 @@
     "aos": "^3.0.0-beta.6",
     "oh-vue-icons": "^1.0.0-rc3",
     "pinia": "^3.0.4",
+    "qrcode.vue": "^3.8.1",
     "tailwindcss": "^4.2.2",
     "tailwindcss-animated": "^2.0.0",
     "vue": "^3.5.30",

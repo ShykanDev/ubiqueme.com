@@ -34,23 +34,13 @@ const ventoCards = [
 </script>
 
 <template>
-  <section class="mb-20 max-w-4xl">
-    <h1 class="text-6xl font-extrabold font-headline tracking-tighter text-on-surface mb-6 leading-none">
-      Siempre conectado<br />
-      <span class="bg-linear-to-r from-primary to-on-secondary bg-clip-text text-transparent">
-        Protegido en todo lugar
-      </span>
-    </h1>
-    <p class="text-xl text-on-surface-variant font-medium leading-relaxed max-w-2xl">
-      Permita que cualquier persona se comunique con usted al instante sin exponer su información personal. Su
-      privacidad es nuestra prioridad.
-    </p>
-  </section>
+
   <!-- Welcome Banner -->
   <div class="mb-12 flex justify-between items-end">
     <div>
-      <p class="text-primary font-semibold tracking-widest uppercase text-xs mb-2">Resumen de su sesión</p>
-      <h2 class="text-4xl font-bold font-headline text-on-surface">Bienvenido de nuevo, Alexander</h2>
+      <p class="text-primary font-semibold tracking-widest  text-xs mb-2 font-google-sans">Inicio
+      </p>
+      <h2 class="text-3xl font-bold font-headline text-on-surface font-google-sans">Bienvenido de nuevo, Alexander</h2>
     </div>
     <button
       class="flex items-center gap-2 px-8 py-4 rounded-lg bg-linear-to-br from-primary to-sky-600 cursor-pointer text-on-primary font-bold shadow-xl hover:brightness-110 transition-all active:scale-95">
