@@ -38,7 +38,7 @@ const ventoCards = [
   <!-- Welcome Banner -->
   <div class="mb-12 flex justify-between items-end">
     <div>
-      <p class="text-primary font-semibold tracking-widest  text-xs mb-2 font-google-sans">Inicio
+      <p class="text-primary font-semibold tracking-widest text-xs mb-2 font-google-sans">Inicio
       </p>
       <h2 class="text-3xl font-bold font-headline text-on-surface font-google-sans">Bienvenido de nuevo, Alexander</h2>
     </div>

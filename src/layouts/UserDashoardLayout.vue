@@ -48,13 +48,14 @@ const navLinks = [
 
         <!-- Buttons -->
         <div class="flex items-center space-x-6 font-rubik">
-          <button class="text-slate-400  hover:text-slate-100 transition-all text-sm font-semibold">
+          <router-link :to="{ name: 'login' }"
+            class="text-slate-400  hover:text-slate-100 transition-all text-sm font-semibold">
             Iniciar Sesión
-          </button>
-          <button
+          </router-link>
+          <router-link :to="{ name: 'register' }"
             class="bg-sky-400 text-on-primary-fixed  px-6 py-2.5 rounded-full text-sm font-bold hover:opacity-80 active:scale-95 transition-all">
             Obtener QR
-          </button>
+          </router-link>
         </div>
 
       </div>

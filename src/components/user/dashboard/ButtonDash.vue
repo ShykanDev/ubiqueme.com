@@ -19,19 +19,33 @@ const props = defineProps({
     type: Boolean,
     required: true
   }
-
 })
 </script>
 
 <template>
-  <button
-    class="w-full  text-white overflow-hidden  flex p-5 items-center justify-start gap-3 hover:bg-[#001943] rounded-md relative cursor-pointer"
-    :class="{ 'bg-[#002462]': active }">
-    <v-icon :name="props.icon" scale="1.5" class="absolute left-4" />
-    <span v-show="isHover"
-      class="animate__animated animate__flipInX whitespace-nowrap animate-duration-[.1s] w-full  transition-colors duration-200 ease-out text-lg font-google-sans"
-      :style="{ 'animation-delay': `${index * 55}ms` }">{{
-        props.name }}</span>
+  <button :class="[
+    'relative flex items-center gap-3 rounded-[10px] transition-all duration-300 overflow-hidden',
+    'min-h-[42px] px-3 cursor-pointer',
+    active
+      ? 'bg-[rgba(99,140,255,0.13)] text-[#a8bfff]'
+      : 'text-[rgba(160,170,200,0.7)] hover:bg-[rgba(99,140,255,0.08)] hover:text-[rgba(200,210,240,0.95)]'
+  ]" :style="{ width: isHover ? '184px' : '47px' }">
+    <!-- indicador activo -->
+    <span v-if="active" class="absolute left-0 top-[20%] bottom-[20%] w-0.5 rounded-full bg-[#6B8FFF]"></span>
+
+    <!-- ícono -->
+    <v-icon :name="icon" scale="1.3" :class="active ? 'opacity-100' : 'opacity-75'" />
+
+    <!-- label con fade + colapso de ancho -->
+    <span
+      class="text-sm font-light tracking-wide whitespace-nowrap pointer-events-none transition-all duration-200 font-google-sans animate_animated animate__"
+      :style="{
+        opacity: isHover ? '1' : '0',
+        maxWidth: isHover ? '140px' : '0px',
+        overflow: 'hidden'
+      }">
+      {{ name }}
+    </span>
   </button>
 </template>
 

@@ -73,18 +73,27 @@ const changeComponent = (component: ComponentName) => {
       <!--Main Container for Dash-->
       <div class="flex  relative ">
 
-        <!-- Left Side -->
+        <!-- Sidebar -->
         <aside @mouseenter="handleSideBarHover" @mouseleave="handleSideBarLeave"
-          :class="{ 'w-2/12': hoverOnSideBar, 'w-16': !hoverOnSideBar }"
-          class="absolute z-20 left-0 transition-all duration-300 bg-[#070C16]/95  h-screen flex flex-col items-center justify-around pt-20">
+          :class="{ 'w-[200px]': hoverOnSideBar, 'w-20': !hoverOnSideBar }"
+          class="absolute z-20 left-0 transition-all duration-300 h-screen flex flex-col items-center justify-around pt-14 overflow-hidden"
+          style="
+    background: rgba(7, 12, 22, 0.97);
+    border-right: 1px solid rgba(255,255,255,0.04);
+  ">
+          <!-- línea decorativa lateral interna -->
+          <div class="absolute right-0 top-0 bottom-0 w-px pointer-events-none"
+            style="background: linear-gradient(to bottom, transparent, rgba(99,140,255,0.12) 40%, rgba(99,140,255,0.12) 60%, transparent);">
+          </div>
+
           <ButtonDash @click="changeComponent(btn.name as ComponentName)" v-for="(btn, index) in dashButtons"
             :key="btn.name" :name="btn.name" :isHover="hoverOnSideBar" :index="index" :icon="btn.icon"
-            :active="componentsMap[btn.name] === currentComponent"></ButtonDash>
+            :active="componentsMap[btn.name] === currentComponent" />
         </aside>
 
-        <!-- Right Side -->
+        <!-- Content Side -->
         <section
-          class="w-full bg-[#0F1324] h-screen pl-20 pt-24 pr-10 overflow-y-scroll overflow-hidden scrollbar-hide ">
+          class="w-full bg-[#0F1324] h-screen pl-24! pt-24! pr-10! overflow-y-scroll overflow-hidden scrollbar-hide ">
           <component :is="currentComponent"></component>
         </section>
 
