@@ -1,8 +1,20 @@
 <script lang="ts" setup>
+import { useUserStore } from '@/stores/user';
 import VentoCard from '../homeDash/VentoCard.vue';
 import QRCard from './QRCard.vue';
 
-const userQRs = [
+type TStatus = 'Active' | 'Canceled' | 'Process' | 'Error';
+
+interface IMyQR {
+  id: string;
+  name: string;
+  status: TStatus;
+  scans: number;
+  lastScan: string;
+  statusClass: string;
+}
+
+const userQRs: IMyQR[] = [
   {
     id: 'ABC123',
     name: 'MacBook Pro',
@@ -30,7 +42,7 @@ const userQRs = [
 ];
 
 
-
+const userStore = useUserStore();
 </script>
 
 <template>
@@ -52,7 +64,8 @@ const userQRs = [
     <div>
       <p class="text-primary font-semibold tracking-widest uppercase text-xs mb-2 font-google-sans">Resumen de su sesión
       </p>
-      <h2 class="text-4xl font-bold font-headline text-on-surface font-google-sans">Bienvenido de nuevo, Alejandro</h2>
+      <h2 class="text-4xl font-bold font-headline text-on-surface font-google-sans">Bienvenido de nuevo, {{
+        userStore.getFirstName }} </h2>
     </div>
     <button
       class="flex items-center gap-2 px-8 py-4 rounded-lg bg-linear-to-br from-primary to-sky-600 cursor-pointer text-on-primary font-bold shadow-xl hover:brightness-110 transition-all active:scale-95">

@@ -20,5 +20,9 @@ export const useUserStore = defineStore('userStore', {
     clearFullName() {
       this.fullName = ''
     },
+    clearUser() {
+      this.fullName = ''
+      this.creationDate = ''
+    },
   },
 })

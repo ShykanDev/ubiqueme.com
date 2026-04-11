@@ -1,7 +1,8 @@
 <script lang="ts" setup>
 import ButtonDash from '@/components/user/dashboard/ButtonDash.vue';
 import UserDashoardLayout from '@/layouts/UserDashoardLayout.vue';
-import { defineAsyncComponent, onMounted, ref, shallowRef } from 'vue';
+import { useAuth } from '@/handleAuth';
+import { defineAsyncComponent, ref, shallowRef } from 'vue';
 const hoverOnSideBar = ref(false);
 
 let timeout = null as any;
@@ -58,8 +59,12 @@ const componentsMap: Record<string, ReturnType<typeof defineAsyncComponent>> = {
   'Soporte': defineAsyncComponent(() => import('../../components/user/dashboard/support/SupportDash.vue')),
 }
 const currentComponent = shallowRef(componentsMap['Inicio']);
-
+const { handleLogout } = useAuth();
 const changeComponent = (component: ComponentName) => {
+  if (component == 'Cerrar Sesión') {
+    handleLogout()
+    return
+  }
   currentComponent.value = componentsMap[component] ?? componentsMap['Inicio']
 }
 

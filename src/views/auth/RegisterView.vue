@@ -157,7 +157,7 @@
 <script setup lang="ts">
 import { reactive } from 'vue'
 import HomeLayout from '@/layouts/HomeLayout.vue'
-import { auth as authFirebase } from '@/main'
+import { auth as authFirebase } from '@/firebase'
 import { createUserWithEmailAndPassword, sendEmailVerification, updateCurrentUser, updateProfile } from 'firebase/auth';
 import { log } from 'console';
 import { collection, doc, getFirestore, Timestamp, writeBatch } from 'firebase/firestore';
