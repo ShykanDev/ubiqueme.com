@@ -22,6 +22,7 @@ import {
   MdQrcodescannerRound,
   MdNotificationsnoneOutlined,
   MdSettings,
+  MdHelpSharp,
 } from 'oh-vue-icons/icons'
 
 addIcons(
@@ -40,6 +41,7 @@ addIcons(
   MdQrcodescannerRound,
   MdNotificationsnoneOutlined,
   MdSettings,
+  MdHelpSharp,
 )
 
 const app = createApp(App)

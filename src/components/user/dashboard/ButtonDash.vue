@@ -2,39 +2,53 @@
 const props = defineProps({
   name: {
     type: String,
-    required: true
+    required: true,
   },
   isHover: {
     type: Boolean,
   },
   index: {
     type: Number,
-    required: true
+    required: true,
   },
   icon: {
     type: String,
-    required: true
+    required: true,
+  },
+  iconActive: {
+    type: String,
+    required: true,
   },
   active: {
     type: Boolean,
-    required: true
-  }
+    required: true,
+  },
 })
 </script>
 
 <template>
-  <button :class="[
-    'relative flex items-center gap-3 rounded-[10px] transition-all duration-300 overflow-hidden',
-    'min-h-[42px] px-3 cursor-pointer',
-    active
-      ? 'bg-[rgba(99,140,255,0.13)] text-[#a8bfff]'
-      : 'text-[rgba(160,170,200,0.7)] hover:bg-[rgba(99,140,255,0.08)] hover:text-[rgba(200,210,240,0.95)]'
-  ]" :style="{ width: isHover ? '184px' : '47px' }">
+  <button
+    :class="[
+      'relative flex items-center gap-3 rounded-[10px] transition-all duration-300 overflow-hidden',
+      'min-h-[42px] px-3 cursor-pointer',
+      active
+        ? 'bg-[rgba(99,140,255,0.13)] text-[#a8bfff]'
+        : 'text-[rgba(160,170,200,0.7)] hover:bg-[rgba(99,140,255,0.08)] hover:text-[rgba(200,210,240,0.95)]',
+    ]"
+    :style="{ width: isHover ? '184px' : '47px' }"
+  >
     <!-- indicador activo -->
-    <span v-if="active" class="absolute left-0 top-[20%] bottom-[20%] w-0.5 rounded-full bg-[#6B8FFF]"></span>
+    <span
+      v-if="active"
+      class="absolute left-0 top-[20%] bottom-[20%] w-0.5 rounded-full bg-[#6B8FFF]"
+    ></span>
 
     <!-- ícono -->
-    <v-icon :name="icon" scale="1.3" :class="active ? 'opacity-100' : 'opacity-75'" />
+    <v-icon
+      :name="active ? iconActive : icon"
+      scale="1.3"
+      :class="active ? 'opacity-100' : 'opacity-75'"
+    />
 
     <!-- label con fade + colapso de ancho -->
     <span
@@ -42,8 +56,9 @@ const props = defineProps({
       :style="{
         opacity: isHover ? '1' : '0',
         maxWidth: isHover ? '140px' : '0px',
-        overflow: 'hidden'
-      }">
+        overflow: 'hidden',
+      }"
+    >
       {{ name }}
     </span>
   </button>

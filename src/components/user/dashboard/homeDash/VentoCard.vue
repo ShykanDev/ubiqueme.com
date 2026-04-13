@@ -25,8 +25,11 @@ const props = defineProps({
 
 <template>
   <div
-    class="col-span-12 md:col-span-3 surface-container rounded-xl p-8 border border-white/5 relative overflow-hidden group">
-    <div class="absolute -right-4 -bottom-4 opacity-5 group-hover:scale-125 transition-transform duration-500">
+    class="col-span-12 md:col-span-3 surface-container rounded-xl p-8 border border-white/5 relative overflow-hidden group"
+  >
+    <div
+      class="absolute -right-4 -bottom-4 opacity-5 group-hover:scale-125 transition-transform duration-500"
+    >
       <span class="material-symbols-outlined text-[120px]">{{ icon }}</span>
     </div>
     <p class="text-on-surface-variant text-sm font-medium mb-1">{{ title }}</p>

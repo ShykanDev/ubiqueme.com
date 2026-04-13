@@ -1,16 +1,15 @@
 <script lang="ts" setup>
-import FeaturesComponent from '@/components/home/Features/FeaturesComponent.vue';
-import StepByStep from '@/components/home/StepByStep/StepByStep.vue';
-import HomeLayout from '@/layouts/HomeLayout.vue';
+import FeaturesComponent from '@/components/home/Features/FeaturesComponent.vue'
+import StepByStep from '@/components/home/StepByStep/StepByStep.vue'
+import HomeLayout from '@/layouts/HomeLayout.vue'
 
-import AOS from 'aos';
-import 'aos/dist/aos.css';
-import { onMounted } from 'vue';
+import AOS from 'aos'
+import 'aos/dist/aos.css'
+import { onMounted } from 'vue'
 
 onMounted(() => {
-  AOS.init();
-});
-
+  AOS.init()
+})
 </script>
 
 <template>
@@ -18,25 +17,32 @@ onMounted(() => {
     <template #main>
       <section class="px-8 md:px-24 mx-auto pt-32 bg-surface-container">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-
           <!-- Text -->
           <div>
             <span
-              class="inline-block px-4 py-1.5 rounded-full bg-secondary-container text-on-secondary-container text-xs font-bold tracking-widest uppercase mb-6">
+              class="inline-block px-4 py-1.5 rounded-full bg-secondary-container text-on-secondary-container text-xs font-bold tracking-widest uppercase mb-6"
+            >
               Security Redefined
             </span>
 
-            <h1 class="font-headline text-white text-5xl md:text-7xl font-extrabold tracking-tight mb-8 leading-[1.1]">
+            <h1
+              class="font-headline text-white text-5xl md:text-7xl font-extrabold tracking-tight mb-8 leading-[1.1]"
+            >
               Reciba alertas sobre sus <span class="text-gradient">pertenencias</span>
             </h1>
 
             <div class="text-on-surface-variant text-xl leading-relaxed mb-10 max-w-xl">
-              Una forma sencilla y segura para que cualquier persona le notifique si algo le sucede a su
-              <span class="inline-flex relative overflow-hidden align-bottom w-[180px] h-[1.5em] fade-edges mx-1">
+              Una forma sencilla y segura para que cualquier persona le notifique si algo le sucede
+              a su
+              <span
+                class="inline-flex relative overflow-hidden align-bottom w-[180px] h-[1.5em] fade-edges mx-1"
+              >
                 <div class="flex animate-marquee-text whitespace-nowrap">
-                  <span class="text-gradient font-bold px-2">Automóvil &bull; Propiedad &bull; Bicicleta &bull; Scooter
-                    &bull; Motocicleta &bull; Equipaje &bull; Automóvil &bull; Propiedad &bull; Bicicleta &bull; Scooter
-                    &bull; Motocicleta &bull; Equipaje &bull; </span>
+                  <span class="text-gradient font-bold px-2"
+                    >Automóvil &bull; Propiedad &bull; Bicicleta &bull; Scooter &bull; Motocicleta
+                    &bull; Equipaje &bull; Automóvil &bull; Propiedad &bull; Bicicleta &bull;
+                    Scooter &bull; Motocicleta &bull; Equipaje &bull;
+                  </span>
                 </div>
               </span>
               sin compartir su información personal, todo de forma anónima y segura.
@@ -46,7 +52,9 @@ onMounted(() => {
               <button class="btn-primary text-on-primary font-bold px-8 py-4 rounded-full text-lg">
                 Obtenga su QR
               </button>
-              <button class="bg-surface-container-highest text-on-surface font-semibold px-8 py-4 rounded-full text-lg">
+              <button
+                class="bg-surface-container-highest text-on-surface font-semibold px-8 py-4 rounded-full text-lg"
+              >
                 Iniciar Sesión
               </button>
             </div>
@@ -57,12 +65,22 @@ onMounted(() => {
             <div class="absolute -inset-10 bg-primary/20 blur-[120px] rounded-full"></div>
 
             <div class="relative p-0 rounded-xl border px-0 mx-0">
-              <img class="rounded-xl  w-10/12 mx-auto hidden" src="../../assets/qr-code.png" alt="qr-code">
-              <video class="rounded-xl  h-full w-full mx-auto" src="../../assets/videos/laptop.mp4" autoplay loop
-                muted></video>
+              <img
+                class="rounded-xl w-10/12 mx-auto hidden"
+                src="../../assets/qr-code.png"
+                alt="qr-code"
+              />
+              <video
+                class="rounded-xl h-full w-full mx-auto"
+                src="../../assets/videos/laptop.mp4"
+                autoplay
+                loop
+                muted
+              ></video>
               <!-- Floating Card -->
               <div
-                class="absolute -bottom-6 -right-6 backdrop-blur-sm p-3 rounded-3xl border border-sky-100/45  max-w-[240px]">
+                class="absolute -bottom-6 -right-6 backdrop-blur-sm p-3 rounded-3xl border border-sky-100/45 max-w-[240px]"
+              >
                 <div class="flex items-center space-x-3 mb-2">
                   <span class="material-symbols-outlined text-primary">lock</span>
 
@@ -72,24 +90,25 @@ onMounted(() => {
                   Conexión segura activa. No se comparten datos.
                 </p>
               </div>
-
             </div>
           </div>
-
         </div>
       </section>
 
       <StepByStep />
 
       <FeaturesComponent />
-
     </template>
   </HomeLayout>
 </template>
 
 <style scoped>
 .material-symbols-outlined {
-  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  font-variation-settings:
+    'FILL' 0,
+    'wght' 400,
+    'GRAD' 0,
+    'opsz' 24;
 }
 
 .glass-panel {

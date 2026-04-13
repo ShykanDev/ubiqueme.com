@@ -1,18 +1,15 @@
 <template>
-
   <HomeLayout>
     <template #main>
-
       <section
         class="min-h-screen w-full flex flex-col md:flex-row bg-surface font-body overflow-hidden pt-20 font-google-sans">
-
         <div class="grow md:w-1/2 lg:w-2/5 flex items-center justify-center p-6 sm:p-12 bg-surface order-2 md:order-1">
           <div class="w-full max-w-md">
-
             <div class="md:hidden flex flex-col items-center mb-10 text-center">
               <div
                 class="w-14 h-14 rounded-xl bg-primary flex items-center justify-center text-on-primary font-google-sans font-black text-2xl mb-4 shadow-xl shadow-primary/20">
-                U</div>
+                U
+              </div>
               <h2 class="font-google-sans font-bold text-3xl text-on-surface">Ubiqueme</h2>
               <p class="text-on-surface-variant mt-2">Únete a la comunidad de curaduría digital</p>
             </div>
@@ -20,12 +17,15 @@
             <div
               class="bg-surface-container-low md:bg-transparent p-8 md:p-0 rounded-3xl md:rounded-none border md:border-none border-outline-variant/10 shadow-2xl md:shadow-none">
               <div class="hidden md:block mb-8">
-                <h2 class="font-google-sans text-4xl font-bold text-on-surface mb-3 text-balance">Cree su cuenta</h2>
-                <p class="text-on-surface-variant">Comience a mantenerse comunicado, seguro y privado.</p>
+                <h2 class="font-google-sans text-4xl font-bold text-on-surface mb-3 text-balance">
+                  Cree su cuenta
+                </h2>
+                <p class="text-on-surface-variant">
+                  Comience a mantenerse comunicado, seguro y privado.
+                </p>
               </div>
 
               <form @submit.prevent="handleRegister" class="space-y-4">
-
                 <div class="space-y-1.5">
                   <label class="text-[10px] font-bold text-on-surface-variant uppercase tracking-[0.15em] ml-1"
                     for="name">Nombre Completo</label>
@@ -75,7 +75,9 @@
                   <input id="terms" v-model="form.terms" type="checkbox"
                     class="mt-1 w-4 h-4 rounded border-outline-variant/30 bg-surface-container-highest text-primary focus:ring-primary/20" />
                   <label for="terms" class="text-xs text-on-surface-variant leading-relaxed">
-                    Acepto los <a href="#" class="text-primary font-bold hover:underline">Términos de Servicio</a> y la
+                    Acepto los
+                    <a href="#" class="text-primary font-bold hover:underline">Términos de Servicio</a>
+                    y la
                     <a href="#" class="text-primary font-bold hover:underline">Política de Privacidad</a>.
                   </label>
                 </div>
@@ -91,13 +93,14 @@
                 <div class="absolute inset-0 flex items-center">
                   <div class="w-full border-t border-outline-variant/10"></div>
                 </div>
-                <div class="relative flex justify-center"><span
-                    class="bg-surface px-4 text-[10px] font-black text-outline uppercase tracking-[0.2em]">O</span>
+                <div class="relative flex justify-center">
+                  <span class="bg-surface px-4 text-[10px] font-black text-outline uppercase tracking-[0.2em]">O</span>
                 </div>
               </div>
 
               <p class="text-center mt-8 text-on-surface-variant text-sm">
-                ¿Ya tiene una cuenta? <RouterLink to="/login" class="text-primary font-bold hover:underline ml-1">
+                ¿Ya tiene una cuenta?
+                <RouterLink to="/login" class="text-primary font-bold hover:underline ml-1">
                   Inicia sesión</RouterLink>
               </p>
             </div>
@@ -134,8 +137,8 @@
             </p>
 
             <div class="flex flex-wrap gap-3">
-              <div v-for="tag in ['Seguro', 'Notificaciones en Tiempo Real', 'Privacidad']" :key="tag"
-                class="px-4 py-2 rounded-full bg-[#001029] border-2 border-double border-sky-400 text-xs font-bold text-slate-300 tracking-wide ">
+              <div v-for="tag in ['Seguro', 'Notificaciones en Tiempo Real', 'Privado']" :key="tag"
+                class="px-4 py-2 rounded-full bg-[#001029] border-2 border-double border-sky-400 text-xs font-bold text-slate-300 tracking-wide">
                 {{ tag }}
               </div>
             </div>
@@ -148,7 +151,6 @@
             <a href="#" class="hover:text-primary transition-colors">Términos</a>
           </div>
         </div>
-
       </section>
     </template>
   </HomeLayout>
@@ -158,18 +160,24 @@
 import { reactive } from 'vue'
 import HomeLayout from '@/layouts/HomeLayout.vue'
 import { auth as authFirebase } from '@/firebase'
-import { createUserWithEmailAndPassword, sendEmailVerification, updateCurrentUser, updateProfile } from 'firebase/auth';
-import { log } from 'console';
-import { collection, doc, getFirestore, Timestamp, writeBatch } from 'firebase/firestore';
+import {
+  createUserWithEmailAndPassword,
+  sendEmailVerification,
+  updateCurrentUser,
+  updateProfile,
+} from 'firebase/auth'
+import { log } from 'console'
+import { collection, doc, getFirestore, Timestamp, writeBatch } from 'firebase/firestore'
+import { link } from 'fs'
 const form = reactive({
   name: '',
   email: '',
   password: '',
   confirmPassword: '',
-  terms: false
+  terms: false,
 })
 
-const auth = authFirebase;
+const auth = authFirebase
 
 const validateForm = () => {
   if (form.name === '') {
@@ -190,34 +198,66 @@ const validateForm = () => {
   return true
 }
 
-const db = getFirestore();
+const db = getFirestore()
 const handleRegister = async () => {
   if (!validateForm()) {
     alert('Todos los campos son obligatorios')
     return
   }
 
-  let user;
+  let user
   try {
     const credentials = await createUserWithEmailAndPassword(auth, form.email, form.password);
     user = credentials.user;
-    await updateProfile(user, { displayName: form.name.trim() })
-    await sendEmailVerification(user)
+    await updateProfile(user, { displayName: form.name.trim() });
+    await sendEmailVerification(user);
     const userDoc = doc(db, `users/${user.uid}`);
     const batch = writeBatch(db);
+    //Set user data
 
     batch.set(userDoc, {
+      uid: user.uid,
       name: form.name.trim(),
       email: form.email.trim(),
-      createdAt: Timestamp.now()
+      phone: '',
+      isActive: true,
+      isBanned: false,
+      banReason: '',
+      plan: 'none',
+      planPurchasedAt: null,
+      planEndDate: null,
+      createdAt: Timestamp.now(),
     })
-    await batch.commit();
+
+    //Set first example user QR (for DEMO)
+    const userQrDoc = doc(db, `users/${user.uid}/qrs/${user.uid}`)
+    batch.set(userQrDoc, {
+      link: 'http://localhost:5173/u/ubiqueme.com/test',
+      nameQR: 'MacBook Pro',
+      isActive: true,
+      isBanned: false,
+      banReason: '',
+      status: '',
+      scans: 0,
+      lastScan: null,
+      planPurchasedAt: null,
+      planEndDate: null,
+      createdAt: Timestamp.now(),
+    })
+
+    //Set user profile
+    const userProfileDoc = doc(db, `users/${user.uid}/public/${user.uid}`)
+    batch.set(userProfileDoc, {
+      name: '',
+      email: '',
+      phone: '',
+    })
+    await batch.commit()
     console.log(`User ${user.uid} created successfully`)
   } catch (error) {
-    if (user) await user.delete();
+    if (user) await user.delete()
     console.log(`Error while creating user: ${error}`)
   }
-
 }
 </script>
 
@@ -235,11 +275,15 @@ const handleRegister = async () => {
 }
 
 .material-symbols-outlined {
-  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  font-variation-settings:
+    'FILL' 1,
+    'wght' 400,
+    'GRAD' 0,
+    'opsz' 24;
 }
 
 /* Custom Checkbox focus */
-input[type="checkbox"]:focus {
+input[type='checkbox']:focus {
   box-shadow: none;
 }
 </style>
