@@ -1,20 +1,34 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 import QrcodeVue from 'qrcode.vue'
+import { doc, Timestamp, updateDoc } from 'firebase/firestore'
+import { db } from '@/firebase'
+import { useUserStore } from '@/stores/user'
+import CloudLoader from '@/components/ui/CloudLoader.vue'
 type TStatus = 'Active' | 'Canceled' | 'Process' | 'Error'
 
 interface IQRCard {
-  id: string
-  name: string
-  status: TStatus
-  scans: number
-  lastScan: string
+  link: string,
+  name: string,
+  isActive: boolean,
+  isBanned: boolean,
+  banReason: string,
+  status: TStatus,
+  scans: number,
+  lastScan: string,
+  planPurchasedAt: null,
+  planEndDate: null,
+  id: string,
+  createdAt: Timestamp,
+  docId: string,
 }
 
 const props = defineProps<IQRCard>()
 
 const showMenu = ref(false)
 const activePrompt = ref<'cancel' | 'renew' | 'edit' | null>(null)
+
+const qrName = ref(props.name);
 
 const getStatusStyles = (status: TStatus) => {
   switch (status) {
@@ -73,10 +87,55 @@ const closeAll = () => {
   showMenu.value = false
   activePrompt.value = null
 }
+
+const handleAction = (action: 'cancel' | 'renew' | 'edit') => {
+  switch (action) {
+    case 'cancel':
+      // Handle cancel logic
+      console.log('Cancel QR')
+      break
+    case 'renew':
+      // Handle renew logic
+      console.log('Renew QR')
+      break
+    case 'edit':
+      // Handle edit logic
+      console.log('Edit QR')
+      break
+  }
+  closeAll()
+}
+
+const userStore = useUserStore();
+
+const isLoading = ref(false);
+
+const handleEdit = async () => {
+  try {
+    isLoading.value = true;
+    const qrDoc = doc(db, `users/${userStore.getUserId}/qrs/${props.docId}`)
+    await updateDoc(qrDoc, {
+      name: qrName.value
+    })
+    closeAll();
+    console.log(`QR name updated successfully`);
+    isLoading.value = false;
+  } catch (error) {
+    isLoading.value = false;
+    const e = error as Error;
+    console.log(`Error while trying to edit the qr name`, e.message);
+  }
+}
+
 </script>
 
 <template>
-  <div class="qr-card">
+  <div class="qr-card relative">
+
+    <section v-if="isLoading" class="absolute inset-0 bg-black/80 flex items-center justify-center">
+      <CloudLoader></CloudLoader>
+    </section>
+
     <!-- Main Card Content -->
     <div class="card-inner">
       <!-- Header -->
@@ -137,6 +196,7 @@ const closeAll = () => {
         </button>
       </div>
     </div>
+
 
     <!-- Dropdown Menu -->
     <Transition name="fade-slide">
@@ -224,11 +284,11 @@ const closeAll = () => {
           <h3 class="prompt-title">Editar nombre</h3>
           <div class="input-group">
             <label>Nuevo nombre</label>
-            <input type="text" :value="props.name" placeholder="Ej: Mi QR Personal" />
+            <input @keyup.enter="handleEdit" type="text" v-model="qrName" placeholder="Ej: Mi QR Personal" />
           </div>
           <div class="prompt-actions">
             <button @click="closeAll" class="btn-ghost">Descartar</button>
-            <button class="btn-info">Guardar</button>
+            <button @click="handleEdit" class="btn-info">Guardar</button>
           </div>
         </div>
       </div>

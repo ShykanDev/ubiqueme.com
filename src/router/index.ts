@@ -24,6 +24,11 @@ const router = createRouter({
       component: () => import('@/views/dashboard/DashboardView.vue'),
     },
     {
+      path: '/qr/:qrId?',
+      name: 'qr-scanned',
+      component: () => import('@/views/public/QRScannedView.vue'),
+    },
+    {
       path: '/:pathMatch(.*)*',
       name: 'not-found',
       component: () => import('@/views/NotFound.vue'),

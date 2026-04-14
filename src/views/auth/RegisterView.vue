@@ -163,12 +163,10 @@ import { auth as authFirebase } from '@/firebase'
 import {
   createUserWithEmailAndPassword,
   sendEmailVerification,
-  updateCurrentUser,
   updateProfile,
 } from 'firebase/auth'
-import { log } from 'console'
 import { collection, doc, getFirestore, Timestamp, writeBatch } from 'firebase/firestore'
-import { link } from 'fs'
+import { useRouter } from 'vue-router'
 const form = reactive({
   name: '',
   email: '',
@@ -178,6 +176,7 @@ const form = reactive({
 })
 
 const auth = authFirebase
+const router = useRouter()
 
 const validateForm = () => {
   if (form.name === '') {
@@ -213,8 +212,8 @@ const handleRegister = async () => {
     await sendEmailVerification(user);
     const userDoc = doc(db, `users/${user.uid}`);
     const batch = writeBatch(db);
-    //Set user data
 
+    //Set user data
     batch.set(userDoc, {
       uid: user.uid,
       name: form.name.trim(),
@@ -230,18 +229,19 @@ const handleRegister = async () => {
     })
 
     //Set first example user QR (for DEMO)
-    const userQrDoc = doc(db, `users/${user.uid}/qrs/${user.uid}`)
+    const userQrDoc = doc(db, `users/${user.uid}/qrs/demoid123456789`)
     batch.set(userQrDoc, {
       link: 'http://localhost:5173/u/ubiqueme.com/test',
-      nameQR: 'MacBook Pro',
+      name: 'MacBook Pro',
       isActive: true,
       isBanned: false,
       banReason: '',
-      status: '',
+      status: 'Actives',
       scans: 0,
-      lastScan: null,
+      lastScan: '',
       planPurchasedAt: null,
       planEndDate: null,
+      id: 'string',
       createdAt: Timestamp.now(),
     })
 
@@ -254,6 +254,8 @@ const handleRegister = async () => {
     })
     await batch.commit()
     console.log(`User ${user.uid} created successfully`)
+    alert('Usuario creado exitosamente')
+    router.push({ name: 'login' })
   } catch (error) {
     if (user) await user.delete()
     console.log(`Error while creating user: ${error}`)
