@@ -1,78 +1,68 @@
 <script lang="ts" setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, onUnmounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
-import { collectionGroup, getDocs, getFirestore, query, where } from 'firebase/firestore'
+import { collection, collectionGroup, doc, getDoc, getDocs, getFirestore, onSnapshot, query, Timestamp, where, writeBatch } from 'firebase/firestore'
 import { db } from '@/firebase'
 import CloudLoader from '@/components/ui/CloudLoader.vue'
 import HomeLayout from '@/layouts/HomeLayout.vue'
+import type { IPublicQR } from '@/interfaces/IPublicQR'
+import type { Unsubscribe } from 'firebase/auth'
 
 const route = useRoute()
 const qrId = route.params.qrId as string
 
-interface IQRScannedData {
-  name: string
-  isActive: boolean
-  isBanned: boolean
-  banReason: string
-  status: string
-  scans: number
-  lastScan: string
-  createdAt: any
-  link: string
+const loading = ref(true)
+const qrData = ref<IPublicQR | null>(null)
+const qrStatus = ref<IPublicQR | null>(null)
+const errorMsg = ref('')
+const error = ref(false);
+
+//public QR collection
+
+
+const scanQR = async () => {
+
+  if (!qrId || typeof qrId !== 'string') {
+    errorMsg.value = "QR no valido";
+    loading.value = false;
+    return;
+  }
+  const QRDoc = doc(db, 'publicQR', qrId);
+
+  try {
+    const docSnapshot = await getDoc(QRDoc);
+    if (!docSnapshot.exists()) {
+      errorMsg.value = "No se encontro informacion sobre este QR";
+      loading.value = false;
+      console.log(`Not QR data was found`);
+      return
+    }
+    qrData.value = docSnapshot.data() as IPublicQR;
+    const batch = writeBatch(db);
+    batch.update(QRDoc, {
+      totalScans: qrData.value.totalScans + 1,
+      lastScan: Timestamp.now(),
+    })
+    await batch.commit();
+    loading.value = false;
+  } catch (error) {
+    loading.value = false;
+    const e = error as Error;
+    errorMsg.value = "Error al obtener la informacion del QR";
+    console.log(`Error while trying to get data: ${e}`);
+  }
 }
 
-const loading = ref(true)
-const qrData = ref<IQRScannedData | null>(null)
-const errorMsg = ref('')
 
-onMounted(async () => {
-  try {
-    // Si tienes el docId del QR en la ruta (ej. /qr/:qrId)
-    // Buscamos en el collectionGroup 'qrs'
-    if (qrId) {
-      // Como Firestore no permite buscar fácilmente por document ID en un collectionGroup a menos que sea muy específico,
-      // lo ideal sería asegurarnos que cada doc guarde un campo 'docId' internamente.
-      // Aquí buscamos por docId guardado como campo:
-      const qrsRef = collectionGroup(db, 'qrs')
-      // asumiendo que los QRs nuevos tienen un campo llamado "docId" o podemos probar buscando los que existen
-      const q = query(qrsRef)
-      const querySnapshot = await getDocs(q)
 
-      let found = null;
-      querySnapshot.forEach((doc) => {
-        if (doc.id === qrId || doc.data().docId === qrId) {
-          found = doc.data()
-        }
-      })
 
-      if (found) {
-        qrData.value = found as IQRScannedData
-      } else {
-        errorMsg.value = 'El código QR escaneado no existe o fue eliminado.'
-      }
-    } else {
-      // Mock data for testing the UI
-      qrData.value = {
-        name: 'MacBook Pro de Juan',
-        isActive: true,
-        isBanned: false,
-        banReason: '',
-        status: 'Active',
-        scans: 42,
-        lastScan: new Date().toISOString(),
-        createdAt: new Date(),
-        link: 'https://ubiqueme.com/xyz',
-      }
-    }
-  } catch (error) {
-    console.error('Error fetching scanned QR:', error)
-    errorMsg.value = 'Ocurrió un error al cargar la información del QR.'
-  } finally {
-    setTimeout(() => {
-      loading.value = false
-    }, 1000) // fake delay for the awesome loader
-  }
+
+
+onMounted(() => {
+  scanQR()
+
 })
+
 </script>
 
 <template>
@@ -89,7 +79,7 @@ onMounted(async () => {
 
         <!-- Error State -->
         <div v-else-if="errorMsg"
-          class="w-full max-w-md bg-surface-container rounded-3xl p-8 border border-outline-variant/20 shadow-2xl text-center">
+          class="w-full max-w-lg bg-surface-container rounded-3xl p-8 border border-outline-variant/20 shadow-2xl text-center">
           <div class="w-20 h-20 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
             <span class="material-symbols-outlined text-red-500 text-4xl">error</span>
           </div>
@@ -103,9 +93,9 @@ onMounted(async () => {
         </div>
 
         <!-- Success / QR Info State -->
-        <div v-else-if="qrData" class="w-full max-w-lg">
+        <div v-else-if="qrData" class="w-full max-w-xl">
           <div
-            class="bg-surface-container-low rounded-[2rem] overflow-hidden border border-outline-variant/10 shadow-2xl relative">
+            class="bg-surface-container-low rounded-4xl overflow-hidden border border-outline-variant/10 shadow-2xl relative">
 
             <!-- Header Background with Gradients -->
             <div class="h-32 bg-obsidian-gradient relative overflow-hidden flex items-center justify-center">
@@ -128,11 +118,12 @@ onMounted(async () => {
 
               <!-- Main Info -->
               <div class="text-center mb-8">
-                <h1 class="text-3xl font-headline font-extrabold text-on-surface mb-2 tracking-tight">{{ qrData.name }}
+                <h1 class="text-3xl font-headline font-extrabold text-on-surface mb-2 tracking-tight">{{
+                  qrData.ownerName }}
                 </h1>
 
-                <div class="flex items-center justify-center gap-2 mb-4">
-                  <span v-if="qrData.isActive && !qrData.isBanned"
+                <div class="items-center justify-center gap-2 mb-4 hidden">
+                  <span v-if="qrData.status === 'active' && !qrData.isBanned"
                     class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-500/10 text-green-500 text-xs font-bold uppercase tracking-wider border border-green-500/20">
                     <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
                     Activo
@@ -143,7 +134,7 @@ onMounted(async () => {
                     Bloqueado
                   </span>
                   <span v-else
-                    class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-500/10 text-orange-500 text-xs font-bold uppercase tracking-wider border border-orange-500/20">
+                    class=" items-center gap-1.5 px-3 py-1 rounded-full bg-orange-500/10 text-orange-500 text-xs font-bold uppercase tracking-wider border border-orange-500/20 hidden">
                     <span class="material-symbols-outlined text-[14px]">pause_circle</span>
                     Inactivo
                   </span>
@@ -156,7 +147,7 @@ onMounted(async () => {
               </div>
 
               <!-- Divider -->
-              <div class="w-full h-px bg-gradient-to-r from-transparent via-outline-variant/30 to-transparent mb-8">
+              <div class="w-full h-px bg-linear-to-r from-transparent via-outline-variant/30 to-transparent mb-8">
               </div>
 
               <!-- Stats Grid -->
@@ -168,7 +159,7 @@ onMounted(async () => {
                   </div>
                   <div class="flex flex-col">
                     <span class="text-[10px] uppercase font-bold text-on-surface-variant tracking-wider">Escaneos</span>
-                    <span class="text-xl font-headline font-black text-on-surface">{{ qrData.scans }}</span>
+                    <span class="text-xl font-headline font-black text-on-surface">{{ qrData.totalScans }}</span>
                   </div>
                 </div>
 
@@ -181,9 +172,10 @@ onMounted(async () => {
                     <span
                       class="text-[10px] uppercase font-bold text-on-surface-variant tracking-wider whitespace-nowrap">Último
                       Escaneo</span>
-                    <span class="text-sm font-bold text-on-surface mt-0.5 truncate max-w-[80px]"
-                      :title="qrData.lastScan">
-                      {{ qrData.lastScan ? new Date(qrData.lastScan).toLocaleDateString() : 'Nunca' }}
+                    <span class="text-sm font-bold text-on-surface mt-0.5  max-w-[80px]"
+                      :title="qrData.lastScan ? new Date(qrData.lastScan.seconds * 1000).toLocaleString('es-MX') : 'Nunca'">
+                      {{ qrData.lastScan ? new Date(qrData.lastScan.seconds * 1000).toLocaleString('es-MX') :
+                        'Nunca' }}
                     </span>
                   </div>
                 </div>

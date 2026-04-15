@@ -167,6 +167,7 @@ import {
 } from 'firebase/auth'
 import { collection, doc, getFirestore, Timestamp, writeBatch } from 'firebase/firestore'
 import { useRouter } from 'vue-router'
+import { nanoid } from 'nanoid'
 const form = reactive({
   name: '',
   email: '',
@@ -196,6 +197,9 @@ const validateForm = () => {
   }
   return true
 }
+
+//generate random ID
+const generateRandomId = () => nanoid(10);
 
 const db = getFirestore()
 const handleRegister = async () => {
@@ -229,32 +233,57 @@ const handleRegister = async () => {
     })
 
     //Set first example user QR (for DEMO)
-    const userQrDoc = doc(db, `users/${user.uid}/qrs/demoid123456789`)
+    const userQrDoc = doc(db, `users/${user.uid}/qrs/demoid1`)
     batch.set(userQrDoc, {
-      link: 'http://localhost:5173/u/ubiqueme.com/test',
       name: 'MacBook Pro',
       isActive: true,
       isBanned: false,
       banReason: '',
-      status: 'Actives',
+      status: 'Active',
       scans: 0,
       lastScan: '',
       planPurchasedAt: null,
       planEndDate: null,
-      id: 'string',
+      id: generateRandomId(),
       createdAt: Timestamp.now(),
     })
 
-    //Set user profile
-    const userProfileDoc = doc(db, `users/${user.uid}/public/${user.uid}`)
-    batch.set(userProfileDoc, {
-      name: '',
-      email: '',
-      phone: '',
+    //Set second example user QR (for DEMO)
+    const secondUserQrDoc = doc(db, `users/${user.uid}/qrs/demoid2`)
+    batch.set(secondUserQrDoc, {
+      name: 'Bicicleta ',
+      isActive: true,
+      isBanned: false,
+      banReason: '',
+      status: 'Active',
+      scans: 0,
+      lastScan: '',
+      planPurchasedAt: null,
+      planEndDate: null,
+      id: generateRandomId(),
+      createdAt: Timestamp.now(),
     })
+
+    //Set third example user QR (for DEMO)
+    const thirdUserQrDoc = doc(db, `users/${user.uid}/qrs/demoid3`)
+    batch.set(thirdUserQrDoc, {
+      name: 'Motocicleta',
+      isActive: true,
+      isBanned: false,
+      banReason: '',
+      status: 'Active',
+      scans: 0,
+      lastScan: '',
+      planPurchasedAt: null,
+      planEndDate: null,
+      id: generateRandomId(),
+      createdAt: Timestamp.now(),
+    })
+
+
     await batch.commit()
     console.log(`User ${user.uid} created successfully`)
-    alert('Usuario creado exitosamente')
+    console.log('Usuario creado exitosamente');
     router.push({ name: 'login' })
   } catch (error) {
     if (user) await user.delete()

@@ -1,14 +1,16 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { computed, onMounted, onUnmounted, reactive, ref } from 'vue'
 import QrcodeVue from 'qrcode.vue'
-import { doc, Timestamp, updateDoc } from 'firebase/firestore'
+import { doc, onSnapshot, Timestamp, updateDoc, writeBatch } from 'firebase/firestore'
 import { db } from '@/firebase'
 import { useUserStore } from '@/stores/user'
 import CloudLoader from '@/components/ui/CloudLoader.vue'
-type TStatus = 'Active' | 'Canceled' | 'Process' | 'Error'
+import { nanoid } from 'nanoid'
+import type { IPublicQR } from '@/interfaces/IPublicQR'
+import type { Unsubscribe } from 'firebase/auth'
+type TStatus = 'Active' | 'Canceled' | 'Process' | 'Error' | 'Paused'
 
 interface IQRCard {
-  link: string,
   name: string,
   isActive: boolean,
   isBanned: boolean,
@@ -25,12 +27,18 @@ interface IQRCard {
 
 const props = defineProps<IQRCard>()
 
+const propsComputed = computed(() => {
+  return {
+    ...props,
+  }
+})
+
 const showMenu = ref(false)
 const activePrompt = ref<'cancel' | 'renew' | 'edit' | null>(null)
 
-const qrName = ref(props.name);
+const qrName = ref(propsComputed.value.name);
 
-const getStatusStyles = (status: TStatus) => {
+const getStatusStyles = (status: TStatus) => computed(() => {
   switch (status) {
     case 'Active':
       return {
@@ -60,6 +68,13 @@ const getStatusStyles = (status: TStatus) => {
         dot: 'bg-red-400',
         label: 'Error'
       }
+    case 'Paused':
+      return {
+        bg: 'bg-slate-500/10',
+        text: 'text-slate-400',
+        dot: 'bg-slate-400',
+        label: 'Pausado'
+      }
     default:
       return {
         bg: 'bg-slate-500/10',
@@ -68,10 +83,7 @@ const getStatusStyles = (status: TStatus) => {
         label: 'Desconocido'
       }
   }
-}
-
-
-const statusStyle = getStatusStyles(props.status)
+})
 
 const toggleMenu = () => {
   showMenu.value = !showMenu.value
@@ -86,24 +98,6 @@ const openPrompt = (type: 'cancel' | 'renew' | 'edit') => {
 const closeAll = () => {
   showMenu.value = false
   activePrompt.value = null
-}
-
-const handleAction = (action: 'cancel' | 'renew' | 'edit') => {
-  switch (action) {
-    case 'cancel':
-      // Handle cancel logic
-      console.log('Cancel QR')
-      break
-    case 'renew':
-      // Handle renew logic
-      console.log('Renew QR')
-      break
-    case 'edit':
-      // Handle edit logic
-      console.log('Edit QR')
-      break
-  }
-  closeAll()
 }
 
 const userStore = useUserStore();
@@ -127,575 +121,278 @@ const handleEdit = async () => {
   }
 }
 
+const _setQrPublic = async () => {
+  try {
+    isLoading.value = true;
+    const batch = writeBatch(db);
+    const publicQrRef = doc(db, 'publicQR', props.id);
+    const publicQRData: IPublicQR = {
+      id: props.id,
+      ownerName: props.name,
+      status: 'Active',
+      isBanned: false,
+      banReason: '',
+      totalScans: 0,
+      lastScan: null,
+    }
+    const qrDoc = doc(db, `users/${userStore.getUserId}/qrs/${props.docId}`)
+    batch.update(qrDoc, {
+      status: 'Active',
+    })
+    batch.set(publicQrRef, publicQRData);
+    await batch.commit();
+    isLoading.value = false;
+    console.log(`QR set to public successfully`);
+  } catch (error) {
+    isLoading.value = false;
+    const e = error as Error;
+    console.log(`Error while trying to set the qr to public`, e.message);
+  }
+}
+
+const _setQrPrivate = async () => {
+  try {
+    isLoading.value = true;
+    const batch = writeBatch(db);
+    const publicQrRef = doc(db, 'publicQR', props.id);
+    batch.delete(publicQrRef);
+    const qrDoc = doc(db, `users/${userStore.getUserId}/qrs/${props.docId}`)
+    batch.update(qrDoc, {
+      status: 'Paused',
+    })
+    await batch.commit();
+    isLoading.value = false;
+    console.log(`QR set to private successfully`);
+  } catch (error) {
+    isLoading.value = false;
+    const e = error as Error;
+    console.log(`Error while trying to set the qr to private`, e.message);
+  }
+}
+
+let unsubscribe: Unsubscribe;
+
+
+
+const qrStatus = reactive({
+  totalScans: 0,
+  lastScan: Timestamp.now() ?? 'No se ha escaneado aún',
+})
+
+onMounted(() => {
+  unsubscribe = onSnapshot(doc(db, 'publicQR', props.id), (docSnapshot) => {
+    if (!docSnapshot.exists()) {
+      console.log(`QR not found`);
+      //errorMsg.value = "No se encontro informacion sobre este QR";
+      //loading.value = false;
+      return;
+    }
+    qrStatus.totalScans = docSnapshot.data().totalScans ?? 0;
+    qrStatus.lastScan = docSnapshot.data().lastScan ?? 'No se ha escaneado aún';
+    console.log(`QR status updated`);
+  }
+    , (error) => {
+      console.log(`Error while trying to get data: ${error}`);
+    }
+  )
+})
+
+onUnmounted(() => {
+  if (unsubscribe) unsubscribe();
+})
+
+
 </script>
 
 <template>
-  <div class="qr-card relative">
-
-    <section v-if="isLoading" class="absolute inset-0 bg-black/80 flex items-center justify-center">
+  <div
+    class="relative w-full max-w-[380px] bg-[#111324] rounded-[24px] border border-white/5 overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:border-white/10 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)] hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.6)]">
+    <section v-if="isLoading" class="absolute inset-0 bg-black/80 flex items-center justify-center z-50">
       <CloudLoader></CloudLoader>
     </section>
 
     <!-- Main Card Content -->
-    <div class="card-inner">
+    <div class="p-6">
       <!-- Header -->
-      <div class="card-header">
-        <div class="title-section">
-          <h3 class="card-title">{{ props.name }}</h3>
-          <span class="card-id">ID: {{ props.id }}</span>
+      <div class="flex justify-between items-start mb-6">
+        <div class="flex flex-col gap-1">
+          <h3 class="text-white text-lg font-semibold m-0 tracking-tight">{{ propsComputed.name }}</h3>
+          <span class="text-xs text-slate-400 font-mono">ID: {{ propsComputed.id }}</span>
         </div>
 
-        <div :class="['status-badge', statusStyle.bg, statusStyle.text]">
-          <span :class="['status-dot', statusStyle.dot]"></span>
-          {{ statusStyle.label }}
+        <div
+          :class="['flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider', getStatusStyles(propsComputed.status).value.bg, getStatusStyles(propsComputed.status).value.text]">
+          <span
+            :class="['w-1.5 h-1.5 rounded-full shadow-[0_0_8px_currentColor]', getStatusStyles(propsComputed.status).value.dot]"></span>
+          {{ getStatusStyles(propsComputed.status).value.label }}
         </div>
       </div>
 
       <!-- Content/Stats -->
-      <div class="card-stats">
-        <div class="stat-item">
-          <span class="stat-label">Escaneos</span>
-          <span class="stat-value">{{ props.scans }}</span>
+      <div
+        class="flex items-center justify-between bg-white/5 p-4 rounded-2xl mb-6 border border-white/5 overflow-hidden">
+        <div class="flex flex-col gap-1">
+          <span class="text-[0.7rem] text-slate-400 uppercase tracking-wider">Escaneos</span>
+          <span :key="qrStatus.totalScans" class="text-white font-semibold text-base animate-fade-up">{{
+            qrStatus.totalScans }}</span>
         </div>
-        <div class="stat-divider"></div>
-        <div class="stat-item text-right">
-          <span class="stat-label">Último uso</span>
-          <span class="stat-value">{{ props.lastScan }}</span>
+        <div class="w-[1px] h-6 bg-white/10"></div>
+        <div class="flex flex-col gap-1 text-right">
+          <span class="text-[0.7rem] text-slate-400 uppercase tracking-wider">Último uso</span>
+          <span :key="qrStatus.lastScan.seconds"
+            class="text-white font-semibold text-base animate-fade-up animate-delay-500">{{ new
+              Date(qrStatus.lastScan.seconds * 1000).toLocaleString('es-MX') }}</span>
         </div>
       </div>
 
       <!-- QR Code -->
-      <section class="flex justify-center bg-[#14162c] p-3 rounded-2xl overflow-hidden">
-        <div class="bg-white p-2 rounded-lg">
-          <QrcodeVue :value="`https://tudominio.com/u/${props.name}`" :size="220" />
+      <section class="flex justify-center bg-[#14162c] p-3 rounded-2xl overflow-hidden mb-6">
+        <div class="bg-white p-2 rounded-xl">
+          <QrcodeVue :value="`http://192.168.100.13:5173/qr/${propsComputed.id}`" :size="220" render-as="canvas" />
         </div>
       </section>
 
       <!-- Actions Footer -->
-      <div class="card-footer">
-        <button class="btn-primary">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
-            <circle cx="12" cy="12" r="3" />
-          </svg>
-          Ver Detalle
+      <div class="flex items-center gap-3 justify-center">
+        <!-- PUBLIC -->
+        <button @click="_setQrPublic"
+          class="group flex items-center gap-2 px-4 cursor-pointer py-2 rounded-xl text-sm font-medium text-blue-400 border border-blue-400/20 bg-blue-400/10 transition-all duration-300 hover:bg-blue-400/20 hover:shadow-[0_0_12px_rgba(59,130,246,0.8),0_0_2px_rgba(59,130,246,0.5)]">
+          <span
+            class="material-symbols-outlined text-[18px] transition-transform duration-300 group-hover:scale-110">public</span>
+          Hacer Público
         </button>
 
-        <button @click="toggleMenu" :class="['btn-icon', { 'active': showMenu }]" aria-label="Menú de opciones">
-          <svg v-if="!showMenu" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
-            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="1" />
-            <circle cx="19" cy="12" r="1" />
-            <circle cx="5" cy="12" r="1" />
-          </svg>
-          <svg v-else xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M18 6L6 18M6 6l12 12" />
-          </svg>
+        <!-- PRIVATE -->
+        <button @click="_setQrPrivate"
+          class="group cursor-pointer flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium text-pink-400 border border-pink-400/20 bg-pink-400/10 transition-all duration-300 hover:-translate-y-0.5 hover:bg-pink-400/20 hover:shadow-[0_0_12px_rgba(236,72,153,0.8),0_0_2px_rgba(236,72,153,0.5)]">
+          <span
+            class="material-symbols-outlined text-[18px] transition-transform duration-300 group-hover:scale-110">visibility_off</span>
+          Hacer Privado
+        </button>
+
+        <!-- MENU -->
+        <button @click="toggleMenu" :class="[
+          'p-2 rounded-xl transition-all duration-300 border flex items-center justify-center',
+          showMenu
+            ? 'bg-white/10 border-white/20 shadow-[0_0_10px_rgba(255,255,255,0.3)]'
+            : 'bg-white/5 border-white/10 hover:bg-white/10 hover:shadow-[0_0_8px_rgba(255,255,255,0.2)]'
+        ]">
+          <span v-if="!showMenu" class="material-symbols-outlined text-white text-[20px]">more_vert</span>
+          <span v-else class="material-symbols-outlined text-white text-[20px]">close</span>
         </button>
       </div>
     </div>
 
-
     <!-- Dropdown Menu -->
-    <Transition name="fade-slide">
-      <div v-if="showMenu" class="dropdown-menu">
-        <button @click="openPrompt('edit')" class="menu-item">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
-            <path d="m15 5 4 4" />
-          </svg>
+    <Transition enter-active-class="transition-all duration-300 ease-out"
+      enter-from-class="opacity-0 -translate-y-2 scale-95" enter-to-class="opacity-100 translate-y-0 scale-100"
+      leave-active-class="transition-all duration-200 ease-in" leave-from-class="opacity-100 translate-y-0 scale-100"
+      leave-to-class="opacity-0 -translate-y-2 scale-95">
+      <div v-if="showMenu"
+        class="absolute top-[340px] right-6 w-[200px] bg-[#1a1d35]/95 backdrop-blur-md border border-white/10 rounded-2xl p-2 z-[100] shadow-[0_20px_40px_rgba(0,0,0,0.4)]">
+        <button @click="openPrompt('edit')"
+          class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl bg-transparent text-slate-200 text-sm hover:bg-white/5 transition-colors text-left">
+          <span class="material-symbols-outlined text-[18px]">edit</span>
           Editar nombre
         </button>
-        <button @click="openPrompt('renew')" class="menu-item">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
-            <path d="M21 3v5h-5" />
-            <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
-            <path d="M8 16H3v5" />
-          </svg>
+        <button @click="openPrompt('renew')"
+          class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl bg-transparent text-slate-200 text-sm hover:bg-white/5 transition-colors text-left">
+          <span class="material-symbols-outlined text-[18px]">autorenew</span>
           Renovar QR
         </button>
-        <div class="menu-divider"></div>
-        <button @click="openPrompt('cancel')" class="menu-item text-danger">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="m21 21-18-18" />
-            <path d="M19 5 5 19" />
-          </svg>
+        <div class="h-[1px] bg-white/5 my-1.5"></div>
+        <button @click="openPrompt('cancel')"
+          class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl bg-transparent text-rose-400 text-sm hover:bg-rose-500/10 transition-colors text-left">
+          <span class="material-symbols-outlined text-[18px]">block</span>
           Desactivar
         </button>
       </div>
     </Transition>
 
     <!-- Overlay Prompts -->
-    <Transition name="overlay-fade">
-      <div v-if="activePrompt" class="prompt-overlay">
-        <button @click="closeAll" class="close-overlay-btn" aria-label="Cerrar">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M18 6L6 18M6 6l12 12" />
-          </svg>
+    <Transition enter-active-class="transition-all duration-300 ease-out" enter-from-class="opacity-0"
+      enter-to-class="opacity-100" leave-active-class="transition-all duration-200 ease-in"
+      leave-from-class="opacity-100" leave-to-class="opacity-0">
+      <div v-if="activePrompt"
+        class="absolute inset-0 bg-[#0A0C1B]/95 backdrop-blur-md z-200 p-6 flex flex-col justify-center items-center">
+        <button @click="closeAll"
+          class="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/5 flex items-center justify-center text-slate-400 hover:bg-white/10 hover:text-white transition-all border-none">
+          <span class="material-symbols-outlined text-[20px]">close</span>
         </button>
 
         <!-- Cancel Prompt -->
-        <div v-if="activePrompt === 'cancel'" class="prompt-content">
-          <div class="prompt-icon bg-danger-soft">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-              stroke="#f43f5e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="m21 21-18-18" />
-              <path d="M19 5 5 19" />
-            </svg>
+        <Transition enter-active-class="transition-all duration-300 ease-out" enter-from-class="opacity-0 scale-95"
+          enter-to-class="opacity-100 scale-100" leave-active-class="transition-all duration-200 ease-in"
+          leave-from-class="opacity-100 scale-100" leave-to-class="opacity-0 scale-95">
+          <div v-if="activePrompt === 'cancel'" class="w-full text-center">
+            <div class="w-14 h-14 rounded-2xl bg-rose-500/10 flex items-center justify-center mx-auto mb-4">
+              <span class="material-symbols-outlined text-rose-500 text-[28px]">warning</span>
+            </div>
+            <h3 class="text-white text-xl font-bold mb-3">¿Desactivar QR?</h3>
+            <p class="text-slate-400 text-sm leading-relaxed mb-6">
+              Esta acción es <span class="text-rose-500 font-semibold">permanente</span>. El código dejará de funcionar
+              de inmediato.
+            </p>
+            <div class="flex flex-col gap-2.5 w-full">
+              <button @click="closeAll"
+                class="px-3 py-3 bg-transparent text-slate-400 border border-white/10 rounded-xl font-semibold hover:bg-white/5 hover:text-white transition-colors">Cancelar</button>
+              <button
+                class="px-3 py-3 bg-rose-500 text-white rounded-xl font-semibold shadow-[0_4px_15px_rgba(244,63,94,0.3)] hover:bg-rose-600 transition-colors">Confirmar</button>
+            </div>
           </div>
-          <h3 class="prompt-title">¿Desactivar QR?</h3>
-          <p class="prompt-desc">Esta acción es <span class="text-danger-bold">permanente</span>. El código dejará de
-            funcionar de inmediato.</p>
-          <div class="prompt-actions">
-            <button @click="closeAll" class="btn-ghost">Cancelar</button>
-            <button class="btn-danger">Confirmar</button>
-          </div>
-        </div>
+        </Transition>
 
         <!-- Renew Prompt -->
-        <div v-if="activePrompt === 'renew'" class="prompt-content">
-          <div class="prompt-icon bg-info-soft">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-              stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
-              <path d="M21 3v5h-5" />
-              <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
-              <path d="M8 16H3v5" />
-            </svg>
+        <Transition enter-active-class="transition-all duration-300 ease-out" enter-from-class="opacity-0 scale-95"
+          enter-to-class="opacity-100 scale-100" leave-active-class="transition-all duration-200 ease-in"
+          leave-from-class="opacity-100 scale-100" leave-to-class="opacity-0 scale-95">
+          <div v-if="activePrompt === 'renew'" class="w-full text-center">
+            <div class="w-14 h-14 rounded-2xl bg-blue-500/10 flex items-center justify-center mx-auto mb-4">
+              <span class="material-symbols-outlined text-blue-500 text-[28px]">autorenew</span>
+            </div>
+            <h3 class="text-white text-xl font-bold mb-3">Renovar QR</h3>
+            <p class="text-slate-400 text-sm leading-relaxed mb-6">
+              Se generará un nuevo pago. El QR actual será reemplazado por la nueva configuración.
+            </p>
+            <div class="flex flex-col gap-2.5 w-full">
+              <button @click="closeAll"
+                class="px-3 py-3 bg-transparent text-slate-400 border border-white/10 rounded-xl font-semibold hover:bg-white/5 hover:text-white transition-colors">Volver</button>
+              <button
+                class="px-3 py-3 bg-blue-500 text-white rounded-xl font-semibold shadow-[0_4px_15px_rgba(59,130,246,0.3)] hover:bg-blue-600 transition-colors">Renovar</button>
+            </div>
           </div>
-          <h3 class="prompt-title">Renovar QR</h3>
-          <p class="prompt-desc">Se generará un nuevo pago. El QR actual será reemplazado por la nueva configuración.
-          </p>
-          <div class="prompt-actions">
-            <button @click="closeAll" class="btn-ghost">Volver</button>
-            <button class="btn-info">Renovar</button>
-          </div>
-        </div>
+        </Transition>
 
         <!-- Edit Name Prompt -->
-        <div v-if="activePrompt === 'edit'" class="prompt-content">
-          <h3 class="prompt-title">Editar nombre</h3>
-          <div class="input-group">
-            <label>Nuevo nombre</label>
-            <input @keyup.enter="handleEdit" type="text" v-model="qrName" placeholder="Ej: Mi QR Personal" />
+        <Transition enter-active-class="transition-all duration-300 ease-out" enter-from-class="opacity-0 scale-95"
+          enter-to-class="opacity-100 scale-100" leave-active-class="transition-all duration-200 ease-in"
+          leave-from-class="opacity-100 scale-100" leave-to-class="opacity-0 scale-95">
+          <div v-if="activePrompt === 'edit'" class="w-full text-center mt-4">
+            <h3 class="text-white text-xl font-bold mb-6">Editar nombre</h3>
+            <div class="text-left mb-6">
+              <label class="block text-xs text-slate-400 mb-2 uppercase tracking-wider">Nuevo nombre</label>
+              <input @keyup.enter="handleEdit" type="text" v-model="qrName" placeholder="Ej: Mi QR Personal"
+                class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-[15px] transition-colors focus:outline-none focus:border-blue-500 focus:bg-white/10" />
+            </div>
+            <div class="flex flex-col gap-2.5 w-full">
+              <button @click="closeAll"
+                class="px-3 py-3 bg-transparent text-slate-400 border border-white/10 rounded-xl font-semibold hover:bg-white/5 hover:text-white transition-colors">Descartar</button>
+              <button @click="handleEdit"
+                class="px-3 py-3 bg-blue-500 text-white rounded-xl font-semibold shadow-[0_4px_15px_rgba(59,130,246,0.3)] hover:bg-blue-600 transition-colors">Guardar</button>
+            </div>
           </div>
-          <div class="prompt-actions">
-            <button @click="closeAll" class="btn-ghost">Descartar</button>
-            <button @click="handleEdit" class="btn-info">Guardar</button>
-          </div>
-        </div>
+        </Transition>
       </div>
     </Transition>
   </div>
 </template>
 
 <style scoped>
-.qr-card {
-  --bg-card: #111324;
-  --bg-darker: #0A0C1B;
-  --border-white: rgba(255, 255, 255, 0.08);
-  --text-muted: #94a3b8;
-  --accent-color: #6366f1;
-  --danger-color: #f43f5e;
-  --info-color: #3b82f6;
-
-  position: relative;
-  width: 100%;
-  max-width: 380px;
-  background: var(--bg-card);
-  border-radius: 24px;
-  border: 1px solid var(--border-white);
-  overflow: hidden;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
-}
-
-.qr-card:hover {
-  transform: translateY(-4px);
-  border-color: rgba(255, 255, 255, 0.15);
-  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.6);
-}
-
-.card-inner {
-  padding: 24px;
-}
-
-/* Header */
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 24px;
-}
-
-.title-section {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.card-title {
-  color: white;
-  font-size: 1.125rem;
-  font-weight: 600;
-  margin: 0;
-  letter-spacing: -0.025em;
-}
-
-.card-id {
-  font-size: 0.75rem;
-  color: var(--text-muted);
-  font-family: monospace;
-}
-
-.status-badge {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  border-radius: 100px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.status-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  box-shadow: 0 0 8px currentColor;
-}
-
-/* Stats */
-.card-stats {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: rgba(255, 255, 255, 0.03);
-  padding: 16px;
-  border-radius: 16px;
-  margin-bottom: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.02);
-}
-
-.stat-item {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.stat-label {
-  font-size: 0.7rem;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.stat-value {
-  color: white;
-  font-weight: 600;
-  font-size: 1rem;
-}
-
-.stat-divider {
-  width: 1px;
-  height: 24px;
-  background: var(--border-white);
-}
-
-/* Footer */
-.card-footer {
-  display: flex;
-  gap: 12px;
-}
-
-.btn-primary {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  background: white;
-  color: #000;
-  border: none;
-  padding: 12px;
-  border-radius: 14px;
-  font-weight: 600;
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.btn-primary:hover {
-  background: #f1f5f9;
-  transform: scale(1.02);
-}
-
-.btn-icon {
-  width: 44px;
-  height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(255, 255, 255, 0.05);
-  color: white;
-  border: 1px solid var(--border-white);
-  border-radius: 14px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.btn-icon:hover,
-.btn-icon.active {
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
-  border-color: rgba(255, 255, 255, 0.2);
-}
-
-/* Dropdown Menu */
-.dropdown-menu {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  width: 200px;
-  background: #1a1d35;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
-  padding: 8px;
-  z-index: 100;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(12px);
-}
-
-.menu-item {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 12px;
-  border: none;
-  background: transparent;
-  color: #e2e8f0;
-  font-size: 0.875rem;
-  border-radius: 10px;
-  cursor: pointer;
-  text-align: left;
-  transition: all 0.2s ease;
-}
-
-.menu-item:hover {
-  background: rgba(255, 255, 255, 0.05);
-}
-
-.menu-item.text-danger {
-  color: #fb7185;
-}
-
-.menu-item.text-danger:hover {
-  background: rgba(244, 63, 94, 0.1);
-}
-
-.menu-divider {
-  height: 1px;
-  background: rgba(255, 255, 255, 0.05);
-  margin: 6px 0;
-}
-
-/* Overlay Prompts */
-.prompt-overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(10, 12, 27, 0.95);
-  backdrop-filter: blur(8px);
-  z-index: 200;
-  padding: 24px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-
-.close-overlay-btn {
-  position: absolute;
-  top: 16px;
-  right: 16px;
-  background: rgba(255, 255, 255, 0.05);
-  border: none;
-  color: var(--text-muted);
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.close-overlay-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
-}
-
-.prompt-content {
-  width: 100%;
-  text-align: center;
-  animation: promptEntry 0.3s ease-out;
-}
-
-@keyframes promptEntry {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-.prompt-icon {
-  width: 56px;
-  height: 56px;
-  border-radius: 18px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 16px;
-}
-
-.bg-danger-soft {
-  background: rgba(244, 63, 94, 0.1);
-}
-
-.bg-info-soft {
-  background: rgba(59, 130, 246, 0.1);
-}
-
-.prompt-title {
-  color: white;
-  font-size: 1.25rem;
-  font-weight: 700;
-  margin-bottom: 12px;
-}
-
-.prompt-desc {
-  color: var(--text-muted);
-  font-size: 0.9rem;
-  line-height: 1.5;
-  margin-bottom: 24px;
-}
-
-.text-danger-bold {
-  color: var(--danger-color);
-  font-weight: 600;
-}
-
-.prompt-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  width: 100%;
-}
-
-.btn-ghost {
-  padding: 12px;
-  background: transparent;
-  color: var(--text-muted);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.btn-ghost:hover {
-  background: rgba(255, 255, 255, 0.03);
-  color: white;
-}
-
-.btn-danger {
-  padding: 12px;
-  background: var(--danger-color);
-  color: white;
-  border: none;
-  border-radius: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  box-shadow: 0 4px 15px rgba(244, 63, 94, 0.3);
-}
-
-.btn-info {
-  padding: 12px;
-  background: var(--info-color);
-  color: white;
-  border: none;
-  border-radius: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
-}
-
-/* Input Group */
-.input-group {
-  text-align: left;
-  margin-bottom: 24px;
-}
-
-.input-group label {
-  display: block;
-  font-size: 0.75rem;
-  color: var(--text-muted);
-  margin-bottom: 8px;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.input-group input {
-  width: 100%;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  padding: 12px;
-  color: white;
-  font-size: 0.95rem;
-  transition: all 0.2s ease;
-}
-
-.input-group input:focus {
-  outline: none;
-  border-color: var(--info-color);
-  background: rgba(255, 255, 255, 0.1);
-}
-
-/* Transitions */
-.fade-slide-enter-active,
-.fade-slide-leave-active {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.fade-slide-enter-from,
-.fade-slide-leave-to {
-  opacity: 0;
-  transform: translateY(-10px) scale(0.95);
-}
-
-.overlay-fade-enter-active,
-.overlay-fade-leave-active {
-  transition: all 0.3s ease;
-}
-
-.overlay-fade-enter-from,
-.overlay-fade-leave-to {
-  opacity: 0;
+.material-symbols-outlined {
+  font-variation-settings:
+    'FILL' 1,
+    'wght' 400,
+    'GRAD' 0,
+    'opsz' 24;
 }
 </style>
