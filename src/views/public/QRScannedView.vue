@@ -69,134 +69,142 @@ onMounted(() => {
 
   <HomeLayout>
     <template #main>
+      <main
+        class="relative min-h-screen bg-[#070b14] overflow-hidden flex flex-col items-center justify-center p-6 md:p-12 font-google-sans">
 
-      <section class="min-h-screen bg-surface font-body flex items-center justify-center p-4 pt-20">
-        <!-- Loader -->
-        <div v-if="loading" class="flex flex-col items-center justify-center space-y-4">
-          <CloudLoader />
-          <p class="text-on-surface-variant font-medium tracking-wide ">Obteniendo información...</p>
+        <!-- 📐 BACKGROUND GRID (Lightweight architectural feel) -->
+        <div class="absolute inset-0 z-0 opacity-[0.03]"
+          style="background-image: linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px); background-size: 40px 40px;">
+        </div>
+        <div class="absolute inset-0 z-0 bg-linear-to-b from-primary/5 via-transparent to-transparent"></div>
+
+        <!-- 💠 ORNAMENTAL LIGHT SOURCE -->
+        <div
+          class="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-2xl h-[300px] bg-primary/20 blur-[120px] rounded-full opacity-50 z-0 pointer-events-none">
         </div>
 
-        <!-- Error State -->
-        <div v-else-if="errorMsg"
-          class="w-full max-w-lg bg-surface-container rounded-3xl p-8 border border-outline-variant/20 shadow-2xl text-center">
-          <div class="w-20 h-20 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
-            <span class="material-symbols-outlined text-red-500 text-4xl">error</span>
-          </div>
-          <h2 class="text-2xl font-headline font-bold text-on-surface mb-2">QR No Encontrado</h2>
-          <p class="text-on-surface-variant mb-6 text-sm">{{ errorMsg }}</p>
-          <RouterLink to="/"
-            class="inline-flex items-center gap-2 bg-primary text-on-primary px-6 py-3 rounded-xl font-bold hover:bg-primary-fixed transition-colors">
-            <span class="material-symbols-outlined">home</span>
-            Volver al inicio
-          </RouterLink>
-        </div>
+        <!-- 🚀 MAIN CONTENT CONTAINER -->
+        <div class="relative z-10 w-full max-w-4xl flex flex-col md:flex-row gap-8 items-stretch">
 
-        <!-- Success / QR Info State -->
-        <div v-else-if="qrData" class="w-full max-w-xl">
+          <!-- LEFT COLUMN: STATUS & BADGE -->
           <div
-            class="bg-surface-container-low rounded-4xl overflow-hidden border border-outline-variant/10 shadow-2xl relative">
+            class="flex-1 flex flex-col justify-center items-center md:items-start text-center md:text-left gap-6 py-6 border-b md:border-b-0 md:border-r border-white/5 pr-0 md:pr-12">
 
-            <!-- Header Background with Gradients -->
-            <div class="h-32 bg-obsidian-gradient relative overflow-hidden flex items-center justify-center">
-              <div class="absolute inset-0 opacity-30">
-                <div class="absolute top-[-50%] left-[-20%] w-full h-full bg-primary/20 rounded-full blur-[60px]"></div>
+            <div class="relative">
+              <div class="absolute inset-0 bg-primary/20 blur-xl rounded-full scale-110"></div>
+              <div
+                class="relative w-20 h-20 bg-primary flex items-center justify-center rounded-2xl shadow-[0_0_30px_rgba(123,208,255,0.4)]">
+                <span class="material-symbols-outlined text-black text-4xl font-bold">verified</span>
               </div>
-              <span
-                class="material-symbols-outlined text-white/20 text-8xl absolute -right-4 -bottom-6 rotate-12">qr_code_2</span>
             </div>
 
-            <div class="px-8 pb-8 -mt-12 relative z-10">
+            <div class="space-y-3">
+              <h2 class="text-primary font-black text-xs uppercase tracking-[0.4em]">Propiedad Confirmada</h2>
+              <h1 class="text-4xl md:text-6xl font-black text-white leading-none tracking-tighter">
+                {{ qrData?.ownerName || 'Cargando...' }}
+              </h1>
+              <p class="text-white/40 text-sm max-w-xs font-medium leading-relaxed">
+                Este perfil ha sido validado exitosamente a través de la red segura de Ubiqueme.
+              </p>
+            </div>
 
-              <!-- Avatar/Icon of the item -->
-              <div
-                class="w-24 h-24 bg-surface rounded-2xl p-2 shadow-xl border border-outline-variant/20 mx-auto flex items-center justify-center mb-6">
-                <div class="w-full h-full bg-primary/10 rounded-xl flex items-center justify-center">
-                  <span class="material-symbols-outlined text-primary text-4xl">devices</span>
-                </div>
+            <div class="flex items-center gap-4 pt-4">
+              <div class="px-4 py-2 bg-white/5 rounded-xl border border-white/10 flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]"></span>
+                <span class="text-[10px] text-white/70 font-bold uppercase tracking-wider">Servicio Activo</span>
               </div>
-
-              <!-- Main Info -->
-              <div class="text-center mb-8">
-                <h1 class="text-3xl font-headline font-extrabold text-on-surface mb-2 tracking-tight">{{
-                  qrData.ownerName }}
-                </h1>
-
-                <div class="items-center justify-center gap-2 mb-4 hidden">
-                  <span v-if="qrData.status === 'active' && !qrData.isBanned"
-                    class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-500/10 text-green-500 text-xs font-bold uppercase tracking-wider border border-green-500/20">
-                    <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
-                    Activo
-                  </span>
-                  <span v-else-if="qrData.isBanned"
-                    class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-500/10 text-red-500 text-xs font-bold uppercase tracking-wider border border-red-500/20">
-                    <span class="material-symbols-outlined text-[14px]">block</span>
-                    Bloqueado
-                  </span>
-                  <span v-else
-                    class=" items-center gap-1.5 px-3 py-1 rounded-full bg-orange-500/10 text-orange-500 text-xs font-bold uppercase tracking-wider border border-orange-500/20 hidden">
-                    <span class="material-symbols-outlined text-[14px]">pause_circle</span>
-                    Inactivo
-                  </span>
-                </div>
-
-                <p v-if="qrData.isBanned"
-                  class="text-red-400 text-sm bg-red-500/10 p-3 rounded-lg border border-red-500/20 inline-block">
-                  Motivo: {{ qrData.banReason || 'Incumplimiento de políticas' }}
-                </p>
-              </div>
-
-              <!-- Divider -->
-              <div class="w-full h-px bg-linear-to-r from-transparent via-outline-variant/30 to-transparent mb-8">
-              </div>
-
-              <!-- Stats Grid -->
-              <div class="grid grid-cols-2 gap-4 mb-8">
+              <div class="flex -space-x-2">
                 <div
-                  class="bg-surface p-4 rounded-2xl border border-outline-variant/10 shadow-sm flex items-center gap-4 hover:border-primary/30 transition-colors">
-                  <div class="w-10 h-10 rounded-lg bg-blue-500/10 text-blue-500 flex items-center justify-center">
-                    <span class="material-symbols-outlined">visibility</span>
-                  </div>
-                  <div class="flex flex-col">
-                    <span class="text-[10px] uppercase font-bold text-on-surface-variant tracking-wider">Escaneos</span>
-                    <span class="text-xl font-headline font-black text-on-surface">{{ qrData.totalScans }}</span>
-                  </div>
+                  class="w-8 h-8 rounded-full border-2 border-[#070b14] bg-white/10 overflow-hidden flex items-center justify-center">
+                  <span class="material-symbols-outlined text-xs text-white">person</span>
                 </div>
-
-                <div
-                  class="bg-surface p-4 rounded-2xl border border-outline-variant/10 shadow-sm flex items-center gap-4 hover:border-primary/30 transition-colors">
-                  <div class="w-10 h-10 rounded-lg bg-purple-500/10 text-purple-500 flex items-center justify-center">
-                    <span class="material-symbols-outlined">schedule</span>
-                  </div>
-                  <div class="flex flex-col">
-                    <span
-                      class="text-[10px] uppercase font-bold text-on-surface-variant tracking-wider whitespace-nowrap">Último
-                      Escaneo</span>
-                    <span class="text-sm font-bold text-on-surface mt-0.5  max-w-[80px]"
-                      :title="qrData.lastScan ? new Date(qrData.lastScan.seconds * 1000).toLocaleString('es-MX') : 'Nunca'">
-                      {{ qrData.lastScan ? new Date(qrData.lastScan.seconds * 1000).toLocaleString('es-MX') :
-                        'Nunca' }}
-                    </span>
-                  </div>
+                <div class="w-8 h-8 rounded-full border-2 border-[#070b14] bg-primary flex items-center justify-center">
+                  <span class="material-symbols-outlined text-xs text-black">check</span>
                 </div>
               </div>
-
-              <!-- Action Button -->
-              <div class="space-y-3">
-                <button
-                  class="w-full bg-primary hover:bg-primary-fixed text-on-primary py-4 rounded-xl font-bold text-lg shadow-lg shadow-primary/20 transition-all active:scale-[0.98] flex items-center justify-center gap-2 group">
-                  <span class="material-symbols-outlined group-hover:animate-bounce">chat</span>
-                  Contactar al Propietario
-                </button>
-                <p class="text-center text-xs text-on-surface-variant/60 font-medium">
-                  Protegido por Ubiqueme. Comunícate de forma segura.
-                </p>
-              </div>
-
             </div>
           </div>
+
+          <!-- RIGHT COLUMN: MODULAR INFO & ACTIONS -->
+          <div class="flex-1 flex flex-col gap-6">
+
+            <!-- STATS MODULE -->
+            <div class="grid grid-cols-2 gap-4">
+              <div
+                class="group relative bg-white/[0.03] border border-white/10 rounded-3xl p-6 transition-all duration-300 hover:bg-white/[0.06] overflow-hidden">
+                <div class="absolute top-0 right-0 p-3 opacity-20 group-hover:opacity-40 transition-opacity">
+                  <span class="material-symbols-outlined text-xl text-white">analytics</span>
+                </div>
+                <span class="block text-[9px] font-bold text-white/30 uppercase tracking-[0.2em] mb-1">Total
+                  Escaneos</span>
+                <p class="text-3xl font-black text-white tracking-tight">{{ qrData?.totalScans || 0 }}</p>
+              </div>
+
+              <div
+                class="group relative bg-white/[0.03] border border-white/10 rounded-3xl p-6 transition-all duration-300 hover:bg-white/[0.06] overflow-hidden">
+                <div class="absolute top-0 right-0 p-3 opacity-20 group-hover:opacity-40 transition-opacity">
+                  <span class="material-symbols-outlined text-xl text-white">fingerprint</span>
+                </div>
+                <span class="block text-[9px] font-bold text-white/30 uppercase tracking-[0.2em] mb-1">ID
+                  Registro</span>
+                <p class="text-3xl font-black text-white tracking-tight font-mono text-sm leading-8">{{
+                  qrData?.id?.substring(0, 8).toUpperCase() || '---' }}</p>
+              </div>
+            </div>
+
+            <!-- MESSAGING / INFO CARD -->
+            <div
+              class="relative overflow-hidden bg-gradient-to-br from-white/[0.05] to-transparent border border-white/10 rounded-[2rem] p-8">
+              <div
+                class="absolute -bottom-12 -right-12 w-48 h-48 bg-primary/10 blur-[60px] rounded-full pointer-events-none">
+              </div>
+
+              <div class="relative z-10 flex flex-col gap-4">
+                <div class="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center">
+                  <span class="material-symbols-outlined text-primary text-xl">shield_lock</span>
+                </div>
+                <div class="space-y-2">
+                  <h3 class="text-white font-bold text-lg">Protocolo Privacy-Plus</h3>
+                  <p class="text-white/50 text-sm leading-relaxed">
+                    La identidad del propietario se encuentra protegida. Al contactar, utilizaremos un túnel de
+                    comunicación seguro para garantizar el anonimato de ambas partes.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- PRIMARY ACTION BUTTON -->
+            <button
+              class="group relative w-full h-16 rounded-2xl bg-white text-black font-black text-lg overflow-hidden transition-all duration-300 hover:shadow-[0_0_40px_rgba(255,255,255,0.2)] active:scale-[0.98]">
+              <div
+                class="absolute inset-0 bg-primary opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              </div>
+              <div class="relative z-10 flex items-center justify-center gap-3 group-hover:text-black">
+                <span>Contactar Propietario</span>
+                <span
+                  class="material-symbols-outlined font-black transition-transform group-hover:translate-x-1">arrow_forward</span>
+              </div>
+            </button>
+
+            <!-- SECONDARY FOOTER -->
+            <div class="flex items-center justify-between px-2 pt-2 text-white/20">
+              <span class="text-[8px] font-bold uppercase tracking-[0.3em]">Built for security</span>
+              <div class="flex gap-4">
+                <span class="material-symbols-outlined text-sm">security</span>
+                <span class="material-symbols-outlined text-sm">vpn_key</span>
+                <span class="material-symbols-outlined text-sm">eco</span>
+              </div>
+              <span class="text-[8px] font-bold uppercase tracking-[0.3em] font-mono">v2.4.0_UBI</span>
+            </div>
+
+          </div>
         </div>
-      </section>
+
+        <!-- 🏷️ BRAND WATERMARK -->
+        <div class="absolute bottom-10 left-1/2 -translate-x-1/2 opacity-20 pointer-events-none">
+          <p class="text-white text-[10px] font-black uppercase tracking-[0.8em]">Ubiqueme.com</p>
+        </div>
+      </main>
     </template>
 
   </HomeLayout>
@@ -204,19 +212,33 @@ onMounted(() => {
 </template>
 
 <style scoped>
-.font-headline {
-  font-family: 'Manrope', sans-serif;
-}
-
-.font-body {
-  font-family: 'Inter', sans-serif;
-}
-
-.bg-obsidian-gradient {
-  background: radial-gradient(circle at 50% 0%, #151b2d 0%, #0c1324 100%);
+.font-google-sans {
+  font-family: 'Google Sans', sans-serif;
 }
 
 .material-symbols-outlined {
   font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+/* Custom smooth easing for interactions */
+button {
+  transition: all 0.01s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* Subtle reveal animation for the whole container */
+main>div {
+  animation: reveal 0s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 </style>

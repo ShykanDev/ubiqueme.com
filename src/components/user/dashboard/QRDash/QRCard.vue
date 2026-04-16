@@ -107,10 +107,17 @@ const isLoading = ref(false);
 const handleEdit = async () => {
   try {
     isLoading.value = true;
-    const qrDoc = doc(db, `users/${userStore.getUserId}/qrs/${props.docId}`)
-    await updateDoc(qrDoc, {
+    const userQRDoc = doc(db, `users/${userStore.getUserId}/qrs/${props.docId}`)
+    const publicQrDoc = doc(db, 'publicQR', props.id);
+
+    const batch = writeBatch(db);
+    batch.update(userQRDoc, {
       name: qrName.value
     })
+    batch.update(publicQrDoc, {
+      ownerName: qrName.value
+    })
+    await batch.commit();
     closeAll();
     console.log(`QR name updated successfully`);
     isLoading.value = false;
