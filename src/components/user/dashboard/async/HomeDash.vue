@@ -33,6 +33,14 @@ const ventoCards = [
 ]
 
 const userStore = useUserStore()
+
+
+const handleGreeting = (): string => {
+  const hour = new Date().getHours()
+  if (hour < 12) return 'Buenos días'
+  if (hour < 18) return 'Buenas tardes'
+  return 'Buenas noches'
+}
 </script>
 
 <template>
@@ -41,29 +49,21 @@ const userStore = useUserStore()
     <div class="mb-12 flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
       <div>
         <p class="text-primary font-semibold tracking-widest text-[10px] uppercase mb-2">Protocol: Home</p>
-        <h2 class="text-3xl md:text-4xl font-black text-white tracking-tighter uppercase leading-none">
-          Bienvenido, {{ userStore.getFirstName || 'Usuario' }}
+        <h2 class="text-3xl md:text-4xl font-black text-white tracking-tighter  leading-none">
+          {{ handleGreeting() }}, {{ userStore.getFirstName || 'Usuario' }}
         </h2>
       </div>
       <button
-        class="w-full md:w-auto flex items-center justify-center gap-3 px-8 py-4 rounded-xl bg-white text-black font-black uppercase tracking-widest text-xs shadow-xl hover:bg-primary transition-all active:scale-95"
-      >
+        class="w-full md:w-auto flex items-center justify-center gap-3 px-8 py-4 rounded-xl bg-white text-black font-black uppercase tracking-widest text-xs shadow-xl hover:bg-primary transition-all active:scale-95">
         <span class="material-symbols-outlined font-black">add</span>
         Nuevo Nodo QR
       </button>
     </div>
-    
+
     <!-- Bento Grid Stats -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
-      <VentoCard
-        v-for="(card, index) in ventoCards"
-        :key="index"
-        :icon="card.icon"
-        :title="card.title"
-        :value="card.value"
-        :trendIcon="card.trendIcon"
-        :trendText="card.trendText"
-      >
+      <VentoCard v-for="(card, index) in ventoCards" :key="index" :icon="card.icon" :title="card.title"
+        :value="card.value" :trendIcon="card.trendIcon" :trendText="card.trendText">
       </VentoCard>
     </div>
   </div>

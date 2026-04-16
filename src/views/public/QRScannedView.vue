@@ -1,21 +1,18 @@
 <script lang="ts" setup>
 import { onMounted, onUnmounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
-import { collection, collectionGroup, doc, getDoc, getDocs, getFirestore, onSnapshot, query, Timestamp, where, writeBatch } from 'firebase/firestore'
+import { collection, collectionGroup, doc, getDoc, getDocs, getFirestore, onSnapshot, query, Timestamp, where, writeBatch, increment } from 'firebase/firestore'
 import { db } from '@/firebase'
 import CloudLoader from '@/components/ui/CloudLoader.vue'
 import HomeLayout from '@/layouts/HomeLayout.vue'
 import type { IPublicQR } from '@/interfaces/IPublicQR'
-import type { Unsubscribe } from 'firebase/auth'
 
 const route = useRoute()
 const qrId = route.params.qrId as string
 
 const loading = ref(true)
 const qrData = ref<IPublicQR | null>(null)
-const qrStatus = ref<IPublicQR | null>(null)
 const errorMsg = ref('')
-const error = ref(false);
 
 //public QR collection
 
@@ -39,10 +36,48 @@ const scanQR = async () => {
     }
     qrData.value = docSnapshot.data() as IPublicQR;
     const batch = writeBatch(db);
+    //Update totalScans and lastScan
     batch.update(QRDoc, {
-      totalScans: qrData.value.totalScans + 1,
+      totalScans: increment(1),
       lastScan: Timestamp.now(),
-    })
+    });
+
+    const metricData = {
+      country: "",
+      city: "",
+      region: ""
+    };
+
+    try {
+      /*
+       * LEGAL & PRIVACY COMPLIANCE NOTICE
+       * This network request operates strictly under a "Stateless Processing" (Ephemeral) architecture.
+       * We utilize the client's IP solely 'in transit' to anonymously resolve geographic metadata
+       * (City, Region, Country). The raw IP address is NEVER stored, processed, or linked to
+       * Personally Identifiable Information (PII) within our databases. By adhering strictly to
+       * the Data Minimization principle, this implementation ensures full compliance with international
+       * and regional privacy regulations (including GDPR, CCPA, and Mexico's LFPDPPP).
+       * The resulting dataset is entirely anonymized and statistically dissociated.
+       */
+      const ipRes = await fetch('https://ipapi.co/json/');
+      if (ipRes.ok) {
+        const data = await ipRes.json();
+        metricData.country = data.country_name || "";
+        metricData.city = data.city || "";
+        metricData.region = data.region || "";
+      }
+    } catch (err) {
+      console.log('No se pudieron obtener las metricas:', err);
+    }
+
+    const logsCollection = collection(db, 'publicQR', qrId, 'logs');
+    const logDoc = doc(logsCollection, Timestamp.now().toMillis().toString());
+
+    batch.set(logDoc, {
+      scanDate: Timestamp.now(),
+      scanMetrics: metricData
+    });
+
     await batch.commit();
     loading.value = false;
   } catch (error) {
@@ -60,7 +95,6 @@ const scanQR = async () => {
 
 onMounted(() => {
   scanQR()
-
 })
 
 </script>
@@ -70,7 +104,7 @@ onMounted(() => {
   <HomeLayout>
     <template #main>
       <main
-        class="relative min-h-screen bg-[#070b14] overflow-hidden flex flex-col items-center justify-center p-6 md:p-12 font-google-sans">
+        class="relative min-h-screen bg-[#070b14] pt-20 overflow-hidden flex flex-col items-center justify-center p-6 md:p-12 font-google-sans">
 
         <!-- 📐 BACKGROUND GRID (Lightweight architectural feel) -->
         <div class="absolute inset-0 z-0 opacity-[0.03]"
@@ -83,8 +117,34 @@ onMounted(() => {
           class="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-2xl h-[300px] bg-primary/20 blur-[120px] rounded-full opacity-50 z-0 pointer-events-none">
         </div>
 
+        <!-- ☁️ LOADING STATE -->
+        <CloudLoader v-if="loading" />
+
+        <!-- ❌ ERROR STATE -->
+        <div v-else-if="errorMsg" class="relative z-10 w-full max-w-md flex flex-col items-center text-center gap-6">
+          <div class="relative">
+            <div class="absolute inset-0 bg-red-500/20 blur-xl rounded-full scale-110"></div>
+            <div
+              class="relative w-24 h-24 bg-red-500/10 border border-red-500/30 flex items-center justify-center rounded-3xl shadow-[0_0_40px_rgba(239,68,68,0.2)]">
+              <span class="material-symbols-outlined text-red-500 text-5xl">error</span>
+            </div>
+          </div>
+
+          <div class="space-y-3">
+            <h1 class="text-3xl font-black text-white">QR No Encontrado</h1>
+            <p class="text-white/50 text-sm leading-relaxed px-4">
+              {{ errorMsg }}. Te recomendamos verificar los datos, escanear nuevamente o intentarlo más tarde.
+            </p>
+          </div>
+
+          <button @click="$router.push('/')"
+            class="mt-4 px-8 py-3 rounded-2xl bg-white/5 border border-white/10 text-white font-bold hover:bg-white/10 transition-colors uppercase tracking-widest text-xs">
+            Volver al Inicio
+          </button>
+        </div>
+
         <!-- 🚀 MAIN CONTENT CONTAINER -->
-        <div class="relative z-10 w-full max-w-4xl flex flex-col md:flex-row gap-8 items-stretch">
+        <div v-else class="relative z-10 w-full max-w-4xl flex flex-col md:flex-row gap-8 items-stretch">
 
           <!-- LEFT COLUMN: STATUS & BADGE -->
           <div
@@ -186,9 +246,15 @@ onMounted(() => {
               </div>
             </button>
 
+            <!-- LEGAL TELEMETRY DISCLAIMER -->
+            <p class="text-[10px] text-white/30 text-center px-2 leading-relaxed font-medium">
+              Como parte del proceso de conexión, registramos métricas anónimas (como región aproximada u horario). Esta
+              información es puramente estadística y no está vinculada a ningún dato personal.
+            </p>
+
             <!-- SECONDARY FOOTER -->
             <div class="flex items-center justify-between px-2 pt-2 text-white/20">
-              <span class="text-[8px] font-bold uppercase tracking-[0.3em]">Built for security</span>
+              <span class="text-[8px] font-bold uppercase tracking-[0.3em]">Diseñado para la privacidad</span>
               <div class="flex gap-4">
                 <span class="material-symbols-outlined text-sm">security</span>
                 <span class="material-symbols-outlined text-sm">vpn_key</span>

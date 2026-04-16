@@ -30,4 +30,5 @@ export const useUserStore = defineStore('userStore', {
       this.creationDate = ''
     },
   },
+  persist: true,
 })
