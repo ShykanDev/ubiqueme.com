@@ -36,33 +36,36 @@ const userStore = useUserStore()
 </script>
 
 <template>
-  <!-- Welcome Banner -->
-  <div class="mb-12 flex justify-between items-end">
-    <div>
-      <p class="text-primary font-semibold tracking-widest text-xs mb-2 font-google-sans">Inicio</p>
-      <h2 class="text-3xl font-bold font-headline text-on-surface font-google-sans">
-        Bienvenido de nuevo, {{ userStore.getFirstName ?? 'User' }}
-      </h2>
+  <div class="font-google-sans">
+    <!-- Welcome Banner -->
+    <div class="mb-12 flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+      <div>
+        <p class="text-primary font-semibold tracking-widest text-[10px] uppercase mb-2">Protocol: Home</p>
+        <h2 class="text-3xl md:text-4xl font-black text-white tracking-tighter uppercase leading-none">
+          Bienvenido, {{ userStore.getFirstName || 'Usuario' }}
+        </h2>
+      </div>
+      <button
+        class="w-full md:w-auto flex items-center justify-center gap-3 px-8 py-4 rounded-xl bg-white text-black font-black uppercase tracking-widest text-xs shadow-xl hover:bg-primary transition-all active:scale-95"
+      >
+        <span class="material-symbols-outlined font-black">add</span>
+        Nuevo Nodo QR
+      </button>
     </div>
-    <button
-      class="flex items-center gap-2 px-8 py-4 rounded-lg bg-linear-to-br from-primary to-sky-600 cursor-pointer text-on-primary font-bold shadow-xl hover:brightness-110 transition-all active:scale-95"
-    >
-      <span class="material-symbols-outlined">add</span>
-      Crear Nuevo QR
-    </button>
-  </div>
-  <!-- Bento Grid Stats -->
-  <div class="grid grid-cols-12 gap-6 mb-16">
-    <VentoCard
-      v-for="(card, index) in ventoCards"
-      :key="index"
-      :icon="card.icon"
-      :title="card.title"
-      :value="card.value"
-      :trendIcon="card.trendIcon"
-      :trendText="card.trendText"
-    >
-    </VentoCard>
+    
+    <!-- Bento Grid Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+      <VentoCard
+        v-for="(card, index) in ventoCards"
+        :key="index"
+        :icon="card.icon"
+        :title="card.title"
+        :value="card.value"
+        :trendIcon="card.trendIcon"
+        :trendText="card.trendText"
+      >
+      </VentoCard>
+    </div>
   </div>
 </template>
 

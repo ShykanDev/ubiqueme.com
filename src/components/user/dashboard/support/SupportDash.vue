@@ -43,7 +43,7 @@ const submitForm = () => {
       <!-- Overlay de éxito -->
       <div
         v-if="showSuccess"
-        class="absolute inset-0 bg-[#0F1222]/95 backdrop-blur-md flex flex-col items-center justify-center z-10 animate-fade-in"
+        class="absolute inset-0 bg-[#0F1222] flex flex-col items-center justify-center z-10"
       >
         <div
           class="w-16 h-16 bg-green-500/20 text-green-400 border border-green-500/20 rounded-full flex items-center justify-center mb-4"

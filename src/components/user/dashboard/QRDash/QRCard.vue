@@ -213,13 +213,13 @@ onUnmounted(() => {
 
 <template>
   <div
-    class="relative w-full max-w-[380px] bg-[#111324] rounded-[24px] border border-white/5 overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:border-white/10 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)] hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.6)]">
+    class="relative w-full max-w-[380px] bg-[#000000]/20  rounded-[24px] border border-white/5 overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:border-white/10 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)] hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.6)]">
     <section v-if="isLoading" class="absolute inset-0 bg-black/80 flex items-center justify-center z-50">
       <CloudLoader></CloudLoader>
     </section>
 
     <!-- Main Card Content -->
-    <div class="p-6">
+    <div class="p-6 ">
       <!-- Header -->
       <div class="flex justify-between items-start mb-6">
         <div class="flex flex-col gap-1">
@@ -243,7 +243,7 @@ onUnmounted(() => {
           <span :key="qrStatus.totalScans" class="text-white font-semibold text-base animate-fade-up">{{
             qrStatus.totalScans }}</span>
         </div>
-        <div class="w-[1px] h-6 bg-white/10"></div>
+        <div class="w-px h-6 bg-white/10"></div>
         <div class="flex flex-col gap-1 text-right">
           <span class="text-[0.7rem] text-slate-400 uppercase tracking-wider">Último uso</span>
           <span :key="qrStatus.lastScan.seconds"
@@ -253,7 +253,7 @@ onUnmounted(() => {
       </div>
 
       <!-- QR Code -->
-      <section class="flex justify-center bg-[#14162c] p-3 rounded-2xl overflow-hidden mb-6">
+      <section class="flex justify-center bg-[#000000]/30 p-2 rounded-2xl overflow-hidden mb-6">
         <div class="bg-white p-2 rounded-xl">
           <QrcodeVue :value="`http://192.168.100.13:5173/qr/${propsComputed.id}`" :size="220" render-as="canvas" />
         </div>

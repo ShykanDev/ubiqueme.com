@@ -16,9 +16,6 @@ const props = defineProps<{
   <!-- Step  -->
   <div
     class="relative h-[590px] group"
-    data-aos="fade-up"
-    :data-aos-delay="steps.number * 100"
-    :data-aos-duration="1000"
   >
     <video
       class="rounded-3xl absolute w-full h-full top-0 bottom-0 left-0 right-0 object-cover"
@@ -46,7 +43,7 @@ const props = defineProps<{
       </div>
       <h3 class="font-headline text-xl font-bold mb-4 text-slate-100">{{ steps.title }}</h3>
       <p
-        class="text-white font-rubik leading-relaxed p-1.5 bg-slate-200/10 rounded-2xl backdrop-blur-sm"
+        class="text-white font-rubik leading-relaxed p-1.5 bg-black/40 rounded-2xl"
       >
         {{ steps.description }}
       </p>

@@ -25,18 +25,27 @@ const props = defineProps({
 
 <template>
   <div
-    class="col-span-12 md:col-span-3 surface-container rounded-xl p-8 border border-white/5 relative overflow-hidden group"
+    class="col-span-1 border border-white/5 bg-white/[0.02] rounded-2xl p-6 relative overflow-hidden group transition-all duration-300 hover:bg-white/[0.04]"
   >
-    <div
-      class="absolute -right-4 -bottom-4 opacity-5 group-hover:scale-125 transition-transform duration-500"
-    >
-      <span class="material-symbols-outlined text-[120px]">{{ icon }}</span>
+    <div class="relative z-10 space-y-4">
+      <div class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center">
+        <span class="material-symbols-outlined text-primary text-xl">{{ icon }}</span>
+      </div>
+      
+      <div>
+        <p class="text-[9px] font-black text-white/30 uppercase tracking-[0.2em] mb-1">{{ title }}</p>
+        <p class="text-3xl font-black text-white tracking-tighter">{{ value }}</p>
+      </div>
+
+      <div class="flex items-center gap-2 pt-2 border-t border-white/5">
+        <span class="material-symbols-outlined text-[10px] text-primary">{{ trendIcon }}</span>
+        <span class="text-[9px] font-black text-white/50 uppercase tracking-widest">{{ trendText }}</span>
+      </div>
     </div>
-    <p class="text-on-surface-variant text-sm font-medium mb-1">{{ title }}</p>
-    <p class="text-4xl font-bold font-headline text-on-surface mb-4">{{ value }}</p>
-    <div class="flex items-center text-xs text-primary font-semibold">
-      <span class="material-symbols-outlined text-sm mr-1">{{ trendIcon }}</span>
-      {{ trendText }}
+
+    <!-- Background Decoration -->
+    <div class="absolute -right-4 -bottom-4 opacity-[0.03] group-hover:scale-110 transition-transform duration-700 pointer-events-none">
+       <span class="material-symbols-outlined text-[100px]">{{ icon }}</span>
     </div>
   </div>
 </template>

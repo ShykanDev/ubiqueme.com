@@ -222,23 +222,6 @@ onMounted(() => {
 
 /* Custom smooth easing for interactions */
 button {
-  transition: all 0.01s cubic-bezier(0.23, 1, 0.32, 1);
-}
-
-/* Subtle reveal animation for the whole container */
-main>div {
-  animation: reveal 0s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-@keyframes reveal {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  transition: all 0.2s ease;
 }
 </style>

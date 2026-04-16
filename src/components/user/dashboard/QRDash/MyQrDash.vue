@@ -90,42 +90,42 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <!--Section principal-->
-  <section class="mb-12">
-    <h1 class="text-2xl font-bold text-slate-100 mb-2 font-google-sans text-center">
-      Gestión de
-      <span class="text-primary"> Códigos QR </span>
-    </h1>
-    <p class="text-on-surface-variant font-google-sans text-center">
-      Cree, administre y monitoree el rendimiento de sus etiquetas QR en tiempo real. Toda la
-      información y control centralizados en un solo lugar.
-    </p>
-  </section>
-  <!-- Welcome Banner -->
-  <div class="mb-12 flex justify-between items-end">
-    <div>
-      <p class="text-primary font-semibold tracking-widest uppercase text-xs mb-2 font-google-sans">
-        Resumen de su sesión
+  <div class="space-y-12 font-google-sans">
+    <!-- Header Section -->
+    <header class="max-w-3xl mx-auto text-center space-y-4">
+      <div class="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 rounded-lg border border-primary/20">
+        <span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+        <span class="text-[9px] font-black uppercase tracking-[0.4em] text-primary">Gestión de Activos</span>
+      </div>
+      <h1 class="text-4xl md:text-5xl font-black text-white tracking-tighter uppercase leading-none">
+        Códigos <span class="text-primary italic">QR</span>
+      </h1>
+      <p class="text-white/40 text-sm font-medium leading-relaxed">
+        Administre y monitoree el rendimiento de sus etiquetas QR en tiempo real.
       </p>
-      <h2 class="text-4xl font-bold font-headline text-on-surface font-google-sans">
-        Bienvenido de nuevo, {{ userStore.getFirstName }}
-      </h2>
-    </div>
-    <button
-      class="flex items-center gap-2 px-8 py-4 rounded-lg bg-linear-to-br from-primary to-sky-600 cursor-pointer text-on-primary font-bold shadow-xl hover:brightness-110 transition-all active:scale-95">
-      <span class="material-symbols-outlined">add</span>
-      Crear Nuevo QR
-    </button>
-  </div>
+    </header>
 
-  <!-- Mis Códigos QR Section -->
-  <div class="mb-6">
-    <h3 class="text-2xl font-bold font-headline text-on-surface mb-6">Mis Códigos QR</h3>
-    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-      <QRCard v-for="qr in userQRs" :key="qr.id" :id="qr.id" :name="qr.name" :status="qr.status" :scans="qr.scans"
-        :lastScan="qr.lastScan" :docId="qr.docId" :link="qr.link" :isActive="qr.isActive" :isBanned="qr.isBanned"
-        :banReason="qr.banReason" :planPurchasedAt="qr.planPurchasedAt" :planEndDate="qr.planEndDate"
-        :createdAt="qr.createdAt" />
+    <!-- Content Section -->
+    <div class="space-y-10">
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 pb-6 border-b border-white/5">
+        <div>
+          <p class="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] mb-1">Visión General</p>
+          <h2 class="text-2xl font-black text-white tracking-tight uppercase">Mis Registros</h2>
+        </div>
+        <button
+          class="w-full md:w-auto flex items-center justify-center gap-3 px-8 py-4 rounded-xl bg-white text-black font-black uppercase tracking-widest text-xs shadow-xl hover:bg-primary transition-all active:scale-95"
+        >
+          <span class="material-symbols-outlined font-black">add</span>
+          Vincular Nuevo Nodo
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+        <QRCard v-for="qr in userQRs" :key="qr.id" :id="qr.id" :name="qr.name" :status="qr.status" :scans="qr.scans"
+          :lastScan="qr.lastScan" :docId="qr.docId" :link="qr.link" :isActive="qr.isActive" :isBanned="qr.isBanned"
+          :banReason="qr.banReason" :planPurchasedAt="qr.planPurchasedAt" :planEndDate="qr.planEndDate"
+          :createdAt="qr.createdAt" />
+      </div>
     </div>
   </div>
 </template>
