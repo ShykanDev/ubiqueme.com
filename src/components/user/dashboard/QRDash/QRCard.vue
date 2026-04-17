@@ -1,13 +1,14 @@
 <script lang="ts" setup>
 import { computed, onMounted, onUnmounted, reactive, ref } from 'vue'
 import QrcodeVue from 'qrcode.vue'
-import { doc, onSnapshot, Timestamp, updateDoc, writeBatch } from 'firebase/firestore'
+import { collection, doc, onSnapshot, orderBy, query, Timestamp, updateDoc, writeBatch } from 'firebase/firestore'
 import { db } from '@/firebase'
 import { useUserStore } from '@/stores/user'
 import CloudLoader from '@/components/ui/CloudLoader.vue'
 import { nanoid } from 'nanoid'
 import type { IPublicQR } from '@/interfaces/IPublicQR'
 import type { Unsubscribe } from 'firebase/auth'
+import QRCardLog from './QRCardLog.vue'
 type TStatus = 'Active' | 'Canceled' | 'Process' | 'Error' | 'Paused'
 
 interface IQRCard {
@@ -38,50 +39,20 @@ const activePrompt = ref<'cancel' | 'renew' | 'edit' | null>(null)
 
 const qrName = ref(propsComputed.value.name);
 
-const getStatusStyles = (status: TStatus) => computed(() => {
-  switch (status) {
-    case 'Active':
-      return {
-        bg: 'bg-emerald-500/10',
-        text: 'text-emerald-400',
-        dot: 'bg-emerald-400',
-        label: 'Activo'
-      }
-    case 'Canceled':
-      return {
-        bg: 'bg-rose-500/10',
-        text: 'text-rose-400',
-        dot: 'bg-rose-400',
-        label: 'Cancelado'
-      }
-    case 'Process':
-      return {
-        bg: 'bg-amber-500/10',
-        text: 'text-amber-400',
-        dot: 'bg-amber-400',
-        label: 'En Proceso'
-      }
-    case 'Error':
-      return {
-        bg: 'bg-red-500/10',
-        text: 'text-red-400',
-        dot: 'bg-red-400',
-        label: 'Error'
-      }
-    case 'Paused':
-      return {
-        bg: 'bg-slate-500/10',
-        text: 'text-slate-400',
-        dot: 'bg-slate-400',
-        label: 'Pausado'
-      }
-    default:
-      return {
-        bg: 'bg-slate-500/10',
-        text: 'text-slate-400',
-        dot: 'bg-slate-400',
-        label: 'Desconocido'
-      }
+const statusConfig = {
+  Active: { bg: 'bg-emerald-500/10', text: 'text-emerald-400', dot: 'bg-emerald-400', label: 'Activo' },
+  Canceled: { bg: 'bg-rose-500/10', text: 'text-rose-400', dot: 'bg-rose-400', label: 'Cancelado' },
+  Process: { bg: 'bg-amber-500/10', text: 'text-amber-400', dot: 'bg-amber-400', label: 'En Proceso' },
+  Error: { bg: 'bg-red-500/10', text: 'text-red-400', dot: 'bg-red-400', label: 'Error' },
+  Paused: { bg: 'bg-slate-500/10', text: 'text-slate-400', dot: 'bg-slate-400', label: 'Pausado' },
+}
+
+const currentStatus = computed(() => {
+  return statusConfig[propsComputed.value.status] || {
+    bg: 'bg-slate-500/10',
+    text: 'text-slate-400',
+    dot: 'bg-slate-400',
+    label: 'Desconocido'
   }
 })
 
@@ -226,13 +197,66 @@ const timestampToDate = (): string => {
   }
 }
 
+const menuOptions = [
+  { label: 'Hacer Público', icon: 'public', action: _setQrPublic },
+  { label: 'Hacer Privado', icon: 'visibility_off', action: _setQrPrivate },
+  { divider: true },
+  { label: 'Editar nombre', icon: 'edit', action: () => openPrompt('edit') },
+  { label: 'Renovar QR', icon: 'autorenew', action: () => openPrompt('renew') },
+  { divider: true },
+  {
+    label: 'Desactivar',
+    icon: 'block',
+    action: () => openPrompt('cancel'),
+    color: 'text-rose-400',
+    hoverBg: 'hover:bg-rose-500/10'
+  },
+]
 
+interface IQRLog {
+  id: string;
+  scanDate: Timestamp;
+  scanMetrics: {
+    city: string;
+    country: string;
+    region: string;
+  }
+}
+
+const qrLogs = ref<IQRLog[]>([]);
+
+const qrsLogsRef = collection(db, `publicQR/${props.id}/logs`);
+const queryLogs = query(qrsLogsRef, orderBy("scanDate", "desc"));
+let unsubscribeLogs: Unsubscribe;
+onMounted(() => {
+  unsubscribeLogs = onSnapshot(queryLogs, (querySnapshot) => {
+    if (querySnapshot.empty) {
+      console.log(`QR logs empty`);
+      return;
+    }
+    qrLogs.value = querySnapshot.docs.map(doc => ({
+      id: doc.id,
+      scanDate: doc.data().scanDate,
+      scanMetrics: doc.data().scanMetrics
+    }));
+    console.log(`QR logs updated`)
+    loadCount.value++;
+  }
+    , (error) => {
+      console.log(`Error while trying to get data: ${error}`);
+    }
+  )
+})
+
+onUnmounted(() => {
+  if (unsubscribeLogs) unsubscribeLogs();
+})
 
 </script>
 
 <template>
   <div
-    class="relative w-full max-w-[380px] bg-[#000000]/20  rounded-[24px] border border-white/5 overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:border-white/10 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)] hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.6)]">
+    class="relative w-full max-w-[380px] bg-[#000000]/20 rounded-[24px] border border-white/5 overflow-hidden transition-all duration-300 hover:border-white/10 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)] hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.6)] will-change-transform">
     <section v-if="isLoading" class="absolute inset-0 bg-black/80 flex items-center justify-center z-50">
       <CloudLoader></CloudLoader>
     </section>
@@ -248,10 +272,9 @@ const timestampToDate = (): string => {
         </div>
 
         <div
-          :class="['flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider', getStatusStyles(propsComputed.status).value.bg, getStatusStyles(propsComputed.status).value.text]">
-          <span
-            :class="['w-1.5 h-1.5 rounded-full shadow-[0_0_8px_currentColor]', getStatusStyles(propsComputed.status).value.dot]"></span>
-          {{ getStatusStyles(propsComputed.status).value.label }}
+          :class="['flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider', currentStatus.bg, currentStatus.text]">
+          <span :class="['w-1.5 h-1.5 rounded-full shadow-[0_0_8px_currentColor]', currentStatus.dot]"></span>
+          {{ currentStatus.label }}
         </div>
       </div>
 
@@ -267,11 +290,21 @@ const timestampToDate = (): string => {
         <div class="w-px h-6 bg-white/10"></div>
         <div class="flex flex-col gap-1 text-right">
           <span class="text-[0.7rem] text-slate-400 uppercase tracking-wider">Último uso</span>
-          <span :key="qrStatus.lastScan.seconds" :class="{ 'animate-fade-up animate-delay-700': loadCount > 1 }"
+          <span :key="qrStatus.lastScan?.seconds || 'none'"
+            :class="{ 'animate-fade-up animate-delay-700': loadCount > 1 }"
             class="text-white font-semibold text-base">{{ timestampToDate()
             }}</span>
         </div>
       </div>
+
+      <!-- Logs -->
+
+      <TransitionGroup name="list" tag="section"
+        class="flex flex-col space-y-3 overflow-y-auto max-h-[200px] hide-scrollbar overflow-x-hidden">
+        <QRCardLog v-for="(e, i) in qrLogs.sort((a, b) => b.scanDate.toMillis() - a.scanDate.toMillis())" :key="i"
+          :scanDate="e.scanDate" :scanMetrics="e.scanMetrics" />
+      </TransitionGroup>
+
 
       <!-- QR Code -->
       <section class="flex justify-center bg-[#000000]/30 p-2 rounded-2xl overflow-hidden mb-6">
@@ -296,48 +329,32 @@ const timestampToDate = (): string => {
     </div>
 
     <!-- Dropdown Menu -->
-    <Transition enter-active-class="transition-all duration-300 ease-out"
+    <Transition enter-active-class="transition-all duration-200 ease-out"
       enter-from-class="opacity-0 -translate-y-2 scale-95" enter-to-class="opacity-100 translate-y-0 scale-100"
       leave-active-class="transition-all duration-200 ease-in" leave-from-class="opacity-100 translate-y-0 scale-100"
       leave-to-class="opacity-0 -translate-y-2 scale-95">
       <div v-if="showMenu"
-        class="absolute bottom-[72px] right-6 w-[200px] bg-[#1a1d35]/95 backdrop-blur-md border border-white/10 rounded-2xl p-2 z-[100] shadow-[0_20px_40px_rgba(0,0,0,0.4)]">
-        <button @click="_setQrPublic"
-          class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl bg-transparent text-slate-200 text-sm hover:bg-white/5 transition-colors text-left">
-          <span class="material-symbols-outlined text-[18px]">public</span>
-          Hacer Público
-        </button>
-        <button @click="_setQrPrivate"
-          class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl bg-transparent text-slate-200 text-sm hover:bg-white/5 transition-colors text-left">
-          <span class="material-symbols-outlined text-[18px]">visibility_off</span>
-          Hacer Privado
-        </button>
-        <div class="h-[1px] bg-white/5 my-1.5"></div>
-        <button @click="openPrompt('edit')"
-          class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl bg-transparent text-slate-200 text-sm hover:bg-white/5 transition-colors text-left">
-          <span class="material-symbols-outlined text-[18px]">edit</span>
-          Editar nombre
-        </button>
-        <button @click="openPrompt('renew')"
-          class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl bg-transparent text-slate-200 text-sm hover:bg-white/5 transition-colors text-left">
-          <span class="material-symbols-outlined text-[18px]">autorenew</span>
-          Renovar QR
-        </button>
-        <div class="h-[1px] bg-white/5 my-1.5"></div>
-        <button @click="openPrompt('cancel')"
-          class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl bg-transparent text-rose-400 text-sm hover:bg-rose-500/10 transition-colors text-left">
-          <span class="material-symbols-outlined text-[18px]">block</span>
-          Desactivar
-        </button>
+        class="absolute bottom-[72px] right-6 w-[200px] bg-[#1a1d35] border border-white/10 rounded-2xl p-2 z-100">
+        <template v-for="(option, index) in menuOptions" :key="index">
+          <div v-if="option.divider" class="h-1px bg-white/5 my-1.5"></div>
+          <button v-else @click="option.action" :class="[
+            'w-full flex items-center gap-3 cursor-pointer px-3 py-2.5 rounded-xl bg-transparent text-sm transition-colors text-left',
+            option.color || 'text-slate-200',
+            option.hoverBg || 'hover:bg-white/5'
+          ]">
+            <span class="material-symbols-outlined text-[18px]">{{ option.icon }}</span>
+            {{ option.label }}
+          </button>
+        </template>
       </div>
     </Transition>
 
     <!-- Overlay Prompts -->
-    <Transition enter-active-class="transition-all duration-300 ease-out" enter-from-class="opacity-0"
+    <Transition enter-active-class="transition-all duration-100 ease-out" enter-from-class="opacity-0"
       enter-to-class="opacity-100" leave-active-class="transition-all duration-200 ease-in"
       leave-from-class="opacity-100" leave-to-class="opacity-0">
       <div v-if="activePrompt"
-        class="absolute inset-0 bg-[#0A0C1B]/95 backdrop-blur-md z-200 p-6 flex flex-col justify-center items-center">
+        class="absolute inset-0 bg-[#0A0C1B]/95  z-200 p-6 flex flex-col justify-center items-center">
         <button @click="closeAll"
           class="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/5 flex items-center justify-center text-slate-400 hover:bg-white/10 hover:text-white transition-all border-none">
           <span class="material-symbols-outlined text-[20px]">close</span>
@@ -417,5 +434,36 @@ const timestampToDate = (): string => {
     'wght' 400,
     'GRAD' 0,
     'opsz' 24;
+}
+
+.list-move,
+/* apply transition to moving elements */
+.list-enter-active,
+.list-leave-active {
+  transition: all 0.5s ease;
+}
+
+.list-enter-from,
+.list-leave-to {
+  opacity: 0;
+  transform: translateX(30px);
+}
+
+/* ensure leaving items are taken out of layout flow so that moving
+   animations can be calculated correctly. */
+.list-leave-active {
+  position: absolute;
+}
+
+/* TASK Hidde scrollbar  for logs */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
 }
 </style>

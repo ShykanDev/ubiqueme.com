@@ -139,10 +139,10 @@ onUnmounted(() => {
 
           <div v-else-if="userQRs.length > 0" key="content"
             class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 relative z-0">
-            <QRCard v-for="qr in userQRs" :key="qr.id" :id="qr.id" :name="qr.name" :status="qr.status" :scans="qr.scans"
-              :lastScan="qr.lastScan" :docId="qr.docId" :link="qr.link" :isActive="qr.isActive" :isBanned="qr.isBanned"
-              :banReason="qr.banReason" :planPurchasedAt="qr.planPurchasedAt" :planEndDate="qr.planEndDate"
-              :createdAt="qr.createdAt" />
+            <QRCard v-for="qr in userQRs" :key="qr.id" v-memo="[qr.status, qr.name, qr.scans, qr.lastScan]" :id="qr.id"
+              :name="qr.name" :status="qr.status" :scans="qr.scans" :lastScan="qr.lastScan" :docId="qr.docId"
+              :link="qr.link" :isActive="qr.isActive" :isBanned="qr.isBanned" :banReason="qr.banReason"
+              :planPurchasedAt="qr.planPurchasedAt" :planEndDate="qr.planEndDate" :createdAt="qr.createdAt" />
           </div>
 
           <div v-else-if="noQRsFound" key="empty"
@@ -160,7 +160,7 @@ onUnmounted(() => {
 <style scoped>
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0.4s ease;
+  transition: opacity .7s ease;
 }
 
 .fade-enter-from,

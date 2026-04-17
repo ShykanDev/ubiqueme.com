@@ -16,23 +16,16 @@
         <div class="h-6 w-20 bg-white/10 rounded-full skeleton-item"></div>
       </div>
 
-      <!-- Content/Stats Skeleton -->
-      <div class="flex items-center justify-between bg-white/5 p-4 rounded-2xl mb-6 border border-white/5">
-        <div class="flex flex-col gap-2">
-          <div class="h-3 w-14 bg-white/5 rounded skeleton-item"></div>
-          <div class="h-5 w-8 bg-white/10 rounded skeleton-item"></div>
-        </div>
-        <div class="w-px h-6 bg-white/10"></div>
-        <div class="flex flex-col gap-2 items-end">
-          <div class="h-3 w-16 bg-white/5 rounded skeleton-item"></div>
-          <div class="h-5 w-24 bg-white/10 rounded skeleton-item"></div>
-        </div>
+      <!-- Activity Pill Skeleton -->
+      <div class="flex items-center mb-6 px-1 h-8">
+        <div class="w-full h-[1px] bg-white/5"></div>
+        <div class="absolute z-10 w-48 h-6 bg-white/5 border border-white/10 rounded-full skeleton-item"></div>
       </div>
 
       <!-- QR Code Skeleton -->
-      <section class="flex justify-center bg-[#000000]/30 p-2 rounded-2xl mb-6">
-        <div class="bg-white/5 p-2 rounded-xl flex items-center justify-center">
-          <div class="w-[220px] h-[220px] bg-white/5 rounded-lg skeleton-item"></div>
+      <section class="flex justify-center bg-[#000000]/30 p-4 rounded-3xl mb-6 border border-white/5">
+        <div class="bg-white/5 p-3 rounded-2xl">
+          <div class="w-[180px] h-[180px] bg-white/5 rounded-lg skeleton-item"></div>
         </div>
       </section>
 
