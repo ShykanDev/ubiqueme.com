@@ -13,34 +13,26 @@ interface IQRCardLog {
 
 const props = defineProps<IQRCardLog>()
 
-const displayData = computed(() => {
-  let dateStr = "---";
+const formatDate = (timestamp?: Timestamp | null) => {
+  if (!timestamp || typeof timestamp.toDate !== 'function') return '---'
 
-  if (props.scanDate && typeof props.scanDate.toDate === 'function') {
-    const d = props.scanDate.toDate()
+  const d = timestamp.toDate()
 
-    dateStr = d.toLocaleString('es-MX', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-      hour: 'numeric',
-      minute: 'numeric'
-    })
-  }
+  return `${d.getDate().toString().padStart(2, '0')} ${d.toLocaleString('es-MX', { month: 'short' })
+    } ${d.getFullYear()} ${d.getHours()}:${d.getMinutes().toString().padStart(2, '0')}`
+}
 
-  return {
-    date: dateStr,
-    city: props.scanMetrics?.city || "Azcapotzalco",
-    region: props.scanMetrics?.region || "CDMX",
-    country: props.scanMetrics?.country || "México"
-  }
-})
+const date = computed(() => formatDate(props.scanDate))
+
+const city = computed(() => props.scanMetrics?.city || "Azcapotzalco")
+const region = computed(() => props.scanMetrics?.region || "CDMX")
+const country = computed(() => props.scanMetrics?.country || "México")
 </script>
 
 <template>
   <li class="group relative flex items-center justify-between
            bg-white/5 border border-white/5 rounded-xl px-3 py-2
-           hover:bg-white/10 transition-all">
+           hover:bg-white/10 transition-colors duration-100 ease-out">
 
     <!-- LEFT: Icon + Location -->
     <div class="flex items-center gap-3 min-w-0">
@@ -50,11 +42,11 @@ const displayData = computed(() => {
 
       <div class="flex flex-col leading-tight min-w-0">
         <span class="text-white text-xs font-semibold truncate">
-          {{ displayData.city }}
+          {{ city }}
         </span>
 
         <span class="text-white/40 text-[10px] truncate">
-          {{ displayData.region }}, {{ displayData.country }}
+          {{ region }}, {{ country }}
         </span>
       </div>
     </div>
@@ -62,7 +54,7 @@ const displayData = computed(() => {
     <!-- RIGHT: Date -->
     <div class="text-right shrink-0">
       <span class="text-[10px] text-white/70 font-mono leading-tight">
-        {{ displayData.date }}
+        {{ date }}
       </span>
     </div>
 

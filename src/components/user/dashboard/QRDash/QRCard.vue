@@ -300,7 +300,7 @@ onUnmounted(() => {
       <h5 class="text-on-surface text-xs  m-0 font-poppins tracking-tight my-0.5">Registros de escaneos</h5>
       <TransitionGroup name="list" tag="ul"
         class="flex flex-col space-y-3 overflow-y-auto max-h-[200px] hide-scrollbar overflow-x-hidden rounded-t-2xl rounded-b-lg bg-[#080a1e] py-0.5">
-        <QRCardLog v-for="e in qrLogs" :key="e.id" :scanDate="e.scanDate" :scanMetrics="e.scanMetrics" />
+        <QRCardLog v-for="e in qrLogs.slice(0, 4)" :key="e.id" :scanDate="e.scanDate" :scanMetrics="e.scanMetrics" />
       </TransitionGroup>
 
 
