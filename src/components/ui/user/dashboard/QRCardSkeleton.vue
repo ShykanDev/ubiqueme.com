@@ -18,7 +18,7 @@
 
       <!-- Activity Pill Skeleton -->
       <div class="flex items-center mb-6 px-1 h-8">
-        <div class="w-full h-[1px] bg-white/5"></div>
+        <div class="w-full h-px bg-white/5"></div>
         <div class="absolute z-10 w-48 h-6 bg-white/5 border border-white/10 rounded-full skeleton-item"></div>
       </div>
 

@@ -256,7 +256,7 @@ onUnmounted(() => {
 
 <template>
   <div
-    class="relative w-full max-w-[380px] bg-[#000000]/20 rounded-[24px] border border-white/5 overflow-hidden transition-all duration-300 hover:border-white/10 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)] hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.6)] will-change-transform">
+    class="relative w-full max-w-[380px] bg-[#000000]/20 rounded-[24px] border border-white/5 overflow-hidden transition-all duration-300 hover:border-white/10 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)] hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.6)] will-change-transform font-google-sans">
     <section v-if="isLoading" class="absolute inset-0 bg-black/80 flex items-center justify-center z-50">
       <CloudLoader></CloudLoader>
     </section>
@@ -268,7 +268,6 @@ onUnmounted(() => {
         <div class="flex flex-col gap-1">
           <h3 class="text-white text-lg font-semibold m-0 tracking-tight">{{ propsComputed.name }}</h3>
           <span class="text-xs text-slate-400 font-mono">ID: {{ propsComputed.id }}</span>
-          <span class="text-xs text-slate-400 font-mono">Load Count: {{ loadCount }}</span>
         </div>
 
         <div
@@ -282,14 +281,14 @@ onUnmounted(() => {
       <div
         class="flex items-center justify-between bg-white/5 p-4 rounded-2xl mb-6 border border-white/5 overflow-hidden">
         <div class="flex flex-col gap-1">
-          <span class="text-[0.7rem] text-slate-400 uppercase tracking-wider">Escaneos</span>
+          <span class="text-[0.7rem] text-slate-400 tracking-wider">Escaneos Totales</span>
           <span :key="qrStatus.totalScans" class="text-white font-semibold text-base"
             :class="{ 'animate-fade-up animate-delay-[500]': loadCount > 1 }">{{
               qrStatus.totalScans }}</span>
         </div>
         <div class="w-px h-6 bg-white/10"></div>
         <div class="flex flex-col gap-1 text-right">
-          <span class="text-[0.7rem] text-slate-400 uppercase tracking-wider">Último uso</span>
+          <span class="text-[0.7rem] text-slate-400 tracking-wider">Último escaneo</span>
           <span :key="qrStatus.lastScan?.seconds || 'none'"
             :class="{ 'animate-fade-up animate-delay-700': loadCount > 1 }"
             class="text-white font-semibold text-base">{{ timestampToDate()
@@ -298,11 +297,10 @@ onUnmounted(() => {
       </div>
 
       <!-- Logs -->
-
-      <TransitionGroup name="list" tag="section"
-        class="flex flex-col space-y-3 overflow-y-auto max-h-[200px] hide-scrollbar overflow-x-hidden">
-        <QRCardLog v-for="(e, i) in qrLogs.sort((a, b) => b.scanDate.toMillis() - a.scanDate.toMillis())" :key="i"
-          :scanDate="e.scanDate" :scanMetrics="e.scanMetrics" />
+      <h5 class="text-on-surface text-xs  m-0 font-poppins tracking-tight my-0.5">Registros de escaneos</h5>
+      <TransitionGroup name="list" tag="ul"
+        class="flex flex-col space-y-3 overflow-y-auto max-h-[200px] hide-scrollbar overflow-x-hidden rounded-t-2xl rounded-b-lg bg-[#080a1e] py-0.5">
+        <QRCardLog v-for="e in qrLogs" :key="e.id" :scanDate="e.scanDate" :scanMetrics="e.scanMetrics" />
       </TransitionGroup>
 
 

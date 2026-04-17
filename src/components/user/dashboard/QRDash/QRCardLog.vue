@@ -38,7 +38,7 @@ const displayData = computed(() => {
 </script>
 
 <template>
-  <div class="group relative flex items-center justify-between
+  <li class="group relative flex items-center justify-between
            bg-white/5 border border-white/5 rounded-xl px-3 py-2
            hover:bg-white/10 transition-all">
 
@@ -66,26 +66,5 @@ const displayData = computed(() => {
       </span>
     </div>
 
-  </div>
+  </li>
 </template>
-
-<style scoped>
-.list-move,
-/* apply transition to moving elements */
-.list-enter-active,
-.list-leave-active {
-  transition: all 0.5s ease;
-}
-
-.list-enter-from,
-.list-leave-to {
-  opacity: 0;
-  transform: translateX(30px);
-}
-
-/* ensure leaving items are taken out of layout flow so that moving
-   animations can be calculated correctly. */
-.list-leave-active {
-  position: absolute;
-}
-</style>
