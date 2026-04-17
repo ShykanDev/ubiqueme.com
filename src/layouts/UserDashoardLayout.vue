@@ -3,17 +3,17 @@ import { RouterLink } from 'vue-router'
 
 const navLinks = [
   {
-    name: 'Dashboard',
+    name: 'Inicio',
     pathName: 'dashboard',
     href: '/dashboard',
   },
   {
-    name: 'Mis QR',
+    name: 'Mis Códigos',
     pathName: '',
     href: '#',
   },
   {
-    name: 'Notificaciones',
+    name: 'Avisos',
     pathName: 'home',
     href: '#',
   },
@@ -58,9 +58,9 @@ const navLinks = [
           </router-link>
           <router-link
             :to="{ name: 'register' }"
-            class="bg-sky-400 text-on-primary-fixed px-6 py-2.5 rounded-full text-sm font-bold hover:opacity-80 active:scale-95 transition-all"
+            class="bg-sky-400 text-on-primary-fixed px-6 py-2.5 rounded-full text-sm font-bold hover:opacity-80 active:scale-95 transition-all font-google-sans"
           >
-            Obtener QR
+            Nuevo Registro
           </router-link>
         </div>
       </div>

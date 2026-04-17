@@ -33,7 +33,7 @@ const submitForm = () => {
     <div class="mb-6">
       <h2 class="text-2xl font-bold text-white mb-1">Soporte técnico</h2>
       <p class="text-sm text-gray-400">
-        ¿Tienes algún problema? Envíanos un correo y te ayudaremos lo antes posible.
+        ¿Tiene algún problema? Envíenos un correo y le ayudaremos lo antes posible.
       </p>
     </div>
 
@@ -64,7 +64,7 @@ const submitForm = () => {
           </svg>
         </div>
         <h3 class="text-white text-lg font-semibold mb-1">¡Mensaje enviado exitosamente!</h3>
-        <p class="text-gray-400 text-sm">Nuestro equipo te responderá a tu correo en breve.</p>
+        <p class="text-gray-400 text-sm">Nuestro equipo le responderá a su correo en breve.</p>
       </div>
 
       <form @submit.prevent="submitForm" class="space-y-5 relative">
@@ -111,7 +111,7 @@ const submitForm = () => {
             required
             rows="5"
             class="w-full bg-[#0F1222] border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-blue-500 transition-colors resize-none"
-            placeholder="Describe tu problema con detalle para que podamos ayudarte de la mejor manera..."
+            placeholder="Describa su problema con detalle para que podamos ayudarle de la mejor manera..."
           ></textarea>
         </div>
 
@@ -161,7 +161,7 @@ const submitForm = () => {
           d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
         />
       </svg>
-      También puedes escribirnos enviando un correo directo a:
+      También puede escribirnos enviando un correo directo a:
       <a href="mailto:soporte@ubiqueme.com" class="text-blue-400 hover:underline"
         >soporte@ubiqueme.com</a
       >

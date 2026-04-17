@@ -32,7 +32,7 @@ const country = computed(() => props.scanMetrics?.country || "México")
 <template>
   <li class="group relative flex items-center justify-between
            bg-white/5 border border-white/5 rounded-xl px-3 py-2
-           hover:bg-white/10 transition-colors duration-100 ease-out">
+           hover:bg-white/10 transition-colors duration-100 ease-out font-google-sans">
 
     <!-- LEFT: Icon + Location -->
     <div class="flex items-center gap-3 min-w-0">

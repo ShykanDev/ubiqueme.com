@@ -21,7 +21,7 @@ const settings = ref({
   <div class="w-full max-w-7xl mx-auto font-google-sans">
     <div class="mb-6">
       <h2 class="text-2xl font-bold text-white mb-1">Configuración</h2>
-      <p class="text-sm text-gray-400">Administra tu cuenta, notificaciones y seguridad.</p>
+      <p class="text-sm text-gray-400">Administre su cuenta, notificaciones y seguridad.</p>
     </div>
 
     <div class="space-y-6">

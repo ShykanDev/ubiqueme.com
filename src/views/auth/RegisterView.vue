@@ -22,8 +22,8 @@
 
             <div class="space-y-6">
               <h1 class="text-6xl lg:text-8xl font-black text-white leading-[0.9] tracking-tighter">
-                JOIN THE<br />
-                <span class="text-primary">NETWORK.</span>
+                ÚNASE A LA<br />
+                <span class="text-primary uppercase">Comunidad.</span>
               </h1>
               <p class="text-white/40 text-lg font-medium leading-relaxed max-w-sm">
                 Empieza a proteger tus pertenencias y comunicaciones con el estándar de seguridad de Ubiqueme.
@@ -33,11 +33,11 @@
             <div class="grid grid-cols-2 gap-4 max-w-sm">
                <div class="p-4 bg-white/[0.03] border border-white/10 rounded-2xl">
                   <span class="material-symbols-outlined text-primary mb-2">shield_check</span>
-                  <p class="text-[10px] font-black text-white/50 uppercase tracking-widest">End-to-End Encryption</p>
+                  <p class="text-[10px] font-black text-white/50 uppercase tracking-widest">Protección Total</p>
                </div>
                <div class="p-4 bg-white/[0.03] border border-white/10 rounded-2xl">
                   <span class="material-symbols-outlined text-primary mb-2">bolt</span>
-                  <p class="text-[10px] font-black text-white/50 uppercase tracking-widest">Instant Verification</p>
+                  <p class="text-[10px] font-black text-white/50 uppercase tracking-widest">Aviso al Instante</p>
                </div>
             </div>
           </div>
@@ -55,8 +55,8 @@
             </div>
 
             <header class="space-y-2">
-              <h2 class="text-3xl font-black text-white tracking-tight">Cree su cuenta</h2>
-              <p class="text-white/40 text-sm font-medium">Inicie su protocolo de protección digital.</p>
+              <h2 class="text-3xl font-black text-white tracking-tight">Crea tu cuenta</h2>
+              <p class="text-white/40 text-sm font-medium">Comienza a proteger tus pertenencias hoy mismo.</p>
             </header>
 
             <form @submit.prevent="handleRegister" class="space-y-5">
@@ -67,14 +67,14 @@
               </div>
 
               <div class="space-y-2">
-                <label class="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] ml-1">Email / Nodo</label>
+                <label class="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] ml-1">Correo Electrónico</label>
                 <input id="email" v-model="form.email" type="email" placeholder="nombre@dominio.com"
                   class="w-full px-5 py-4 bg-white/[0.03] border border-white/10 rounded-2xl text-white placeholder:text-white/20 focus:border-primary focus:outline-none focus:bg-white/[0.05] transition-all" />
               </div>
 
               <div class="grid grid-cols-2 gap-4">
                 <div class="space-y-2">
-                  <label class="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] ml-1">Password</label>
+                  <label class="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] ml-1">Contraseña</label>
                   <input id="password" v-model="form.password" type="password" placeholder="••••••••"
                     class="w-full px-5 py-4 bg-white/[0.03] border border-white/10 rounded-2xl text-white placeholder:text-white/20 focus:border-primary focus:outline-none transition-all" />
                 </div>
@@ -95,15 +95,15 @@
 
               <button type="submit"
                 class="group w-full h-16 bg-white text-black rounded-2xl font-black text-lg transition-all duration-300 hover:bg-primary active:scale-[0.98] flex items-center justify-center gap-3">
-                <span>Inicializar</span>
-                <span class="material-symbols-outlined font-black transition-transform group-hover:translate-x-1">person_add</span>
+                <span>Registrarme</span>
+                <span class="material-symbols-outlined font-black transition-transform group-hover:translate-x-1">app_registration</span>
               </button>
             </form>
 
             <p class="text-center text-white/30 text-xs font-medium">
               ¿Ya es parte de la red?
               <RouterLink to="/login" class="text-primary font-black hover:text-white ml-2 transition-colors">
-                ACCEDER</RouterLink>
+                INICIAR SESIÓN</RouterLink>
             </p>
           </div>
         </div>

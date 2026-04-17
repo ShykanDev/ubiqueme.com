@@ -23,7 +23,7 @@ const notifications = ref<INotification[]>([
     id: 2,
     type: 'system',
     title: 'Actualización del sistema',
-    message: 'Hemos actualizado nuestros servidores para mejorar la velocidad de carga de tus QR.',
+    message: 'Hemos actualizado nuestros servidores para mejorar la velocidad de carga de sus códigos QR.',
     date: 'Hace 2 horas',
     read: false,
   },
@@ -31,7 +31,7 @@ const notifications = ref<INotification[]>([
     id: 3,
     type: 'billing',
     title: 'Renovación exitosa',
-    message: 'Tu código QR "Tarjeta Personal" ha sido renovado exitosamente por 1 mes.',
+    message: 'Su código QR "Tarjeta Personal" ha sido renovado exitosamente por 1 mes.',
     date: 'Ayer',
     read: true,
   },
@@ -64,7 +64,7 @@ const getIconColor = (type: string) => {
     <div class="mb-6 flex justify-between items-center">
       <div>
         <h2 class="text-2xl font-bold text-white mb-1">Notificaciones</h2>
-        <p class="text-sm text-gray-400">Mantente al tanto de la actividad de tus códigos QR.</p>
+        <p class="text-sm text-gray-400">Manténgase al tanto de la actividad de sus códigos QR.</p>
       </div>
       <button
         class="text-sm px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-white transition cursor-pointer border border-white/5"

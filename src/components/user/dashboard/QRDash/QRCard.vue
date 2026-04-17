@@ -224,16 +224,28 @@ interface IQRLog {
 }
 
 const qrLogs = ref<IQRLog[]>([]);
+const logsLoaded = ref(false);
+const isLogsLoading = ref(false);
 
-const qrsLogsRef = collection(db, `publicQR/${props.id}/logs`);
-const queryLogs = query(qrsLogsRef, orderBy("scanDate", "desc"));
 let unsubscribeLogs: Unsubscribe;
-onMounted(() => {
+
+const loadLogs = () => {
+  if (logsLoaded.value) return;
+  
+  isLogsLoading.value = true;
+  const qrsLogsRef = collection(db, `publicQR/${props.id}/logs`);
+  const queryLogs = query(qrsLogsRef, orderBy("scanDate", "desc"));
+  
   unsubscribeLogs = onSnapshot(queryLogs, (querySnapshot) => {
+    isLogsLoading.value = false;
+    logsLoaded.value = true;
+    
     if (querySnapshot.empty) {
       console.log(`QR logs empty`);
+      qrLogs.value = [];
       return;
     }
+    
     qrLogs.value = querySnapshot.docs.map(doc => ({
       id: doc.id,
       scanDate: doc.data().scanDate,
@@ -241,12 +253,11 @@ onMounted(() => {
     }));
     console.log(`QR logs updated`)
     loadCount.value++;
-  }
-    , (error) => {
-      console.log(`Error while trying to get data: ${error}`);
-    }
-  )
-})
+  }, (error) => {
+    isLogsLoading.value = false;
+    console.log(`Error while trying to get data: ${error}`);
+  });
+}
 
 onUnmounted(() => {
   if (unsubscribeLogs) unsubscribeLogs();
@@ -296,12 +307,29 @@ onUnmounted(() => {
         </div>
       </div>
 
-      <!-- Logs -->
-      <h5 class="text-on-surface text-xs  m-0 font-poppins tracking-tight my-0.5">Registros de escaneos</h5>
-      <TransitionGroup name="list" tag="ul"
-        class="flex flex-col space-y-3 overflow-y-auto max-h-[200px] hide-scrollbar overflow-x-hidden rounded-t-2xl rounded-b-lg bg-[#080a1e] py-0.5">
-        <QRCardLog v-for="e in qrLogs.slice(0, 4)" :key="e.id" :scanDate="e.scanDate" :scanMetrics="e.scanMetrics" />
-      </TransitionGroup>
+      <!-- Logs Section -->
+      <div class="space-y-3 mb-6">
+        <div class="flex items-center justify-between mb-2">
+          <h5 class="text-white/40 text-[10px] font-black uppercase tracking-[0.2em] m-0 font-google-sans">Historial de Actividad</h5>
+          <button v-if="!logsLoaded && !isLogsLoading" @click="loadLogs" 
+            class="text-[10px] text-primary font-bold uppercase tracking-wider hover:underline transition-all mt-0.5 font-google-sans">
+            Mostrar registros
+          </button>
+        </div>
+
+        <div v-if="isLogsLoading" class="flex items-center justify-center py-4">
+           <div class="w-4 h-4 border-2 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+        </div>
+
+        <TransitionGroup v-else name="list" tag="ul"
+          class="flex flex-col space-y-3 overflow-y-auto max-h-[180px] hide-scrollbar overflow-x-hidden rounded-t-2xl rounded-b-lg bg-white/[0.02] py-1 px-1">
+          <QRCardLog v-for="e in qrLogs.slice(0, 4)" :key="e.id" :scanDate="e.scanDate" :scanMetrics="e.scanMetrics" />
+        </TransitionGroup>
+        
+        <p v-if="logsLoaded && qrLogs.length === 0" class="text-center text-[10px] text-white/20 italic py-2 font-google-sans">
+          Aún no se ha detectado actividad
+        </p>
+      </div>
 
 
       <!-- QR Code -->

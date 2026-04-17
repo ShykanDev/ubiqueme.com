@@ -126,7 +126,7 @@ onUnmounted(() => {
         <button
           class="w-full md:w-auto flex items-center justify-center gap-3 px-8 py-4 rounded-xl bg-white text-black font-black uppercase tracking-widest text-xs shadow-xl hover:bg-primary transition-all active:scale-95">
           <span class="material-symbols-outlined font-black">add</span>
-          Vincular Nuevo Nodo
+          Vincular Nuevo Código
         </button>
       </div>
 
@@ -148,7 +148,7 @@ onUnmounted(() => {
           <div v-else-if="noQRsFound" key="empty"
             class="flex flex-col items-center justify-center py-20 text-center absolute inset-0 w-full">
             <span class="material-symbols-outlined text-6xl text-slate-500 mb-4">qr_code_2</span>
-            <h3 class="text-xl font-semibold text-white mb-2">No tienes QRs todavía</h3>
+            <h3 class="text-xl font-semibold text-white mb-2">Aún no tiene códigos QR registrados</h3>
             <p class="text-slate-400">¡Cree su primer código QR para empezar!</p>
           </div>
         </Transition>

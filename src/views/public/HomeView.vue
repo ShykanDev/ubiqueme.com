@@ -26,34 +26,34 @@ import HomeLayout from '@/layouts/HomeLayout.vue'
             <div class="space-y-10">
               <div class="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 rounded-lg border border-primary/20">
                 <span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
-                <span class="text-[9px] font-black uppercase tracking-[0.4em] text-primary">Protocolo de Notificación Activo</span>
+                <span class="text-[9px] font-black uppercase tracking-[0.4em] text-primary">Sistema de Notificación Activo</span>
               </div>
 
               <h1 class="text-6xl lg:text-9xl font-black text-white leading-[0.85] tracking-[ -0.05em] uppercase">
-                SECURE<br />
-                <span class="text-primary">ALERTS.</span>
+                ALERTAS<br />
+                <span class="text-primary">SEGURAS.</span>
               </h1>
 
               <div class="text-white/40 text-xl font-medium leading-relaxed max-w-lg">
-                Mantén tus pertenencias localizables. Recibe alertas instantáneas de tu 
+                Mantenga sus pertenencias localizables. Reciba alertas instantáneas de su 
                 <span class="text-white font-black italic">automóvil, bicicleta o equipaje</span>
-                sin exponer un solo dato personal.
+                sin exponer un solo dato de su información personal.
               </div>
 
               <div class="flex flex-wrap gap-4">
-                <button class="px-10 py-5 bg-white text-black font-black uppercase tracking-widest text-sm rounded-2xl transition-all duration-300 hover:bg-primary hover:text-black active:scale-95 shadow-2xl">
-                  CREAR MI QR
+                <button class="px-10 py-5 bg-white text-black font-black uppercase tracking-widest text-sm rounded-2xl transition-all duration-300 hover:bg-primary hover:text-black active:scale-95 shadow-2xl font-google-sans">
+                  GENERAR MI CÓDIGO
                 </button>
-                <button class="px-10 py-5 bg-white/5 border border-white/10 text-white font-black uppercase tracking-widest text-sm rounded-2xl hover:bg-white/10 transition-all">
-                  LOGIN
+                <button class="px-10 py-5 bg-white/5 border border-white/10 text-white font-black uppercase tracking-widest text-sm rounded-2xl hover:bg-white/10 transition-all font-google-sans">
+                  ENTRAR
                 </button>
               </div>
 
               <!-- TECH STACK BADGES -->
               <div class="flex items-center gap-8 pt-8 opacity-20 filter grayscale">
-                 <span class="text-[10px] font-black tracking-widest uppercase">Encryption P2P</span>
-                 <span class="text-[10px] font-black tracking-widest uppercase">Privacy Mode</span>
-                 <span class="text-[10px] font-black tracking-widest uppercase">Instant Relay</span>
+                  <span class="text-[10px] font-black tracking-widest uppercase">Encriptación P2P</span>
+                  <span class="text-[10px] font-black tracking-widest uppercase">Privacidad Total</span>
+                  <span class="text-[10px] font-black tracking-widest uppercase">Aviso Inmediato</span>
               </div>
             </div>
 
@@ -74,8 +74,8 @@ import HomeLayout from '@/layouts/HomeLayout.vue'
                 <!-- OVERLAY CARD -->
                 <div class="absolute bottom-8 left-8 right-8 z-20 p-6 bg-white/[0.1] border border-white/10 rounded-2xl flex items-center justify-between">
                    <div class="space-y-1">
-                      <p class="text-[10px] font-black text-primary uppercase tracking-widest">Estado de Conexión</p>
-                      <p class="text-white font-bold">Protocolo Encriptado</p>
+                      <p class="text-[10px] font-black text-primary uppercase tracking-widest">Estado del Servicio</p>
+                      <p class="text-white font-bold">Conexión Protegida</p>
                    </div>
                    <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-black">
                       <span class="material-symbols-outlined text-sm font-bold">verified</span>

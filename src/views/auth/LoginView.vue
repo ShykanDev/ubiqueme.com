@@ -25,7 +25,7 @@
 
             <div class="max-w-md space-y-6">
               <p class="text-white/40 text-lg font-medium leading-relaxed">
-                Ingresa a la infraestructura de Ubiqueme para gestionar tus identidades digitales protegidas.
+                Ingresa a tu cuenta de Ubiqueme para gestionar tus códigos QR y protegidos.
               </p>
               
               <div class="flex gap-4 items-center pt-4">
@@ -69,7 +69,7 @@
 
             <form @submit.prevent="handleLogin" class="space-y-6">
               <div class="space-y-2">
-                <label class="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] ml-1">Email / Servidor</label>
+                <label class="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] ml-1">Correo Electrónico</label>
                 <div class="group relative">
                   <input id="email" v-model="form.email" type="email" placeholder="nombre@dominio.com"
                     class="w-full px-5 py-4 bg-white/[0.03] border border-white/10 rounded-2xl text-white placeholder:text-white/20 focus:border-primary focus:outline-none focus:bg-white/[0.05] transition-all" />
@@ -78,8 +78,8 @@
 
               <div class="space-y-2">
                 <div class="flex justify-between items-center px-1">
-                  <label class="text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">Llave Privada</label>
-                  <a href="#" class="text-[10px] font-black text-primary hover:text-white uppercase tracking-widest">Reset</a>
+                  <label class="text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">Contraseña</label>
+                  <a href="#" class="text-[10px] font-black text-primary hover:text-white uppercase tracking-widest">Recuperar</a>
                 </div>
                 <div class="group relative">
                   <input id="password" v-model="form.password" :type="showPassword ? 'text' : 'password'"
@@ -94,8 +94,8 @@
 
               <button type="submit"
                 class="group w-full h-16 bg-white text-black rounded-2xl font-black text-lg transition-all duration-300 hover:bg-primary active:scale-[0.98] flex items-center justify-center gap-3">
-                <span>Acceso</span>
-                <span class="material-symbols-outlined font-black transition-transform group-hover:translate-x-1">arrow_forward</span>
+                <span>Entrar</span>
+                <span class="material-symbols-outlined font-black transition-transform group-hover:translate-x-1">login</span>
               </button>
             </form>
 
@@ -104,7 +104,7 @@
                 <div class="w-full border-t border-white/5"></div>
               </div>
               <div class="relative flex justify-center">
-                <span class="bg-[#070b14] px-4 text-[9px] font-black text-white/20 uppercase tracking-[0.3em]">OR CONNECT</span>
+                <span class="bg-[#070b14] px-4 text-[9px] font-black text-white/20 uppercase tracking-[0.3em]">O CONECTAR CON</span>
               </div>
             </div>
 
@@ -116,13 +116,13 @@
                 <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#fff" opacity="0.4" />
                 <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#fff" opacity="0.8" />
               </svg>
-              Google Account
+              Cuenta de Google
             </button>
 
             <p class="text-center text-white/30 text-xs font-medium">
               ¿Sin credenciales todavía?
               <RouterLink to="/register" class="text-primary font-black hover:text-white ml-2 transition-colors">
-                SOLICITAR ACCESO</RouterLink>
+                CREAR CUENTA</RouterLink>
             </p>
           </div>
         </div>
