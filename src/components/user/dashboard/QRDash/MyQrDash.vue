@@ -3,6 +3,7 @@ import { useUserStore } from '@/stores/user'
 import QRCard from './QRCard.vue'
 import { onMounted, onUnmounted, ref } from 'vue'
 import { collection, getFirestore, onSnapshot, Timestamp } from 'firebase/firestore'
+import QRCardSkeleton from '@/components/ui/user/dashboard/QRCardSkeleton.vue'
 
 type TStatus = 'Active' | 'Canceled' | 'Process' | 'Error'
 
@@ -50,7 +51,8 @@ const userQRsDemo: IMyQR[] = [
 ]
 const userQRs = ref<IMyQR[]>([])
 const userStore = useUserStore()
-
+const isLoading = ref(true);
+const noQRsFound = ref(false);
 //Firebase data
 const db = getFirestore();
 const userId = userStore.getUserId ?? '';
@@ -65,6 +67,8 @@ onMounted(() => {
   unsub = onSnapshot(userQrsCollection, (snapshot) => {
     if (snapshot.empty) {
       console.log('No Qrs were found');
+      noQRsFound.value = true;
+      isLoading.value = false;
       return;
     }
     userQRs.value = [];
@@ -74,16 +78,22 @@ onMounted(() => {
         ...doc.data()
       } as IMyQR);
     })
+    noQRsFound.value = false;
+    setTimeout(() => {
+      isLoading.value = false;
+    }, 600);
   },
     (error) => {
       console.log('Error while getting data', error);
+      isLoading.value = false;
     }
   )
 
 })
 
 onUnmounted(() => {
-  unsub && unsub();
+  if (unsub) unsub();
+  isLoading.value = true;
 })
 
 
@@ -107,27 +117,54 @@ onUnmounted(() => {
 
     <!-- Content Section -->
     <div class="space-y-10">
-      <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 pb-6 border-b border-white/5">
+      <div
+        class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 pb-6 border-b border-white border-dotted">
         <div>
           <p class="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] mb-1">Visión General</p>
           <h2 class="text-2xl font-black text-white tracking-tight uppercase">Mis Registros</h2>
         </div>
         <button
-          class="w-full md:w-auto flex items-center justify-center gap-3 px-8 py-4 rounded-xl bg-white text-black font-black uppercase tracking-widest text-xs shadow-xl hover:bg-primary transition-all active:scale-95"
-        >
+          class="w-full md:w-auto flex items-center justify-center gap-3 px-8 py-4 rounded-xl bg-white text-black font-black uppercase tracking-widest text-xs shadow-xl hover:bg-primary transition-all active:scale-95">
           <span class="material-symbols-outlined font-black">add</span>
           Vincular Nuevo Nodo
         </button>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
-        <QRCard v-for="qr in userQRs" :key="qr.id" :id="qr.id" :name="qr.name" :status="qr.status" :scans="qr.scans"
-          :lastScan="qr.lastScan" :docId="qr.docId" :link="qr.link" :isActive="qr.isActive" :isBanned="qr.isBanned"
-          :banReason="qr.banReason" :planPurchasedAt="qr.planPurchasedAt" :planEndDate="qr.planEndDate"
-          :createdAt="qr.createdAt" />
+      <div class="relative min-h-[400px]">
+        <Transition name="fade">
+          <div v-if="isLoading" key="loading"
+            class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 absolute inset-0 w-full z-10">
+            <QRCardSkeleton v-for="(_, i) in 3" :key="i" />
+          </div>
+
+          <div v-else-if="userQRs.length > 0" key="content"
+            class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 relative z-0">
+            <QRCard v-for="qr in userQRs" :key="qr.id" :id="qr.id" :name="qr.name" :status="qr.status" :scans="qr.scans"
+              :lastScan="qr.lastScan" :docId="qr.docId" :link="qr.link" :isActive="qr.isActive" :isBanned="qr.isBanned"
+              :banReason="qr.banReason" :planPurchasedAt="qr.planPurchasedAt" :planEndDate="qr.planEndDate"
+              :createdAt="qr.createdAt" />
+          </div>
+
+          <div v-else-if="noQRsFound" key="empty"
+            class="flex flex-col items-center justify-center py-20 text-center absolute inset-0 w-full">
+            <span class="material-symbols-outlined text-6xl text-slate-500 mb-4">qr_code_2</span>
+            <h3 class="text-xl font-semibold text-white mb-2">No tienes QRs todavía</h3>
+            <p class="text-slate-400">¡Cree su primer código QR para empezar!</p>
+          </div>
+        </Transition>
       </div>
     </div>
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.4s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+</style>

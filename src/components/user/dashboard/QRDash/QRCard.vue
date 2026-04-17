@@ -129,6 +129,7 @@ const handleEdit = async () => {
 }
 
 const _setQrPublic = async () => {
+  showMenu.value = false;
   try {
     isLoading.value = true;
     const batch = writeBatch(db);
@@ -158,6 +159,7 @@ const _setQrPublic = async () => {
 }
 
 const _setQrPrivate = async () => {
+  showMenu.value = false;
   try {
     isLoading.value = true;
     const batch = writeBatch(db);
@@ -186,6 +188,9 @@ const qrStatus = reactive({
   lastScan: Timestamp.now() ?? 'No se ha escaneado aún',
 })
 
+const loadCount = ref(0);
+
+
 onMounted(() => {
   unsubscribe = onSnapshot(doc(db, 'publicQR', props.id), (docSnapshot) => {
     if (!docSnapshot.exists()) {
@@ -196,7 +201,8 @@ onMounted(() => {
     }
     qrStatus.totalScans = docSnapshot.data().totalScans ?? 0;
     qrStatus.lastScan = docSnapshot.data().lastScan ?? 'No se ha escaneado aún';
-    console.log(`QR status updated`);
+    console.log(`QR status updated`)
+    loadCount.value++;
   }
     , (error) => {
       console.log(`Error while trying to get data: ${error}`);
@@ -207,6 +213,19 @@ onMounted(() => {
 onUnmounted(() => {
   if (unsubscribe) unsubscribe();
 })
+
+const timestampToDate = (): string => {
+  try {
+    if (qrStatus.lastScan instanceof Timestamp) {
+      return qrStatus.lastScan.toDate().toLocaleString('es-MX');
+    }
+    return 'No se ha escaneado aún';
+  } catch (error) {
+    console.log(`Error while trying to convert timestamp to date`, error);
+    return 'No se ha escaneado aún';
+  }
+}
+
 
 
 </script>
@@ -225,6 +244,7 @@ onUnmounted(() => {
         <div class="flex flex-col gap-1">
           <h3 class="text-white text-lg font-semibold m-0 tracking-tight">{{ propsComputed.name }}</h3>
           <span class="text-xs text-slate-400 font-mono">ID: {{ propsComputed.id }}</span>
+          <span class="text-xs text-slate-400 font-mono">Load Count: {{ loadCount }}</span>
         </div>
 
         <div
@@ -240,15 +260,16 @@ onUnmounted(() => {
         class="flex items-center justify-between bg-white/5 p-4 rounded-2xl mb-6 border border-white/5 overflow-hidden">
         <div class="flex flex-col gap-1">
           <span class="text-[0.7rem] text-slate-400 uppercase tracking-wider">Escaneos</span>
-          <span :key="qrStatus.totalScans" class="text-white font-semibold text-base animate-fade-up">{{
-            qrStatus.totalScans }}</span>
+          <span :key="qrStatus.totalScans" class="text-white font-semibold text-base"
+            :class="{ 'animate-fade-up animate-delay-[500]': loadCount > 1 }">{{
+              qrStatus.totalScans }}</span>
         </div>
         <div class="w-px h-6 bg-white/10"></div>
         <div class="flex flex-col gap-1 text-right">
           <span class="text-[0.7rem] text-slate-400 uppercase tracking-wider">Último uso</span>
-          <span :key="qrStatus.lastScan.seconds"
-            class="text-white font-semibold text-base animate-fade-up animate-delay-500">{{ new
-              Date(qrStatus.lastScan.seconds * 1000).toLocaleString('es-MX') }}</span>
+          <span :key="qrStatus.lastScan.seconds" :class="{ 'animate-fade-up animate-delay-700': loadCount > 1 }"
+            class="text-white font-semibold text-base">{{ timestampToDate()
+            }}</span>
         </div>
       </div>
 
@@ -260,23 +281,7 @@ onUnmounted(() => {
       </section>
 
       <!-- Actions Footer -->
-      <div class="flex items-center gap-3 justify-center">
-        <!-- PUBLIC -->
-        <button @click="_setQrPublic"
-          class="group flex items-center gap-2 px-4 cursor-pointer py-2 rounded-xl text-sm font-medium text-blue-400 border border-blue-400/20 bg-blue-400/10 transition-all duration-300 hover:bg-blue-400/20 hover:shadow-[0_0_12px_rgba(59,130,246,0.8),0_0_2px_rgba(59,130,246,0.5)]">
-          <span
-            class="material-symbols-outlined text-[18px] transition-transform duration-300 group-hover:scale-110">public</span>
-          Hacer Público
-        </button>
-
-        <!-- PRIVATE -->
-        <button @click="_setQrPrivate"
-          class="group cursor-pointer flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium text-pink-400 border border-pink-400/20 bg-pink-400/10 transition-all duration-300 hover:-translate-y-0.5 hover:bg-pink-400/20 hover:shadow-[0_0_12px_rgba(236,72,153,0.8),0_0_2px_rgba(236,72,153,0.5)]">
-          <span
-            class="material-symbols-outlined text-[18px] transition-transform duration-300 group-hover:scale-110">visibility_off</span>
-          Hacer Privado
-        </button>
-
+      <div class="flex items-center justify-end">
         <!-- MENU -->
         <button @click="toggleMenu" :class="[
           'p-2 rounded-xl transition-all duration-300 border flex items-center justify-center',
@@ -296,7 +301,18 @@ onUnmounted(() => {
       leave-active-class="transition-all duration-200 ease-in" leave-from-class="opacity-100 translate-y-0 scale-100"
       leave-to-class="opacity-0 -translate-y-2 scale-95">
       <div v-if="showMenu"
-        class="absolute top-[340px] right-6 w-[200px] bg-[#1a1d35]/95 backdrop-blur-md border border-white/10 rounded-2xl p-2 z-[100] shadow-[0_20px_40px_rgba(0,0,0,0.4)]">
+        class="absolute bottom-[72px] right-6 w-[200px] bg-[#1a1d35]/95 backdrop-blur-md border border-white/10 rounded-2xl p-2 z-[100] shadow-[0_20px_40px_rgba(0,0,0,0.4)]">
+        <button @click="_setQrPublic"
+          class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl bg-transparent text-slate-200 text-sm hover:bg-white/5 transition-colors text-left">
+          <span class="material-symbols-outlined text-[18px]">public</span>
+          Hacer Público
+        </button>
+        <button @click="_setQrPrivate"
+          class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl bg-transparent text-slate-200 text-sm hover:bg-white/5 transition-colors text-left">
+          <span class="material-symbols-outlined text-[18px]">visibility_off</span>
+          Hacer Privado
+        </button>
+        <div class="h-[1px] bg-white/5 my-1.5"></div>
         <button @click="openPrompt('edit')"
           class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl bg-transparent text-slate-200 text-sm hover:bg-white/5 transition-colors text-left">
           <span class="material-symbols-outlined text-[18px]">edit</span>
