@@ -126,8 +126,8 @@ const handleGreeting = (): string => {
     <!-- Welcome Banner -->
     <div class="mb-12 flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
       <div>
-        <p class="text-primary font-bold tracking-[0.3em] text-[10px] uppercase mb-2">Resumen General</p>
-        <h2 class="text-3xl md:text-4xl font-black text-white tracking-tighter leading-none">
+        <p class="text-primary font-black tracking-[0.4em] text-[10px] uppercase mb-2">Resumen Operativo</p>
+        <h2 class="text-4xl md:text-6xl font-black text-white tracking-tighter leading-[0.9] uppercase italic">
           {{ handleGreeting() }}, {{ userStore.getFirstName || 'Usuario' }}
         </h2>
       </div>
@@ -139,7 +139,7 @@ const handleGreeting = (): string => {
     </div>
 
     <!-- Bento Grid Stats -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-20 animate-fade-in animate-duration-700">
       <VentoCard v-for="(card, index) in stats" :key="index" :icon="card.icon" :title="card.title"
         :value="card.value" :trendIcon="card.trendIcon" :trendText="card.trendText">
       </VentoCard>

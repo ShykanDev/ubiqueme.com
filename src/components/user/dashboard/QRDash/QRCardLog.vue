@@ -1,62 +1,73 @@
 <script lang="ts" setup>
-import type { Timestamp } from 'firebase/firestore'
+import type { IQRLog } from '@/interfaces/IPublicQR'
 import { computed } from 'vue'
 
-interface IQRCardLog {
-  scanDate?: Timestamp | null;
-  scanMetrics?: {
-    city: string;
-    country: string;
-    region: string;
-  } | null
-}
+const props = defineProps<IQRLog>()
 
-const props = defineProps<IQRCardLog>()
-
-const formatDate = (timestamp?: Timestamp | null) => {
+const formatDate = (timestamp?: any) => {
   if (!timestamp || typeof timestamp.toDate !== 'function') return '---'
-
   const d = timestamp.toDate()
-
-  return `${d.getDate().toString().padStart(2, '0')} ${d.toLocaleString('es-MX', { month: 'short' })
-    } ${d.getFullYear()} ${d.getHours()}:${d.getMinutes().toString().padStart(2, '0')}`
+  return `${d.getDate().toString().padStart(2, '0')} ${d.toLocaleString('es-MX', { month: 'short' })} ${d.getHours()}:${d.getMinutes().toString().padStart(2, '0')}`
 }
 
-const date = computed(() => formatDate(props.scanDate))
+const dateStr = computed(() => formatDate(props.scanDate))
 
-const city = computed(() => props.scanMetrics?.city || "Azcapotzalco")
-const region = computed(() => props.scanMetrics?.region || "CDMX")
-const country = computed(() => props.scanMetrics?.country || "México")
+const reasonMap: Record<string, { label: string, icon: string, color: string }> = {
+  emergency: { label: 'EMERGENCIA', icon: 'emergency', color: 'text-rose-500' },
+  communication: { label: 'CONTACTO', icon: 'chat', color: 'text-primary' },
+  informative: { label: 'INFO', icon: 'info', color: 'text-white/40' },
+  other: { label: 'PERSONALIZADO', icon: 'edit_note', color: 'text-white/60' }
+}
+
+const interactionDetail = computed(() => {
+  if (!props.interaction) return null
+  return reasonMap[props.interaction.reason] || { label: 'ESCANEADO', icon: 'visibility', color: 'text-white/40' }
+})
 </script>
 
 <template>
-  <li class="group relative flex items-center justify-between
-           bg-white/5 border border-white/5 rounded-xl px-3 py-2
-           hover:bg-white/10 transition-colors duration-100 ease-out font-google-sans">
-
-    <!-- LEFT: Icon + Location -->
-    <div class="flex items-center gap-3 min-w-0">
-      <div class="w-8 h-8 flex items-center justify-center rounded-lg bg-primary/10 border border-primary/20">
-        <span class="material-symbols-outlined text-[#d5d5d5] text-[16px]">location_on</span>
+  <li class="group relative bg-white/[0.03] border border-white/5 rounded-2xl p-4 transition-all duration-300 hover:bg-white/[0.06] hover:border-white/10 font-google-sans">
+    
+    <div class="flex gap-4">
+      <!-- 📸 IMAGE THUMBNAIL (Optional) -->
+      <div v-if="img" class="w-16 h-16 shrink-0 rounded-xl overflow-hidden border border-white/10 bg-black/40">
+        <img :src="img" alt="Log evidence" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
       </div>
 
-      <div class="flex flex-col leading-tight min-w-0">
-        <span class="text-white text-xs font-semibold truncate">
-          {{ city }}
-        </span>
+      <!-- 📝 CONTENT -->
+      <div class="flex-1 min-w-0 space-y-2">
+        <!-- Header Info -->
+        <div class="flex items-start justify-between gap-2">
+          <div class="flex flex-col">
+            <div v-if="interactionDetail" class="flex items-center gap-1.5 mb-1" :class="interactionDetail.color">
+              <span class="material-symbols-outlined text-[14px] font-black">{{ interactionDetail.icon }}</span>
+              <span class="text-[9px] font-black uppercase tracking-[0.2em]">{{ interactionDetail.label }}</span>
+            </div>
+            <span class="text-white/90 text-[11px] font-bold truncate">
+              {{ scanMetrics.city }}, {{ scanMetrics.country }}
+            </span>
+          </div>
+          <span class="text-[9px] text-white/30 font-black uppercase tracking-widest font-mono">
+            {{ dateStr }}
+          </span>
+        </div>
 
-        <span class="text-white/40 text-[10px] truncate">
-          {{ region }}, {{ country }}
-        </span>
+        <!-- Message -->
+        <div v-if="interaction?.message" class="bg-white/5 rounded-xl p-2 md:p-3 border border-white/5">
+          <p class="text-white/60 text-[10px] leading-relaxed italic line-clamp-2 group-hover:line-clamp-none transition-all">
+            "{{ interaction.message }}"
+          </p>
+        </div>
       </div>
     </div>
 
-    <!-- RIGHT: Date -->
-    <div class="text-right shrink-0">
-      <span class="text-[10px] text-white/70 font-mono leading-tight">
-        {{ date }}
-      </span>
-    </div>
-
+    <!-- Decorative Corner Glow (Emergency only) -->
+    <div v-if="interaction?.reason === 'emergency'" class="absolute top-0 right-0 w-12 h-12 bg-rose-500/10 blur-xl rounded-full opacity-50 pointer-events-none"></div>
   </li>
 </template>
+
+<style scoped>
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+</style>

@@ -11,4 +11,21 @@ export interface IPublicQR {
   isBanned: boolean
   banReason?: string
   docId?: string
+  img?: string
+}
+
+export interface IQRLog {
+  id: string
+  scanDate: Timestamp
+  scanMetrics: {
+    city: string
+    country: string
+    region: string
+  }
+  interaction?: {
+    reason: string
+    message?: string
+    type: string
+  }
+  img?: string
 }
