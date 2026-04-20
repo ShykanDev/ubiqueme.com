@@ -41,7 +41,7 @@ const openImage = (img: string) => {
   <li
     class="group relative  bg-white/3 border border-white/5 rounded-2xl p-4 transition-all duration-300 hover:bg-white/6 hover:border-white/10 font-google-sans">
 
-    <div class="flex gap-4">
+    <div class="flex gap-4 ">
       <!-- 📸 IMAGE THUMBNAIL (Optional) -->
       <div v-if="img" class="w-16 h-16 shrink-0 rounded-xl overflow-hidden border border-white/10 bg-black/40">
         <img :src="img" @click="openImage(img)" alt="Log evidence"
@@ -57,17 +57,24 @@ const openImage = (img: string) => {
               <span class="material-symbols-outlined text-[14px] font-black">{{ interactionDetail.icon }}</span>
               <span class="text-[9px] font-black uppercase tracking-[0.2em]">{{ interactionDetail.label }}</span>
             </div>
-            <span class="text-white/90 text-[11px] font-bold truncate">
-              {{ scanMetrics.city }}, {{ scanMetrics.country }}
-            </span>
+            <div class="flex gap-1 flex-col">
+              <small class="text-white/90 text-[11px] font-normal truncate font-poppins"><span
+                  class="font-bold font-google-sans">Fecha:</span> {{ dateStr }}</small>
+              <p class="text-white/90 text-[11px] font-normal truncate font-poppins"><span
+                  class="font-bold font-google-sans">Ciudad:</span>
+                {{ scanMetrics.city }},
+              </p>
+              <p class="text-white/90 text-[11px] font-normal truncate font-poppins">
+                <span class="font-bold font-google-sans">Pais:</span> {{ scanMetrics.country }}
+              </p>
+            </div>
           </div>
-          <span class="text-[9px] text-white/80  tracking-widest font-poppins">
-            {{ dateStr }}
-          </span>
+
         </div>
 
         <!-- Message -->
         <div v-if="interaction?.message" class="bg-white/5 rounded-xl p-2 md:p-3 border border-white/5">
+          <small class="text-white/90 text-[11px] font-normal truncate font-poppins">Mensaje:</small>
           <p
             class="text-white/60 text-[10px] leading-relaxed italic line-clamp-2 group-hover:line-clamp-none transition-all">
             "{{ interaction.message }}"
