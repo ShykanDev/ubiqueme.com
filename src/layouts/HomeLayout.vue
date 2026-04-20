@@ -2,34 +2,19 @@
 import { RouterLink } from 'vue-router'
 
 const navLinks = [
-  {
-    name: 'Inicio',
-    pathName: 'home',
-    href: '#',
-  },
-  {
-    name: 'Dashboard',
-    pathName: 'dashboard',
-    href: '/dashboard',
-  },
-  {
-    name: 'Ayuda',
-    pathName: 'home',
-    href: '#',
-  },
-  {
-    name: 'Precios',
-    pathName: 'home',
-    href: '#',
-  },
+  { name: 'Inicio', pathName: 'home' },
+  { name: 'Dashboard', pathName: 'dashboard' },
+  { name: 'Ayuda', pathName: 'home' },
+  { name: 'Precios', pathName: 'home' },
 ]
 </script>
 
 <template>
   <div class="font-google-sans">
     <!-- TopNavBar -->
-    <nav class="fixed top-0 w-full z-50 bg-slate-950/60 backdrop-blur-xl shadow-2xl shadow-slate-950/50">
+    <nav class="fixed top-0 w-full z-50 bg-slate-950/60 shadow-2xl shadow-slate-950/50">
       <div class="flex justify-between items-center h-20 px-8 md:px-24 w-full max-w-screen-2xl mx-auto">
+
         <!-- Logo -->
         <div class="text-xl font-bold text-slate-100 font-headline tracking-tight">
           Ubiqueme.com
@@ -37,27 +22,25 @@ const navLinks = [
 
         <!-- Menu -->
         <div class="hidden md:flex items-center space-x-10 tracking-tight font-rubik">
-          <router-link v-for="link in navLinks" :key="link.name" :to="{ name: link.pathName }"
-            class="text-slate-400 hover:text-white transition-all duration-300 hover:-translate-y-0.5 p-1 px-2 rounded-full relative z-20 group hover:">{{
-              link.name }}
-            <div
-              class="absolute inset-0 w-full h-full bg-sky-900 rounded-2xl -z-10 blur-md opacity-0 group-hover:opacity-100 transition-all duration-200">
-            </div>
-          </router-link>
+          <RouterLink v-for="link in navLinks" :key="link.name" :to="{ name: link.pathName }"
+            class="text-slate-400 hover:text-white transition-all duration-300 hover:-translate-y-0.5 p-1 px-2 rounded-full relative z-20 group">
+            {{ link.name }}
+          </RouterLink>
         </div>
 
         <!-- Buttons -->
         <div class="flex items-center space-x-6 font-rubik">
-          <router-link :to="{ name: 'login' }"
+          <RouterLink :to="{ name: 'login' }"
             class="text-slate-400 hover:text-slate-100 transition-all text-sm font-semibold">
             Iniciar Sesión
-          </router-link>
+          </RouterLink>
 
-          <router-link :to="{ name: 'home' }"
+          <RouterLink :to="{ name: 'home' }"
             class="bg-sky-400 text-white px-6 py-2.5 rounded-full text-sm font-bold hover:opacity-80 active:scale-95 transition-all">
             Registrarse
-          </router-link>
+          </RouterLink>
         </div>
+
       </div>
     </nav>
 
@@ -66,19 +49,29 @@ const navLinks = [
     </main>
 
     <footer
-      class="bg-slate-950 backdrop-blur-xl shadow-2xl shadow-slate-950/50 w-full flex justify-center gap-8 px-12 py-8 z-40 text-blue-400 dark:text-sky-300">
+      class="bg-slate-950 shadow-2xl shadow-slate-950/50 w-full flex justify-center gap-8 px-12 py-8 z-40 text-blue-400 dark:text-sky-300">
       <div
         class="flex flex-col md:flex-row gap-4 md:gap-12 items-center opacity-80 hover:opacity-100 transition-opacity">
-        <span class="font-body text-xs uppercase tracking-widest text-slate-500">©{{ new Date().getFullYear() }}
-          ubiqueme.com</span>
+
+        <span class="font-body text-xs uppercase tracking-widest text-slate-500">
+          ©{{ new Date().getFullYear() }} ubiqueme.com
+        </span>
+
         <div class="flex gap-6">
           <a class="font-body text-xs uppercase tracking-widest text-slate-500 hover:text-slate-300 transition-colors"
-            href="#">Política de Privacidad</a>
+            href="#">
+            Política de Privacidad
+          </a>
           <a class="font-body text-xs uppercase tracking-widest text-slate-500 hover:text-slate-300 transition-colors"
-            href="#">Términos de Servicio</a>
+            href="#">
+            Términos de Servicio
+          </a>
           <a class="font-body text-xs uppercase tracking-widest text-slate-500 hover:text-slate-300 transition-colors"
-            href="#">Contacto</a>
+            href="#">
+            Contacto
+          </a>
         </div>
+
       </div>
     </footer>
   </div>

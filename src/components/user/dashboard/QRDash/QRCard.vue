@@ -274,11 +274,10 @@ onUnmounted(() => {
 
     <!-- Hero Background Accent -->
     <div
-      class="absolute -top-12 -right-12 w-32 h-32 bg-primary/5 blur-3xl rounded-full opacity-50 group-hover:scale-110 transition-transform">
+      class="absolute -top-12 -right-12 w-32 h-32 bg-primary/5  rounded-full opacity-50 group-hover:scale-110 transition-transform">
     </div>
 
-    <section v-if="isLoading"
-      class="absolute inset-0 bg-black/80 flex items-center justify-center z-50 backdrop-blur-sm">
+    <section v-if="isLoading" class="absolute inset-0 bg-black/80 flex items-center justify-center z-50 ">
       <CloudLoader></CloudLoader>
     </section>
 
@@ -289,11 +288,11 @@ onUnmounted(() => {
         <div class="flex flex-col gap-1">
           <h3 class="text-white text-xl font-black tracking-tight m-0 ">{{ propsComputed.name }}</h3>
           <span class="text-[9px] text-white/30 font-black uppercase tracking-widest font-mono">ID: {{ propsComputed.id
-          }}</span>
+            }}</span>
         </div>
 
         <div
-          :class="['flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border border-white/5 backdrop-blur-md', currentStatus.bg, currentStatus.text]">
+          :class="['flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border border-white/5 ', currentStatus.bg, currentStatus.text]">
           <span :class="['w-1.5 h-1.5 rounded-full shadow-[0_0_8px_currentColor]', currentStatus.dot]"></span>
           {{ currentStatus.label }}
         </div>

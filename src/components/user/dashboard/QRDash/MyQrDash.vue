@@ -4,6 +4,7 @@ import QRCard from './QRCard.vue'
 import { onMounted, onUnmounted, ref } from 'vue'
 import { collection, getFirestore, onSnapshot, Timestamp } from 'firebase/firestore'
 import QRCardSkeleton from '@/components/ui/user/dashboard/QRCardSkeleton.vue'
+import { useImageStore } from '@/stores/imageStore'
 
 type TStatus = 'Active' | 'Canceled' | 'Process' | 'Error'
 
@@ -96,11 +97,19 @@ onUnmounted(() => {
   isLoading.value = true;
 })
 
+const imageStore = useImageStore();
+const images = imageStore.getImages;
+
+
 
 </script>
 
 <template>
-  <div class="space-y-12 font-google-sans">
+  <div class="space-y-12 font-google-sans ">
+    <!-- component -->
+    <viewer :images="images">
+      <img v-for="(src, index) in images" :key="index" :src="src.href">
+    </viewer>
     <!-- Header Section -->
     <header class="max-w-3xl mx-auto text-center space-y-4">
       <div class="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 rounded-lg border border-primary/20">

@@ -27,16 +27,12 @@ const props = defineProps({
   <div
     class="col-span-1 border border-white/5 bg-white/[0.03] rounded-[2rem] p-6 relative overflow-hidden group transition-all duration-500 hover:bg-white/[0.06] hover:border-primary/20 ">
     <!-- Background Hero Glow -->
-    <div
-      class="absolute -top-12 -right-12 w-32 h-32 bg-primary/5 blur-3xl rounded-full opacity-50 group-hover:scale-150 transition-transform duration-700">
-    </div>
+
 
     <div class="relative z-10 space-y-5">
       <!-- Icon Container -->
       <div class="relative inline-flex">
-        <div
-          class="absolute inset-0 bg-primary/20 blur-xl rounded-xl opacity-0 group-hover:opacity-100 transition-opacity">
-        </div>
+
         <div
           class="relative w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center shadow-inner">
           <span class="material-symbols-outlined text-primary text-2xl group-hover:scale-110 transition-transform">{{

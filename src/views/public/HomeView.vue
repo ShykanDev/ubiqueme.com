@@ -66,7 +66,7 @@ import HomeLayout from '@/layouts/HomeLayout.vue'
 
             <!-- VISUAL -->
             <div class="relative">
-              <div class="absolute -inset-20 bg-primary/5 blur-[120px] rounded-full"></div>
+
 
               <div
                 class="relative aspect-square rounded-[3rem] overflow-hidden border border-white/10 bg-white/5 shadow-2xl group">

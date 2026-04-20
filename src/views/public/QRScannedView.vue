@@ -162,9 +162,7 @@ onUnmounted(clearImage)
         <div class="absolute inset-0 z-0 bg-linear-to-b from-primary/5 via-transparent to-transparent"></div>
 
         <!-- 💠 ORNAMENTAL LIGHT SOURCE -->
-        <div
-          class="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-2xl h-[300px] bg-primary/20 blur-[120px] rounded-full opacity-50 z-0 pointer-events-none">
-        </div>
+
 
         <!-- ☁️ LOADING STATE -->
         <CloudLoader v-if="loading" />
@@ -172,7 +170,7 @@ onUnmounted(clearImage)
         <!-- ❌ ERROR STATE -->
         <div v-else-if="errorMsg" class="relative z-10 w-full max-w-md flex flex-col items-center text-center gap-6">
           <div class="relative">
-            <div class="absolute inset-0 bg-red-500/20 blur-xl rounded-full scale-110"></div>
+
             <div
               class="relative w-24 h-24 bg-red-500/10 border border-red-500/30 flex items-center justify-center rounded-3xl shadow-[0_0_40px_rgba(239,68,68,0.2)]">
               <span class="material-symbols-outlined text-red-500 text-5xl">error</span>
@@ -203,7 +201,7 @@ onUnmounted(clearImage)
               <div class="space-y-6 text-center md:text-left">
                 <!-- Large verification icon with intense glow -->
                 <div class="relative inline-flex mx-auto md:mx-0">
-                  <div class="absolute inset-0 bg-primary/30 blur-sm rounded-full scale-125"></div>
+
                   <div
                     class="relative w-24 h-24 md:w-32 md:h-32 bg-primary flex items-center justify-center rounded-[2.5rem] shadow-[0_0_60px_rgba(123,208,255,0.5)] border-4 border-[#070b14]">
                     <span
@@ -278,9 +276,7 @@ onUnmounted(clearImage)
               <!-- INTERACTIVE ACTION PANEL -->
               <div class="relative group">
                 <!-- Background subtle glow used as a highlight -->
-                <div
-                  class="absolute -inset-1 bg-linear-to-r from-primary-container/90 to-primary-container/20 blur-2xl opacity-90  transition-opacity">
-                </div>
+
 
                 <div class="relative bg-white/10 border border-white/10 rounded-[2.5rem] p-4 md:p-8  overflow-hidden">
 
@@ -430,7 +426,7 @@ onUnmounted(clearImage)
                     <!-- 3. SUCCESS STATE -->
                     <div v-else-if="isSuccess" class="py-12 text-center space-y-6">
                       <div class="relative inline-flex mx-auto">
-                        <div class="absolute inset-0 bg-green-500/30 blur-2xl rounded-full scale-150"></div>
+
                         <div
                           class="relative w-20 h-20 bg-green-500 rounded-full flex items-center justify-center shadow-[0_0_40px_rgba(34,197,94,0.5)]">
                           <span class="material-symbols-outlined text-black text-4xl font-black">check_circle</span>
@@ -452,9 +448,7 @@ onUnmounted(clearImage)
 
               <!-- PRIVACY INFO CARD -->
               <div class="relative overflow-hidden bg-white/5 border border-white/10 rounded-[2.5rem] p-8  group">
-                <div
-                  class="absolute -bottom-12 -right-12 w-48 h-48 bg-primary/10 blur-[60px] rounded-full opacity-50 transition-all group-hover:scale-110">
-                </div>
+
                 <div class="flex items-start gap-6">
                   <div
                     class="w-14 h-14 rounded-2xl bg-primary/20 border border-primary/30 flex items-center justify-center shrink-0">

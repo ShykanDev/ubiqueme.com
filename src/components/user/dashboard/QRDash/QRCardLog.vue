@@ -1,5 +1,7 @@
 <script lang="ts" setup>
 import type { IQRLog } from '@/interfaces/IPublicQR'
+import { useImageStore } from '@/stores/imageStore';
+import { useUserStore } from '@/stores/user';
 import { computed } from 'vue'
 
 const props = defineProps<IQRLog>()
@@ -23,16 +25,26 @@ const interactionDetail = computed(() => {
   if (!props.interaction) return null
   return reasonMap[props.interaction.reason] || { label: 'ESCANEADO', icon: 'visibility', color: 'text-white/40' }
 })
+
+const imageStore = useImageStore();
+
+const openImage = (img: string) => {
+  imageStore.clearImages();
+  imageStore.setImages(img);
+  imageStore.showImage();
+}
+
 </script>
 
 <template>
+
   <li
-    class="group relative bg-white/3 border border-white/5 rounded-2xl p-4 transition-all duration-300 hover:bg-white/6 hover:border-white/10 font-google-sans">
+    class="group relative  bg-white/3 border border-white/5 rounded-2xl p-4 transition-all duration-300 hover:bg-white/6 hover:border-white/10 font-google-sans">
 
     <div class="flex gap-4">
       <!-- 📸 IMAGE THUMBNAIL (Optional) -->
       <div v-if="img" class="w-16 h-16 shrink-0 rounded-xl overflow-hidden border border-white/10 bg-black/40">
-        <img :src="img" alt="Log evidence"
+        <img :src="img" @click="openImage(img)" alt="Log evidence"
           class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
       </div>
 
@@ -49,7 +61,7 @@ const interactionDetail = computed(() => {
               {{ scanMetrics.city }}, {{ scanMetrics.country }}
             </span>
           </div>
-          <span class="text-[9px] text-white/30 font-black uppercase tracking-widest font-mono">
+          <span class="text-[9px] text-white/80  tracking-widest font-poppins">
             {{ dateStr }}
           </span>
         </div>
@@ -65,9 +77,11 @@ const interactionDetail = computed(() => {
     </div>
 
     <!-- Decorative Corner Glow (Emergency only) -->
-    <div v-if="interaction?.reason === 'emergency'"
-      class="absolute top-0 right-0 w-12 h-12 bg-rose-500/10 blur-xl rounded-full opacity-50 pointer-events-none"></div>
+
   </li>
+
+
+
 </template>
 
 <style scoped>

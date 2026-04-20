@@ -12,9 +12,7 @@
         <!-- 💠 LEFT SIDE: BRAND NARRATIVE (Desktop) -->
         <div
           class="relative hidden md:flex md:w-1/2 lg:w-3/5 flex-col justify-center p-16 lg:p-24 border-r border-white/5">
-          <div
-            class="absolute top-0 left-0 w-full h-[300px] bg-primary/10 blur-[150px] rounded-full pointer-events-none">
-          </div>
+
 
           <div class="relative z-10 space-y-8">
             <div class="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 rounded-lg border border-primary/20">

@@ -10,7 +10,7 @@
         
         <!-- 💠 LEFT SIDE: LOGOS & TABS (Desktop) -->
         <div class="relative hidden md:flex md:w-1/2 lg:w-3/5 flex-col justify-center p-16 lg:p-24 border-r border-white/5">
-          <div class="absolute bottom-0 right-0 w-full h-[300px] bg-primary/10 blur-[150px] rounded-full pointer-events-none"></div>
+
           
           <div class="relative z-10 space-y-10">
             <div class="inline-flex items-center gap-3">

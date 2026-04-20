@@ -20,7 +20,7 @@ import HomeLayout from '@/layouts/HomeLayout.vue'
            </div>
 
            <div class="space-y-4">
-              <h1 class="text-[12rem] md:text-[20rem] font-black text-white leading-none tracking-tighter opacity-10 blur-sm absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none select-none">
+              <h1 class="text-[12rem] md:text-[20rem] font-black text-white leading-none tracking-tighter opacity-10 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none select-none">
                 404
               </h1>
               <h2 class="text-6xl md:text-8xl font-black text-white uppercase tracking-tighter relative">
