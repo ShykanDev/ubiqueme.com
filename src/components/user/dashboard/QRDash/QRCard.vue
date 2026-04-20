@@ -24,6 +24,7 @@ interface IQRCard {
   id: string,
   createdAt: Timestamp,
   docId: string,
+  img?: string,
 }
 
 const props = defineProps<IQRCard>()
@@ -231,21 +232,21 @@ let unsubscribeLogs: Unsubscribe;
 
 const loadLogs = () => {
   if (logsLoaded.value) return;
-  
+
   isLogsLoading.value = true;
   const qrsLogsRef = collection(db, `publicQR/${props.id}/logs`);
   const queryLogs = query(qrsLogsRef, orderBy("scanDate", "desc"));
-  
+
   unsubscribeLogs = onSnapshot(queryLogs, (querySnapshot) => {
     isLogsLoading.value = false;
     logsLoaded.value = true;
-    
+
     if (querySnapshot.empty) {
       console.log(`QR logs empty`);
       qrLogs.value = [];
       return;
     }
-    
+
     qrLogs.value = querySnapshot.docs.map(doc => ({
       id: doc.id,
       scanDate: doc.data().scanDate,
@@ -269,12 +270,15 @@ onUnmounted(() => {
 
 <template>
   <div
-    class="relative w-full max-w-[380px] bg-white/[0.03] rounded-[2rem] border border-white/5 overflow-hidden transition-all duration-300 hover:border-primary/20 shadow-2xl group font-google-sans">
-    
-    <!-- Hero Background Accent -->
-    <div class="absolute -top-12 -right-12 w-32 h-32 bg-primary/5 blur-3xl rounded-full opacity-50 group-hover:scale-110 transition-transform"></div>
+    class="relative w-full max-w-[380px] bg-white/3 rounded-4xl border border-white/5 overflow-hidden transition-all duration-300 hover:border-primary/20 shadow-2xl group font-google-sans">
 
-    <section v-if="isLoading" class="absolute inset-0 bg-black/80 flex items-center justify-center z-50 backdrop-blur-sm">
+    <!-- Hero Background Accent -->
+    <div
+      class="absolute -top-12 -right-12 w-32 h-32 bg-primary/5 blur-3xl rounded-full opacity-50 group-hover:scale-110 transition-transform">
+    </div>
+
+    <section v-if="isLoading"
+      class="absolute inset-0 bg-black/80 flex items-center justify-center z-50 backdrop-blur-sm">
       <CloudLoader></CloudLoader>
     </section>
 
@@ -283,8 +287,9 @@ onUnmounted(() => {
       <!-- Header -->
       <div class="flex justify-between items-start mb-6">
         <div class="flex flex-col gap-1">
-          <h3 class="text-white text-xl font-black tracking-tight m-0 uppercase">{{ propsComputed.name }}</h3>
-          <span class="text-[9px] text-white/30 font-black uppercase tracking-widest font-mono">ID: {{ propsComputed.id }}</span>
+          <h3 class="text-white text-xl font-black tracking-tight m-0 ">{{ propsComputed.name }}</h3>
+          <span class="text-[9px] text-white/30 font-black uppercase tracking-widest font-mono">ID: {{ propsComputed.id
+          }}</span>
         </div>
 
         <div
@@ -296,14 +301,16 @@ onUnmounted(() => {
 
       <!-- Content/Stats -->
       <div
-        class="flex items-center justify-between bg-white/5 p-4 rounded-2xl mb-6 border border-white/5 overflow-hidden backdrop-blur-sm">
+        class="flex items-center justify-between bg-white/5 p-4 rounded-2xl mb-6 border border-white/5 overflow-hidden  font-google-sans">
         <div class="flex flex-col gap-1">
           <span class="text-[8px] text-white/30 font-black uppercase tracking-[0.2em]">Escaneos Totales</span>
-          <div class="flex items-baseline gap-1">
+          <div class="flex items-center justify gap-1">
             <span :key="qrStatus.totalScans" class="text-white font-black text-xl"
               :class="{ 'animate-fade-up animate-delay-[500]': loadCount > 1 }">{{
                 qrStatus.totalScans }}</span>
-            <span class="text-[8px] text-primary font-black uppercase tracking-widest">MET_01</span>
+            <span class="material-symbols-outlined text-white">
+              qr_code_2
+            </span>
           </div>
         </div>
         <div class="w-px h-8 bg-white/10"></div>
@@ -311,7 +318,7 @@ onUnmounted(() => {
           <span class="text-[8px] text-white/30 font-black uppercase tracking-[0.2em]">Último escaneo</span>
           <span :key="qrStatus.lastScan?.seconds || 'none'"
             :class="{ 'animate-fade-up animate-delay-700': loadCount > 1 }"
-            class="text-white/60 font-black text-xs uppercase tracking-widest font-mono">{{ timestampToDate()
+            class="text-white/60 font-black text-xs uppercase tracking-widest font-poppins">{{ timestampToDate()
             }}</span>
         </div>
       </div>
@@ -319,33 +326,38 @@ onUnmounted(() => {
       <!-- Logs Section -->
       <div class="space-y-3 mb-6">
         <div class="flex items-center justify-between mb-2">
-          <h5 class="text-white/40 text-[10px] font-black uppercase tracking-[0.2em] m-0 font-google-sans">Historial de Actividad</h5>
-          <button v-if="!logsLoaded && !isLogsLoading" @click="loadLogs" 
-            class="text-[10px] text-primary font-bold uppercase tracking-wider hover:underline transition-all mt-0.5 font-google-sans">
+          <h5 class="text-white/40 text-[10px] font-black  tracking-[0.2em] m-0 font-google-sans">Historial de
+            Actividad</h5>
+          <button v-if="!logsLoaded && !isLogsLoading" @click="loadLogs"
+            class="text-[10px] text-primary font-bold  tracking-wider hover:underline transition-all mt-0.5 font-google-sans cursor-pointer">
             Mostrar registros
           </button>
         </div>
 
         <div v-if="isLogsLoading" class="flex items-center justify-center py-4">
-           <div class="w-4 h-4 border-2 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+          <div class="w-4 h-4 border-2 border-primary/20 border-t-primary rounded-full animate-spin"></div>
         </div>
 
         <TransitionGroup v-else name="list" tag="ul"
           class="flex flex-col space-y-3 overflow-y-auto max-h-[280px] hide-scrollbar overflow-x-hidden rounded-[1.5rem] bg-black/20 p-2">
           <QRCardLog v-for="e in qrLogs.slice(0, 5)" :key="e.id" v-bind="e" />
         </TransitionGroup>
-        
-        <p v-if="logsLoaded && qrLogs.length === 0" class="text-center text-[10px] text-white/20 italic py-2 font-google-sans">
+
+        <p v-if="logsLoaded && qrLogs.length === 0"
+          class="text-center text-[10px] text-white/20 italic py-2 font-google-sans">
           Aún no se ha detectado actividad
         </p>
       </div>
 
 
       <!-- QR Code / Asset Image -->
-      <section class="relative group/media flex justify-center bg-[#000000]/30 rounded-2xl overflow-hidden mb-6 border border-white/5 shadow-inner min-h-[220px]">
+      <section
+        class="relative group/media flex justify-center bg-[#000000]/30 rounded-2xl overflow-hidden mb-6 border border-white/5 shadow-inner min-h-[220px]">
         <Transition name="fade-slide" mode="out-in">
           <div v-if="propsComputed.img" :key="propsComputed.img" class="w-full h-full">
-            <img :src="propsComputed.img" class="w-full h-full object-cover opacity-80 group-hover/media:opacity-100 transition-opacity duration-500" alt="Asset preview" />
+            <img :src="propsComputed.img"
+              class="w-full h-full object-cover opacity-80 group-hover/media:opacity-100 transition-opacity duration-500"
+              alt="Asset preview" />
             <!-- Tiny overlay QR if image is present -->
             <div class="absolute bottom-2 right-2 p-1.5 bg-white rounded-lg shadow-xl scale-75 origin-bottom-right">
               <QrcodeVue :value="`https://ubiqueme.com/qr/${propsComputed.id}`" :size="40" render-as="canvas" />

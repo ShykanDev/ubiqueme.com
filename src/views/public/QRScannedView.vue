@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { onMounted, onUnmounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
-import { collection, collectionGroup, doc, getDoc, getDocs, getFirestore, onSnapshot, query, Timestamp, where, writeBatch, increment } from 'firebase/firestore'
+import { collection, doc, getDoc, Timestamp, writeBatch, increment } from 'firebase/firestore'
 import { db } from '@/firebase'
 import CloudLoader from '@/components/ui/CloudLoader.vue'
 import HomeLayout from '@/layouts/HomeLayout.vue'
@@ -11,41 +11,39 @@ import imageCompression from 'browser-image-compression'
 const route = useRoute()
 const qrId = route.params.qrId as string
 
+// Base & UI State
 const loading = ref(true)
 const sending = ref(false)
 const isSuccess = ref(false)
 const qrData = ref<IPublicQR | null>(null)
 const errorMsg = ref('')
-
-// Messaging state
 const showContactForm = ref(false)
+
+// Interaction State
 const selectedReason = ref('')
 const messageText = ref('')
 const capturedImage = ref<string | null>(null)
+const imagePreviewUrl = ref('')
+const processingImage = ref(false)
+
 const reasons = [
   {
     id: 'emergency',
     label: 'Emergencia',
     icon: 'emergency',
-    color: 'red',
     presets: [
       '¡AYUDA! He encontrado tu pertenencia en una situación crítica.',
       'Emergencia: Tu objeto está en riesgo de seguridad.',
-      'He encontrado esto y necesito contactarte de inmediato.',
-      'Por favor responde rápido, es un asunto urgente.',
-      'Situación de riesgo detectada con tu pertenencia.'
+      'Necesito contactarte de inmediato por urgencia.'
     ]
   },
   {
     id: 'communication',
     label: 'Comunicación',
     icon: 'chat',
-    color: 'primary',
     presets: [
-      'Hola, tengo tu objeto a salvo. ¿Cómo podemos coordinar?',
-      'He encontrado tu pertenencia. Llámame o escríbeme aquí.',
-      '¿Podemos agendar una entrega? Tengo tu objeto conmigo.',
-      'Buen día, encontré esto en la zona. Está seguro.',
+      'Hola, tengo tu objeto a salvo. ¿Cómo coordinamos?',
+      'He encontrado tu pertenencia. Llámame o escríbeme.',
       'Te contacto para devolverte lo que encontré.'
     ]
   },
@@ -53,12 +51,9 @@ const reasons = [
     id: 'informative',
     label: 'Informativo',
     icon: 'info',
-    color: 'gray',
     presets: [
-      'Solo informo que tu objeto está visible y seguro aquí.',
-      'Verificación de estado: Todo parece estar en orden.',
-      'Escaneo de cortesía para confirmar que el QR funciona.',
-      'He visto tu objeto, solo quería validar el sistema.',
+      'Solo informo que tu objeto está visible y seguro.',
+      'Escaneo de cortesía para validar que el QR funciona.',
       'Excelente forma de proteger tus cosas, ¡saludos!'
     ]
   },
@@ -66,140 +61,91 @@ const reasons = [
     id: 'other',
     label: 'Personalizado',
     icon: 'edit_note',
-    color: 'white',
     presets: []
   }
 ]
 
-const selectPreset = (text: string) => {
-  messageText.value = text
+const loadQRData = async () => {
+  try {
+    if (!qrId) throw new Error()
+    const docSnap = await getDoc(doc(db, 'publicQR', qrId))
+    if (!docSnap.exists()) throw new Error()
+    qrData.value = docSnap.data() as IPublicQR
+  } catch (e) {
+    errorMsg.value = "No se encontró información sobre este QR"
+  } finally {
+    loading.value = false
+  }
 }
 
-const loadQRData = async () => {
-  if (!qrId || typeof qrId !== 'string') {
-    errorMsg.value = "QR no válido";
-    loading.value = false;
-    return;
-  }
+const clearImage = () => {
+  if (imagePreviewUrl.value) URL.revokeObjectURL(imagePreviewUrl.value)
+  imagePreviewUrl.value = ''
+  capturedImage.value = null
+}
+
+const handleImageGet = async (e: Event) => {
+  const file = (e.target as HTMLInputElement).files?.[0]
+  if (!file) return
+
+  clearImage()
+  imagePreviewUrl.value = URL.createObjectURL(file)
 
   try {
-    const QRDoc = doc(db, 'publicQR', qrId);
-    const docSnapshot = await getDoc(QRDoc);
-
-    if (!docSnapshot.exists()) {
-      errorMsg.value = "No se encontró información sobre este QR";
-      loading.value = false;
-      return
+    processingImage.value = true
+    const compressed = await imageCompression(file, { maxSizeMB: 0.14, maxWidthOrHeight: 900, useWebWorker: true })
+    const reader = new FileReader()
+    reader.readAsDataURL(compressed)
+    reader.onloadend = () => {
+      capturedImage.value = reader.result as string
+      processingImage.value = false
     }
-
-    qrData.value = docSnapshot.data() as IPublicQR;
-    loading.value = false;
-  } catch (error) {
-    loading.value = false;
-    errorMsg.value = "Error al obtener la información del QR";
-    console.error(`Error loading QR data:`, error);
+  } catch (err) {
+    console.error(err)
+    processingImage.value = false
   }
 }
 
-const imageSelected = ref<File | undefined>(undefined);
-
-const handleImageGet = (e: Event) => {
-  const target = e.target as HTMLInputElement;
-  if (target.files && target.files.length > 0) {
-    imageSelected.value = target.files[0];
-    console.log(imageSelected.value);
+const getMetrics = async () => {
+  try {
+    const res = await fetch('https://ipapi.co/json/')
+    const d = await res.json()
+    return { country: d.country_name || "", city: d.city || "", region: d.region || "" }
+  } catch {
+    return { country: "", city: "", region: "" }
   }
-}
-
-function handleImageUpload(event) {
-
-  const imageFile = event.target.files[0];
-  console.log('originalFile instanceof Blob', imageFile instanceof Blob); // true
-  console.log(`originalFile size ${imageFile.size / 1024 / 1024} MB`);
-
-  const options = {
-    maxSizeMB: .4,
-    maxWidthOrHeight: 1200,
-    useWebWorker: true
-  }
-  imageCompression(imageFile, options)
-    .then(function (compressedFile) {
-      console.log('compressedFile instanceof Blob', compressedFile instanceof Blob); // true
-      console.log(`compressedFile size ${compressedFile.size / 1024 / 1024} MB`); // smaller than maxSizeMB
-
-      return compressedFile;
-    })
-    .catch(function (error) {
-      console.log(error.message);
-    });
 }
 
 const handleSubmitMessage = async () => {
-  if (!selectedReason.value) return;
-
-  sending.value = true;
-  const QRDoc = doc(db, 'publicQR', qrId);
-  const batch = writeBatch(db);
-
-  const metricData = {
-    country: "",
-    city: "",
-    region: ""
-  };
+  if (!selectedReason.value) return
+  sending.value = true
 
   try {
-    // Collect metrics only when user interacts
-    const ipRes = await fetch('https://ipapi.co/json/');
-    if (ipRes.ok) {
-      const data = await ipRes.json();
-      metricData.country = data.country_name || "";
-      metricData.city = data.city || "";
-      metricData.region = data.region || "";
-    }
-  } catch (err) {
-    console.warn('Metricas no disponibles:', err);
-  }
+    const metricData = await getMetrics()
+    const batch = writeBatch(db)
+    const QRDoc = doc(db, 'publicQR', qrId)
+    const logDoc = doc(collection(db, 'publicQR', qrId, 'logs'), Date.now().toString())
 
-  try {
-    // Update scan counters
-    batch.update(QRDoc, {
-      totalScans: increment(1),
-      lastScan: Timestamp.now(),
-    });
-
-    // Create log with message interaction
-    const logsCollection = collection(db, 'publicQR', qrId, 'logs');
-    const logDoc = doc(logsCollection, Timestamp.now().toMillis().toString());
-
+    batch.update(QRDoc, { totalScans: increment(1), lastScan: Timestamp.now() })
     batch.set(logDoc, {
       scanDate: Timestamp.now(),
       scanMetrics: metricData,
-      interaction: {
-        reason: selectedReason.value,
-        message: messageText.value,
-        type: 'contact_request'
-      },
+      interaction: { reason: selectedReason.value, message: messageText.value, type: 'contact_request' },
       img: capturedImage.value
-    });
+    })
 
-    await batch.commit();
-    isSuccess.value = true;
-
-    // Optional: increment local counter for immediate feedback
-    if (qrData.value) qrData.value.totalScans++;
-
-  } catch (error) {
-    console.error(`Error saving interaction:`, error);
-    alert("Hubo un problema al enviar tu mensaje. Por favor intenta de nuevo.");
+    await batch.commit()
+    isSuccess.value = true
+    if (qrData.value) qrData.value.totalScans++
+  } catch (e) {
+    alert("Error al enviar el mensaje. Intenta de nuevo.")
   } finally {
-    sending.value = false;
+    sending.value = false
   }
 }
 
-onMounted(() => {
-  loadQRData()
-})
-
+onMounted(loadQRData)
+onUnmounted(clearImage)
 </script>
 
 <template>
@@ -333,7 +279,7 @@ onMounted(() => {
               <div class="relative group">
                 <!-- Background subtle glow used as a highlight -->
                 <div
-                  class="absolute -inset-1 bg-linear-to-r from-primary/20 to-purple-500/20 blur-2xl opacity-20 group-hover:opacity-40 transition-opacity">
+                  class="absolute -inset-1 bg-linear-to-r from-primary-container/90 to-primary-container/20 blur-2xl opacity-90  transition-opacity">
                 </div>
 
                 <div class="relative bg-white/10 border border-white/10 rounded-[2.5rem] p-4 md:p-8  overflow-hidden">
@@ -408,22 +354,61 @@ onMounted(() => {
                           class="w-full bg-white/5 border border-white/10 rounded-2xl p-6 text-white text-sm focus:outline-none focus:border-primary/50 transition-all min-h-[140px] resize-none  shadow-inner"></textarea>
                       </div>
 
+
                       <!-- 📸 IMAGE CAPTURE AREA -->
-                      <div class="space-y-4">
-                        <label class="text-[10px] font-black text-white/50 uppercase tracking-[0.3em] ml-2">Evidencia
-                          Fotográfica (Opcional)</label>
-                        <div class="relative group/upload">
+                      <div class="space-y-4 relative">
+                        <div class="flex items-center justify-between ml-2">
+                          <label class="text-[10px] font-black text-white/50 uppercase tracking-[0.3em]">
+                            Evidencia Fotográfica (Opcional)
+                          </label>
+                          <Transition name="fade-slide">
+                            <button v-if="imagePreviewUrl" @click="clearImage"
+                              class="text-red-500 text-[10px] font-black uppercase tracking-[0.2em] bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 rounded-lg px-3 py-1 transition-all flex items-center gap-1.5 active:scale-95 leading-none">
+                              Eliminar
+                              <span class="material-symbols-outlined text-sm!">close</span>
+                            </button>
+                          </Transition>
+                        </div>
+
+                        <div class="relative group/upload min-h-[160px] cursor-pointer group">
                           <input type="file" accept="image/*" @change="handleImageGet" capture="environment"
-                            class="absolute inset-0 opacity-0 cursor-pointer z-10" />
-                          <div
-                            class="w-full h-24 border-2 border-dashed border-white/10 rounded-2xl flex flex-col items-center justify-center gap-2 group-hover/upload:border-primary/30 group-hover/upload:bg-white/[0.02] transition-all">
-                            <span
-                              class="material-symbols-outlined text-white/30 text-2xl group-hover/upload:text-primary transition-colors">add_a_photo</span>
-                            <span class="text-[9px] font-black text-white/20 uppercase tracking-widest">Tocar para tomar
-                              fotografía</span>
+                            class="absolute inset-0 opacity-0 cursor-pointer z-20" />
+
+                          <!-- 1. PREVIEW STATE -->
+                          <div v-if="imagePreviewUrl"
+                            class="relative w-full aspect-video rounded-3xl overflow-hidden border-2 border-primary/20 shadow-[0_0_40px_rgba(123,208,255,0.15)] group-hover:border-primary/40 transition-all duration-500">
+                            <img :src="imagePreviewUrl" alt="Preview" class="w-full h-full object-cover" />
+                            <div
+                              class="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-6">
+                              <div class="flex items-center gap-2">
+                                <div class="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
+                                <p class="text-[10px] font-black text-white uppercase tracking-[0.2em]">Captura Lista
+                                </p>
+                              </div>
+                              <p class="text-[9px] font-medium text-white/40 uppercase tracking-widest mt-1">Toque para
+                                reemplazar la fotografía</p>
+                            </div>
+                          </div>
+
+                          <!-- 2. UPLOAD PROMPT STATE -->
+                          <div v-else
+                            class="w-full h-40 border-2 border-dashed border-white/10 rounded-3xl flex flex-col items-center justify-center gap-4 group-hover/upload:border-primary/30 group-hover/upload:bg-white/2 transition-all duration-300">
+                            <div
+                              class="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center group-hover/upload:bg-primary/10 group-hover/upload:scale-110 transition-all duration-500">
+                              <span
+                                class="material-symbols-outlined text-white/20 text-3xl group-hover/upload:text-primary transition-colors">add_a_photo</span>
+                            </div>
+                            <div class="text-center space-y-1">
+                              <span
+                                class="block text-[11px] font-black text-white/40 uppercase tracking-[0.2em] group-hover/upload:text-white/60 transition-colors">Tocar
+                                para capturar</span>
+                              <span class="block text-[8px] font-bold text-white/10 uppercase tracking-tight">Formatos:
+                                JPG, PNG • Max 5MB</span>
+                            </div>
                           </div>
                         </div>
                       </div>
+
 
                       <!-- ACTIONS FOOTER -->
                       <div class="flex flex-col md:flex-row gap-4 pt-4">
@@ -431,12 +416,13 @@ onMounted(() => {
                           class="flex-1 h-14 rounded-2xl border border-white/10 text-white/40 font-black text-xs uppercase tracking-widest hover:bg-white/5 transition-colors order-2 md:order-1">
                           Cancelar
                         </button>
-                        <button @click="handleSubmitMessage" :disabled="!selectedReason || sending"
+                        <button @click="handleSubmitMessage" :disabled="!selectedReason || sending || processingImage"
                           class="flex-2 h-14 rounded-2xl bg-primary text-black font-black text-xs uppercase tracking-widest disabled:opacity-30 disabled:grayscale transition-all flex items-center justify-center gap-3 order-1 md:order-2 shadow-xl shadow-primary/10">
-                          <span v-if="sending"
+                          <span v-if="sending || processingImage"
                             class="w-5 h-5 border-3 border-black/20 border-t-black rounded-full animate-spin"></span>
                           <span v-else>Enviar Mensaje Directo</span>
-                          <span v-if="!sending" class="material-symbols-outlined text-lg">send</span>
+                          <span v-if="!sending && !processingImage"
+                            class="material-symbols-outlined text-lg">send</span>
                         </button>
                       </div>
                     </div>

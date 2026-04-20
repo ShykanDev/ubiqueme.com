@@ -26,12 +26,14 @@ const interactionDetail = computed(() => {
 </script>
 
 <template>
-  <li class="group relative bg-white/[0.03] border border-white/5 rounded-2xl p-4 transition-all duration-300 hover:bg-white/[0.06] hover:border-white/10 font-google-sans">
-    
+  <li
+    class="group relative bg-white/3 border border-white/5 rounded-2xl p-4 transition-all duration-300 hover:bg-white/6 hover:border-white/10 font-google-sans">
+
     <div class="flex gap-4">
       <!-- 📸 IMAGE THUMBNAIL (Optional) -->
       <div v-if="img" class="w-16 h-16 shrink-0 rounded-xl overflow-hidden border border-white/10 bg-black/40">
-        <img :src="img" alt="Log evidence" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
+        <img :src="img" alt="Log evidence"
+          class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
       </div>
 
       <!-- 📝 CONTENT -->
@@ -54,7 +56,8 @@ const interactionDetail = computed(() => {
 
         <!-- Message -->
         <div v-if="interaction?.message" class="bg-white/5 rounded-xl p-2 md:p-3 border border-white/5">
-          <p class="text-white/60 text-[10px] leading-relaxed italic line-clamp-2 group-hover:line-clamp-none transition-all">
+          <p
+            class="text-white/60 text-[10px] leading-relaxed italic line-clamp-2 group-hover:line-clamp-none transition-all">
             "{{ interaction.message }}"
           </p>
         </div>
@@ -62,7 +65,8 @@ const interactionDetail = computed(() => {
     </div>
 
     <!-- Decorative Corner Glow (Emergency only) -->
-    <div v-if="interaction?.reason === 'emergency'" class="absolute top-0 right-0 w-12 h-12 bg-rose-500/10 blur-xl rounded-full opacity-50 pointer-events-none"></div>
+    <div v-if="interaction?.reason === 'emergency'"
+      class="absolute top-0 right-0 w-12 h-12 bg-rose-500/10 blur-xl rounded-full opacity-50 pointer-events-none"></div>
   </li>
 </template>
 

@@ -2,7 +2,7 @@
   <HomeLayout>
     <template #main>
       <section
-        class="relative min-h-screen w-full flex flex-col md:flex-row bg-[#070b14] font-google-sans overflow-hidden">
+        class="relative min-h-screen w-full flex flex-col md:flex-row bg-[#070b14] font-google-sans overflow-hidden py-10">
 
         <!-- 📐 BACKGROUND DOT MATRIX (Lightweight) -->
         <div class="absolute inset-0 z-0 opacity-[0.05]"

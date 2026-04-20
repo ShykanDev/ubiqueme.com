@@ -30,23 +30,23 @@ const stats = computed(() => {
   const active = qrs.value.filter(qr => qr.status === 'Active').length
   const inactive = total - active
   const average = total > 0 ? (scans / total).toFixed(1) : '0'
-  
+
   // Find top QR
   const topQR = [...qrs.value].sort((a, b) => (b.scans || 0) - (a.scans || 0))[0]
-  
+
   // Find most recently created QR
   const newestQR = [...qrs.value].sort((a, b) => {
     const dateA = a.createdAt?.seconds || 0
     const dateB = b.createdAt?.seconds || 0
     return dateB - dateA
   })[0]
-  
+
   // Find last scan overall
   const mostRecentScan = [...qrs.value]
     .filter(qr => qr.lastScan)
     .sort((a, b) => b.lastScan?.seconds - a.lastScan?.seconds)[0]
 
-  const lastTime = mostRecentScan?.lastScan 
+  const lastTime = mostRecentScan?.lastScan
     ? mostRecentScan.lastScan.toDate().toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' })
     : '---'
 
@@ -127,7 +127,7 @@ const handleGreeting = (): string => {
     <div class="mb-12 flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
       <div>
         <p class="text-primary font-black tracking-[0.4em] text-[10px] uppercase mb-2">Resumen Operativo</p>
-        <h2 class="text-4xl md:text-6xl font-black text-white tracking-tighter leading-[0.9] uppercase italic">
+        <h2 class="text-4xl md:text-4xl font-black text-white tracking-tighter leading-[0.9] italic">
           {{ handleGreeting() }}, {{ userStore.getFirstName || 'Usuario' }}
         </h2>
       </div>
@@ -140,8 +140,8 @@ const handleGreeting = (): string => {
 
     <!-- Bento Grid Stats -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-20 animate-fade-in animate-duration-700">
-      <VentoCard v-for="(card, index) in stats" :key="index" :icon="card.icon" :title="card.title"
-        :value="card.value" :trendIcon="card.trendIcon" :trendText="card.trendText">
+      <VentoCard v-for="(card, index) in stats" :key="index" :icon="card.icon" :title="card.title" :value="card.value"
+        :trendIcon="card.trendIcon" :trendText="card.trendText">
       </VentoCard>
     </div>
   </div>

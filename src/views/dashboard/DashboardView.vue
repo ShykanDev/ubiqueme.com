@@ -100,7 +100,7 @@ const changeComponent = (component: ComponentName) => {
                 <div class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></div>
                 <span class="text-[9px] font-black text-primary uppercase tracking-[0.4em]">Protocol Linked</span>
               </div>
-              <h1 class="text-4xl lg:text-5xl font-black text-white tracking-tighter uppercase font-google-sans">Panel
+              <h1 class="text-3xl lg:text-4xl font-black text-white tracking-tighter uppercase font-google-sans">Panel
                 de Control</h1>
             </div>
 

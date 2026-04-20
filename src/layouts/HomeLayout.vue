@@ -52,13 +52,10 @@ const navLinks = [
             class="text-slate-400 hover:text-slate-100 transition-all text-sm font-semibold">
             Iniciar Sesión
           </router-link>
-          <router-link :to="{ name: 'register' }"
-            class="text-slate-400 hover:text-slate-100 transition-all text-sm font-semibold">
-            Registrarse
-          </router-link>
+
           <router-link :to="{ name: 'home' }"
-            class="bg-sky-400 text-on-primary-fixed px-6 py-2.5 rounded-full text-sm font-bold hover:opacity-80 active:scale-95 transition-all">
-            Obtener QR
+            class="bg-sky-400 text-white px-6 py-2.5 rounded-full text-sm font-bold hover:opacity-80 active:scale-95 transition-all">
+            Registrarse
           </router-link>
         </div>
       </div>
