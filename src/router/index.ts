@@ -34,6 +34,11 @@ const router = createRouter({
       component: () => import('@/views/public/OrderPlanView.vue'),
     },
     {
+      path: '/pricing',
+      name: 'pricing',
+      component: () => import('@/views/public/PricingView.vue'),
+    },
+    {
       path: '/:pathMatch(.*)*',
       name: 'not-found',
       component: () => import('@/views/NotFound.vue'),

@@ -5,7 +5,7 @@ const navLinks = [
   { name: 'Inicio', pathName: 'home' },
   { name: 'Dashboard', pathName: 'dashboard' },
   { name: 'Ayuda', pathName: 'home' },
-  { name: 'Precios', pathName: 'home' },
+  { name: 'Precios', pathName: 'pricing' },
 ]
 </script>
 
@@ -35,7 +35,7 @@ const navLinks = [
             Iniciar Sesión
           </RouterLink>
 
-          <RouterLink :to="{ name: 'home' }"
+          <RouterLink :to="{ name: 'register' }"
             class="bg-sky-400 text-white px-6 py-2.5 rounded-full text-sm font-bold hover:opacity-80 active:scale-95 transition-all">
             Registrarse
           </RouterLink>
