@@ -153,8 +153,6 @@ const handleRegister = async () => {
     const batch = writeBatch(db);
     batch.set(doc(db, `users/${user.uid}`), {
       uid: user.uid,
-      name: form.name.trim(),
-      email: form.email.trim(),
       isActive: true,
       createdAt: Timestamp.now(),
     });

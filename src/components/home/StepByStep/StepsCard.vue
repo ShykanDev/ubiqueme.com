@@ -1,14 +1,8 @@
 <script lang="ts" setup>
-interface Steps {
-  icon: string
-  title: string
-  description: string
-  number: number
-  video: string
-}
+import type { IStep } from '@/interfaces/IStep'
 
 const props = defineProps<{
-  steps: Steps
+  steps: IStep
 }>()
 </script>
 

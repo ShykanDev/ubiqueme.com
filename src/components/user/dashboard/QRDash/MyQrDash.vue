@@ -6,23 +6,7 @@ import { collection, getFirestore, onSnapshot, Timestamp } from 'firebase/firest
 import QRCardSkeleton from '@/components/ui/user/dashboard/QRCardSkeleton.vue'
 import { useImageStore } from '@/stores/imageStore'
 
-type TStatus = 'Active' | 'Canceled' | 'Process' | 'Error'
-
-interface IMyQR {
-  link: string,
-  name: string,
-  isActive: boolean,
-  isBanned: boolean,
-  banReason: string,
-  status: TStatus,
-  scans: number,
-  lastScan: string,
-  planPurchasedAt: null,
-  planEndDate: null,
-  id: string,
-  createdAt: Timestamp,
-  docId: string,
-}
+import type { IMyQR } from '@/interfaces/IMyQR'
 
 const userQRsDemo: IMyQR[] = [
   {

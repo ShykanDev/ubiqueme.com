@@ -1,14 +1,6 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
-
-interface INotification {
-  id: number
-  type: 'qr_scan' | 'system' | 'billing'
-  title: string
-  message: string
-  date: string
-  read: boolean
-}
+import type { INotification } from '@/interfaces/INotification'
 
 const notifications = ref<INotification[]>([
   {

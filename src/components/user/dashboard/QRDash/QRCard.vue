@@ -6,26 +6,10 @@ import { db } from '@/firebase'
 import { useUserStore } from '@/stores/user'
 import CloudLoader from '@/components/ui/CloudLoader.vue'
 import { nanoid } from 'nanoid'
-import type { IPublicQR } from '@/interfaces/IPublicQR'
+import type { IQRCard } from '@/interfaces/IQRCard'
+import type { IQRLog } from '@/interfaces/IPublicQR'
 import type { Unsubscribe } from 'firebase/auth'
 import QRCardLog from './QRCardLog.vue'
-type TStatus = 'Active' | 'Canceled' | 'Process' | 'Error' | 'Paused'
-
-interface IQRCard {
-  name: string,
-  isActive: boolean,
-  isBanned: boolean,
-  banReason: string,
-  status: TStatus,
-  scans: number,
-  lastScan: string,
-  planPurchasedAt: null,
-  planEndDate: null,
-  id: string,
-  createdAt: Timestamp,
-  docId: string,
-  img?: string,
-}
 
 const props = defineProps<IQRCard>()
 
@@ -213,16 +197,6 @@ const menuOptions = [
     hoverBg: 'hover:bg-rose-500/10'
   },
 ]
-
-interface IQRLog {
-  id: string;
-  scanDate: Timestamp;
-  scanMetrics: {
-    city: string;
-    country: string;
-    region: string;
-  }
-}
 
 const qrLogs = ref<IQRLog[]>([]);
 const logsLoaded = ref(false);

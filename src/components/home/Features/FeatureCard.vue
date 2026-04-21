@@ -1,18 +1,9 @@
 <script lang="ts" setup>
-import type { PropType } from 'vue'
+import type { IFeature } from '@/interfaces/IFeature'
 
-interface IFeature {
-  icon: string
-  title: string
-  description: string
-}
-
-const props = defineProps({
-  feature: {
-    type: Object as () => IFeature,
-    required: true,
-  },
-})
+const props = defineProps<{
+  feature: IFeature
+}>()
 </script>
 
 <template>
