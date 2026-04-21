@@ -29,6 +29,11 @@ const router = createRouter({
       component: () => import('@/views/public/QRScannedView.vue'),
     },
     {
+      path: '/checkout/:planId?',
+      name: 'checkout',
+      component: () => import('@/views/public/OrderPlanView.vue'),
+    },
+    {
       path: '/:pathMatch(.*)*',
       name: 'not-found',
       component: () => import('@/views/NotFound.vue'),

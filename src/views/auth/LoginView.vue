@@ -93,7 +93,7 @@
                   <button type="button" @click="showPassword = !showPassword"
                     class="absolute right-5 top-1/2 -translate-y-1/2 text-white/20 hover:text-white transition-colors">
                     <span class="material-symbols-outlined text-xl">{{ showPassword ? 'visibility' : 'visibility_off'
-                      }}</span>
+                    }}</span>
                   </button>
                 </div>
               </div>
@@ -174,6 +174,7 @@ const handleLogin = async () => {
     userStore.setFullName(user.user.displayName || '')
     userStore.setCreationDate(user.user.metadata?.creationTime || '')
     userStore.setUserId(user.user.uid)
+    userStore.setEmail(user.user.email || '')
     router.push({ name: 'dashboard' });
   } catch (error) {
     console.log(`Error while trying to login: ${error}`)

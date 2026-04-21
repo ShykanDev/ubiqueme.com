@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import FeaturesComponent from '@/components/home/Features/FeaturesComponent.vue'
+import PricingPlans from '@/components/home/Pricing/PricingPlans.vue'
 import StepByStep from '@/components/home/StepByStep/StepByStep.vue'
 import HomeLayout from '@/layouts/HomeLayout.vue'
 </script>
@@ -94,6 +95,7 @@ import HomeLayout from '@/layouts/HomeLayout.vue'
 
         <StepByStep />
         <FeaturesComponent />
+        <PricingPlans />
       </main>
     </template>
   </HomeLayout>

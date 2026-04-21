@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { onMounted, onUnmounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { collection, doc, getDoc, Timestamp, writeBatch, increment } from 'firebase/firestore'
 import { db } from '@/firebase'
@@ -26,44 +26,8 @@ const capturedImage = ref<string | null>(null)
 const imagePreviewUrl = ref('')
 const processingImage = ref(false)
 
-const reasons = [
-  {
-    id: 'emergency',
-    label: 'Emergencia',
-    icon: 'emergency',
-    presets: [
-      '¡AYUDA! He encontrado tu pertenencia en una situación crítica.',
-      'Emergencia: Tu objeto está en riesgo de seguridad.',
-      'Necesito contactarte de inmediato por urgencia.'
-    ]
-  },
-  {
-    id: 'communication',
-    label: 'Comunicación',
-    icon: 'chat',
-    presets: [
-      'Hola, tengo tu objeto a salvo. ¿Cómo coordinamos?',
-      'He encontrado tu pertenencia. Llámame o escríbeme.',
-      'Te contacto para devolverte lo que encontré.'
-    ]
-  },
-  {
-    id: 'informative',
-    label: 'Informativo',
-    icon: 'info',
-    presets: [
-      'Solo informo que tu objeto está visible y seguro.',
-      'Escaneo de cortesía para validar que el QR funciona.',
-      'Excelente forma de proteger tus cosas, ¡saludos!'
-    ]
-  },
-  {
-    id: 'other',
-    label: 'Personalizado',
-    icon: 'edit_note',
-    presets: []
-  }
-]
+const QRName = computed(() => qrData.value?.ownerName || 'objeto')
+const reasons = ref<any[]>([]);
 
 const loadQRData = async () => {
   try {
@@ -143,6 +107,48 @@ const handleSubmitMessage = async () => {
     sending.value = false
   }
 }
+const updateReasons = () => {
+  if (showContactForm.value) return;
+  showContactForm.value = true;
+  reasons.value = [
+    {
+      id: 'emergency',
+      label: 'Emergencia',
+      icon: 'emergency',
+      presets: [
+        `¡Atención! He localizado tu "${QRName.value.trim()}" y requiere atención inmediata.`,
+        `Situación urgente: tu "${QRName.value.trim()}" se encuentra en un estado que necesita tu intervención.`,
+        `Necesito comunicarme contigo de inmediato. Tu "${QRName.value.trim()}" podría estar en riesgo. Por favor responde.`
+      ]
+    },
+    {
+      id: 'communication',
+      label: 'Comunicación',
+      icon: 'chat',
+      presets: [
+        `Hola, he encontrado tu "${QRName.value.trim()}" y está a salvo. ¿Cómo podemos coordinar su devolución?`,
+        `Tu "${QRName.value.trim()}" está en mis manos y en buen estado. Escríbeme o llámame para ponernos de acuerdo.`,
+        `Me gustaría devolverle su "${QRName.value.trim()}" .`
+      ]
+    },
+    {
+      id: 'informative',
+      label: 'Informativo',
+      icon: 'info',
+      presets: [
+        `Solo paso a avisar que tu "${QRName.value.trim()}" está visible y aparentemente en buen estado.`,
+        `Escaneo de verificación: todo parece estar en orden con este registro.`,
+        `Qué buena idea proteger tus bienes así. ¡Un saludo desde donde me encuentro!`
+      ]
+    },
+    {
+      id: 'other',
+      label: 'Personalizado',
+      icon: 'edit_note',
+      presets: []
+    }
+  ]
+}
 
 onMounted(loadQRData)
 onUnmounted(clearImage)
@@ -217,7 +223,7 @@ onUnmounted(clearImage)
                       Confirmada</span>
                   </div>
 
-                  <h1 class="text-5xl md:text-8xl font-black text-white leading-[0.9] tracking-tighter drop-shadow-2xl">
+                  <h1 class="text-4xl md:text-6xl font-black text-white leading-[0.9] tracking-tighter drop-shadow-2xl">
                     {{ qrData?.ownerName || '---' }}
                   </h1>
 
@@ -289,7 +295,7 @@ onUnmounted(clearImage)
                           comunicación segura y anónima.</p>
                       </div>
 
-                      <button @click="showContactForm = true"
+                      <button @click="updateReasons"
                         class="group relative w-full max-w-xs h-16 rounded-2xl bg-white text-black font-black text-lg overflow-hidden mx-auto transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] shadow-2xl">
                         <div class="absolute inset-0 bg-primary opacity-0 group-hover:opacity-100 transition-opacity">
                         </div>
@@ -302,7 +308,7 @@ onUnmounted(clearImage)
                     </div>
 
                     <!-- 2. MESSAGING FLOW -->
-                    <div v-else-if="showContactForm && !isSuccess" class="space-y-8">
+                    <div v-else-if="showContactForm && !isSuccess && !loading && qrData?.ownerName" class="space-y-8">
                       <!-- REASON SELECTION -->
                       <div class="space-y-4">
                         <label class="text-[10px] font-black text-white/50 uppercase tracking-[0.3em] ml-2">Motivo del
