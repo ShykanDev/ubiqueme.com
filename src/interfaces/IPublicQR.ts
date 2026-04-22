@@ -1,4 +1,4 @@
-//This contains the structure of a public QR
+//This contains the structure of a public QR (QR Code that can be scanned by anyone)
 
 import type { Timestamp } from 'firebase/firestore'
 
@@ -12,16 +12,24 @@ export interface IPublicQR {
   banReason?: string
   docId?: string
   img?: string
+  ownerId?: string //User uid
+  tier?: string
+}
+
+export interface IQRScanMetrics {
+  city: string
+  country: string
+  region: string
+  lat?: string
+  lon?: string
+  postal?: string
+  timezone?: string
 }
 
 export interface IQRLog {
   id: string
   scanDate: Timestamp
-  scanMetrics: {
-    city: string
-    country: string
-    region: string
-  }
+  scanMetrics: IQRScanMetrics
   interaction?: {
     reason: string
     message?: string

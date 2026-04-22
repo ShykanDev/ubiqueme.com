@@ -94,24 +94,6 @@ const changeComponent = (component: ComponentName) => {
 
         <!-- 🚀 MAIN CONTENT AREA (FIXED OFFSET) -->
         <div class="relative z-10 flex-1 h-screen overflow-y-auto scrollbar-hide p-8 md:p-12 lg:p-16 ml-24 pt-24!">
-          <header class="mb-12 flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
-            <div class="space-y-2">
-              <div class="flex items-center gap-2">
-                <div class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></div>
-                <span class="text-[9px] font-black text-primary uppercase tracking-[0.4em]">Protocol Linked</span>
-              </div>
-              <h1 class="text-3xl lg:text-4xl font-black text-white tracking-tighter uppercase font-google-sans">Panel
-                de Control</h1>
-            </div>
-
-            <div class="flex gap-4">
-              <div class="px-5 py-3 bg-white/5 border border-white/10 rounded-2xl flex flex-col gap-1 min-w-[120px] ">
-                <span class="text-[8px] font-black text-white/30 uppercase tracking-widest">Global Status</span>
-                <span class="text-xs font-bold text-green-400">OPTIMIZED</span>
-              </div>
-            </div>
-          </header>
-
           <section class="max-w-6xl mx-auto">
             <component :is="currentComponent"></component>
           </section>

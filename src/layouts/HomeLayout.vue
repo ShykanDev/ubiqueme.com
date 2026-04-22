@@ -12,7 +12,7 @@ const navLinks = [
 <template>
   <div class="font-google-sans">
     <!-- TopNavBar -->
-    <nav class="fixed top-0 w-full z-50 bg-slate-950/60 shadow-2xl shadow-slate-950/50">
+    <nav class="fixed top-0 w-full z-50 bg-slate-950/90 border-b border-white/5 shadow-md">
       <div class="flex justify-between items-center h-20 px-8 md:px-24 w-full max-w-screen-2xl mx-auto">
 
         <!-- Logo -->
@@ -49,7 +49,7 @@ const navLinks = [
     </main>
 
     <footer
-      class="bg-slate-950 shadow-2xl shadow-slate-950/50 w-full flex justify-center gap-8 px-12 py-8 z-40 text-blue-400 dark:text-sky-300">
+      class="bg-slate-950 border-t border-white/5 w-full flex justify-center gap-8 px-12 py-8 z-40 text-blue-400 dark:text-sky-300">
       <div
         class="flex flex-col md:flex-row gap-4 md:gap-12 items-center opacity-80 hover:opacity-100 transition-opacity">
 

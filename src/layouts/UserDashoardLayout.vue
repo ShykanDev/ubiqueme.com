@@ -20,7 +20,7 @@ const navLinks = [
 <template>
   <div>
     <!-- TopNavBar -->
-    <nav class="fixed top-0 w-full z-50 bg-slate-950/60 backdrop-blur-xl shadow-2xl shadow-slate-950/50">
+    <nav class="fixed top-0 w-full z-50 bg-[#070b14] border-b border-white/5 shadow-md">
       <div class="flex justify-between items-center h-20 px-8 md:px-24 w-full max-w-screen-2xl mx-auto">
         <!-- Logo -->
         <div class="text-xl font-bold text-slate-100 tracking-tight">
@@ -57,7 +57,7 @@ const navLinks = [
 
     <!-- Footer -->
     <footer
-      class="bg-slate-950 hidden shadow-2xl shadow-slate-950/50 w-full justify-center gap-8 px-12 py-8 z-40 text-sky-300">
+      class="bg-slate-950 hidden border-t border-white/5 w-full justify-center gap-8 px-12 py-8 z-40 text-sky-300">
       <div
         class="flex flex-col md:flex-row gap-4 md:gap-12 items-center opacity-80 hover:opacity-100 transition-opacity">
         <span class="text-xs uppercase tracking-widest text-slate-500">

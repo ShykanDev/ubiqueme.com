@@ -5,12 +5,13 @@ import { collection, doc, getDoc, Timestamp, writeBatch, increment } from 'fireb
 import { db } from '@/firebase'
 import CloudLoader from '@/components/ui/CloudLoader.vue'
 import HomeLayout from '@/layouts/HomeLayout.vue'
-import type { IPublicQR } from '@/interfaces/IPublicQR'
+import type { IPublicQR, IQRScanMetrics } from '@/interfaces/IPublicQR'
 import imageCompression from 'browser-image-compression'
+import { useUserStore } from '@/stores/user'
 
 const route = useRoute()
 const qrId = route.params.qrId as string
-
+const userStore = useUserStore()
 // Base & UI State
 const loading = ref(true)
 const sending = ref(false)
@@ -28,6 +29,9 @@ const processingImage = ref(false)
 
 const QRName = computed(() => qrData.value?.ownerName || 'objeto')
 const reasons = ref<any[]>([]);
+const ownerPlan = userStore.getPlan || 'epsilon';
+
+type plan = 'alpha' | 'beta' | 'epsilon';
 
 const loadQRData = async () => {
   try {
@@ -70,22 +74,38 @@ const handleImageGet = async (e: Event) => {
   }
 }
 
-const getMetrics = async () => {
+const getMetrics = async (typePlan: string) => {
+  const metrics: IQRScanMetrics = { country: "", city: "", region: "" };
   try {
     const res = await fetch('https://ipapi.co/json/')
     const d = await res.json()
-    return { country: d.country_name || "", city: d.city || "", region: d.region || "" }
+
+    //Default minimal metrics
+    metrics.country = d.country_name || "";
+    metrics.city = d.city || "";
+    metrics.region = d.region || "";
+
+    if (typePlan === 'alpha') {
+      return metrics;
+    }
+    if (typePlan === 'beta' || typePlan === 'epsilon') {
+      metrics.lat = d.latitude || "";
+      metrics.lon = d.longitude || "";
+      metrics.postal = d.postal || "";
+      metrics.timezone = d.timezone || "";
+      return metrics;
+    }
   } catch {
-    return { country: "", city: "", region: "" }
+    //Default minimal metrics
+    return metrics;
   }
 }
 
 const handleSubmitMessage = async () => {
   if (!selectedReason.value) return
   sending.value = true
-
   try {
-    const metricData = await getMetrics()
+    const metricData = await getMetrics(ownerPlan)
     const batch = writeBatch(db)
     const QRDoc = doc(db, 'publicQR', qrId)
     const logDoc = doc(collection(db, 'publicQR', qrId, 'logs'), Date.now().toString())
@@ -107,6 +127,8 @@ const handleSubmitMessage = async () => {
     sending.value = false
   }
 }
+
+//Function that calls the updateReasons method when the component is mounted so that way is handled the logic of the reasons
 const updateReasons = () => {
   if (showContactForm.value) return;
   showContactForm.value = true;
@@ -178,7 +200,7 @@ onUnmounted(clearImage)
           <div class="relative">
 
             <div
-              class="relative w-24 h-24 bg-red-500/10 border border-red-500/30 flex items-center justify-center rounded-3xl shadow-[0_0_40px_rgba(239,68,68,0.2)]">
+              class="relative w-24 h-24 bg-red-500/10 border border-red-500/30 flex items-center justify-center rounded-3xl">
               <span class="material-symbols-outlined text-red-500 text-5xl">error</span>
             </div>
           </div>
@@ -209,7 +231,7 @@ onUnmounted(clearImage)
                 <div class="relative inline-flex mx-auto md:mx-0">
 
                   <div
-                    class="relative w-24 h-24 md:w-32 md:h-32 bg-primary flex items-center justify-center rounded-[2.5rem] shadow-[0_0_60px_rgba(123,208,255,0.5)] border-4 border-[#070b14]">
+                    class="relative w-24 h-24 md:w-32 md:h-32 bg-primary flex items-center justify-center rounded-[2.5rem] border-4 border-[#070b14]">
                     <span
                       class="material-symbols-outlined text-on-primary text-5xl md:text-7xl! font-bold">qr_code</span>
                   </div>
@@ -223,7 +245,7 @@ onUnmounted(clearImage)
                       Confirmada</span>
                   </div>
 
-                  <h1 class="text-4xl md:text-6xl font-black text-white leading-[0.9] tracking-tighter drop-shadow-2xl">
+                  <h1 class="text-4xl md:text-6xl font-black text-white leading-[0.9] tracking-tighter">
                     {{ qrData?.ownerName || '---' }}
                   </h1>
 
@@ -236,7 +258,7 @@ onUnmounted(clearImage)
                 <!-- Technical Footer for Identity -->
                 <div class="flex flex-wrap items-center justify-center md:justify-start gap-4 pt-4">
                   <div class="px-5 py-2.5 bg-white/5 rounded-2xl border border-white/10 flex items-center gap-3 ">
-                    <span class="w-2.5 h-2.5 rounded-full bg-green-500 shadow-[0_0_12px_rgba(34,197,94,0.6)]"></span>
+                    <span class="w-2.5 h-2.5 rounded-full bg-green-500 border border-green-400"></span>
                     <span class="text-[10px] text-white/80 font-black uppercase tracking-widest">Servicio Activo</span>
                   </div>
                   <div class="flex -space-x-3">
@@ -245,7 +267,7 @@ onUnmounted(clearImage)
                       <span class="material-symbols-outlined text-sm text-white">person</span>
                     </div>
                     <div
-                      class="w-10 h-10 rounded-full border-2 border-[#070b14] bg-primary flex items-center justify-center shadow-lg">
+                      class="w-10 h-10 rounded-full border-2 border-[#070b14] bg-primary flex items-center justify-center">
                       <span class="material-symbols-outlined text-sm text-black font-bold">check</span>
                     </div>
                   </div>
@@ -296,7 +318,7 @@ onUnmounted(clearImage)
                       </div>
 
                       <button @click="updateReasons"
-                        class="group relative w-full max-w-xs h-16 rounded-2xl bg-white text-black font-black text-lg overflow-hidden mx-auto transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] shadow-2xl">
+                        class="group relative w-full max-w-xs h-16 rounded-2xl bg-white text-black font-black text-lg overflow-hidden mx-auto transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]">
                         <div class="absolute inset-0 bg-primary opacity-0 group-hover:opacity-100 transition-opacity">
                         </div>
                         <div class="relative z-10 flex items-center justify-center gap-3">
@@ -317,7 +339,7 @@ onUnmounted(clearImage)
                           <button v-for="reason in reasons" :key="reason.id" @click="selectedReason = reason.id" :class="[
                             'h-14 rounded-2xl border text-[10px] font-black uppercase tracking-widest transition-all flex flex-col items-center justify-center gap-1.5 px-2 relative overflow-hidden',
                             selectedReason === reason.id
-                              ? 'bg-primary border-primary text-black shadow-[0_0_20px_rgba(123,208,255,0.4)]'
+                              ? 'bg-primary border-primary text-black'
                               : 'bg-white/5 border-white/10 text-white/40 hover:bg-white/10'
                           ]">
                             <span class="material-symbols-outlined text-lg">{{ reason.icon }}</span>
@@ -378,7 +400,7 @@ onUnmounted(clearImage)
 
                           <!-- 1. PREVIEW STATE -->
                           <div v-if="imagePreviewUrl"
-                            class="relative w-full aspect-video rounded-3xl overflow-hidden border-2 border-primary/20 shadow-[0_0_40px_rgba(123,208,255,0.15)] group-hover:border-primary/40 transition-all duration-500">
+                            class="relative w-full aspect-video rounded-3xl overflow-hidden border-2 border-primary/20 group-hover:border-primary/40 transition-all duration-500">
                             <img :src="imagePreviewUrl" alt="Preview" class="w-full h-full object-cover" />
                             <div
                               class="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-6">
@@ -419,7 +441,7 @@ onUnmounted(clearImage)
                           Cancelar
                         </button>
                         <button @click="handleSubmitMessage" :disabled="!selectedReason || sending || processingImage"
-                          class="flex-2 h-14 rounded-2xl bg-primary text-black font-black text-xs uppercase tracking-widest disabled:opacity-30 disabled:grayscale transition-all flex items-center justify-center gap-3 order-1 md:order-2 shadow-xl shadow-primary/10">
+                          class="flex-2 h-14 rounded-2xl bg-primary text-black font-black text-xs uppercase tracking-widest disabled:opacity-30 disabled:grayscale transition-all flex items-center justify-center gap-3 order-1 md:order-2">
                           <span v-if="sending || processingImage"
                             class="w-5 h-5 border-3 border-black/20 border-t-black rounded-full animate-spin"></span>
                           <span v-else>Enviar Mensaje Directo</span>
@@ -434,7 +456,7 @@ onUnmounted(clearImage)
                       <div class="relative inline-flex mx-auto">
 
                         <div
-                          class="relative w-20 h-20 bg-green-500 rounded-full flex items-center justify-center shadow-[0_0_40px_rgba(34,197,94,0.5)]">
+                          class="relative w-20 h-20 bg-green-500 rounded-full flex items-center justify-center border border-green-400">
                           <span class="material-symbols-outlined text-black text-4xl font-black">check_circle</span>
                         </div>
                       </div>

@@ -7,7 +7,7 @@ import { useUserStore } from '@/stores/user'
 import CloudLoader from '@/components/ui/CloudLoader.vue'
 import { nanoid } from 'nanoid'
 import type { IQRCard } from '@/interfaces/IQRCard'
-import type { IQRLog } from '@/interfaces/IPublicQR'
+import type { IPublicQR, IQRLog } from '@/interfaces/IPublicQR'
 import type { Unsubscribe } from 'firebase/auth'
 import QRCardLog from './QRCardLog.vue'
 
@@ -98,6 +98,8 @@ const _setQrPublic = async () => {
       banReason: '',
       totalScans: 0,
       lastScan: null,
+      ownerId: userStore.getUserId,
+      tier: userStore.getPlan,
     }
     const qrDoc = doc(db, `users/${userStore.getUserId}/qrs/${props.docId}`)
     batch.update(qrDoc, {
@@ -244,7 +246,7 @@ onUnmounted(() => {
 
 <template>
   <div
-    class="relative w-full max-w-[380px] bg-white/3 rounded-4xl border border-white/5 overflow-hidden transition-all duration-300 hover:border-primary/20 shadow-2xl group font-google-sans">
+    class="relative w-full max-w-[700px] bg-[#0d111d] rounded-[2.5rem] border border-white/5 overflow-hidden transition-all duration-300 hover:border-primary/20 shadow-lg group font-google-sans">
 
     <!-- Hero Background Accent -->
     <div
@@ -256,7 +258,7 @@ onUnmounted(() => {
     </section>
 
     <!-- Main Card Content -->
-    <div class="p-6 ">
+    <div class="p-6 md:p-8">
       <!-- Header -->
       <div class="flex justify-between items-start mb-6">
         <div class="flex flex-col gap-1">
@@ -312,7 +314,7 @@ onUnmounted(() => {
         </div>
 
         <TransitionGroup v-else name="list" tag="ul"
-          class="flex flex-col space-y-3 overflow-y-auto max-h-[280px] hide-scrollbar overflow-x-hidden rounded-[1.5rem] bg-black/20 p-2">
+          class="flex flex-col space-y-4 overflow-y-auto max-h-[500px] hide-scrollbar overflow-x-hidden rounded-[2rem] bg-black/40 p-4 border border-white/5">
           <QRCardLog v-for="e in qrLogs.slice(0, 5)" :key="e.id" v-bind="e" />
         </TransitionGroup>
 
@@ -348,8 +350,8 @@ onUnmounted(() => {
         <button @click="toggleMenu" :class="[
           'p-2 rounded-xl transition-all duration-300 border flex items-center justify-center',
           showMenu
-            ? 'bg-white/10 border-white/20 shadow-[0_0_10px_rgba(255,255,255,0.3)]'
-            : 'bg-white/5 border-white/10 hover:bg-white/10 hover:shadow-[0_0_8px_rgba(255,255,255,0.2)]'
+            ? 'bg-white/10 border-white/20'
+            : 'bg-white/5 border-white/10 hover:bg-white/10'
         ]">
           <span v-if="!showMenu" class="material-symbols-outlined text-white text-[20px]">more_vert</span>
           <span v-else class="material-symbols-outlined text-white text-[20px]">close</span>
@@ -406,7 +408,7 @@ onUnmounted(() => {
               <button @click="closeAll"
                 class="px-3 py-3 bg-transparent text-slate-400 border border-white/10 rounded-xl font-semibold hover:bg-white/5 hover:text-white transition-colors">Cancelar</button>
               <button
-                class="px-3 py-3 bg-rose-500 text-white rounded-xl font-semibold shadow-[0_4px_15px_rgba(244,63,94,0.3)] hover:bg-rose-600 transition-colors">Confirmar</button>
+                class="px-3 py-3 bg-rose-500 text-white rounded-xl font-semibold hover:bg-rose-600 transition-colors">Confirmar</button>
             </div>
           </div>
         </Transition>
@@ -427,7 +429,7 @@ onUnmounted(() => {
               <button @click="closeAll"
                 class="px-3 py-3 bg-transparent text-slate-400 border border-white/10 rounded-xl font-semibold hover:bg-white/5 hover:text-white transition-colors">Volver</button>
               <button
-                class="px-3 py-3 bg-blue-500 text-white rounded-xl font-semibold shadow-[0_4px_15px_rgba(59,130,246,0.3)] hover:bg-blue-600 transition-colors">Renovar</button>
+                class="px-3 py-3 bg-blue-500 text-white rounded-xl font-semibold hover:bg-blue-600 transition-colors">Renovar</button>
             </div>
           </div>
         </Transition>
@@ -447,7 +449,7 @@ onUnmounted(() => {
               <button @click="closeAll"
                 class="px-3 py-3 bg-transparent text-slate-400 border border-white/10 rounded-xl font-semibold hover:bg-white/5 hover:text-white transition-colors">Descartar</button>
               <button @click="handleEdit"
-                class="px-3 py-3 bg-blue-500 text-white rounded-xl font-semibold shadow-[0_4px_15px_rgba(59,130,246,0.3)] hover:bg-blue-600 transition-colors">Guardar</button>
+                class="px-3 py-3 bg-blue-500 text-white rounded-xl font-semibold hover:bg-blue-600 transition-colors">Guardar</button>
             </div>
           </div>
         </Transition>

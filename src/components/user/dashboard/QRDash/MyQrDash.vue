@@ -131,7 +131,7 @@ const images = imageStore.getImages;
           </div>
 
           <div v-else-if="userQRs.length > 0" key="content"
-            class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 relative z-0">
+            class="grid grid-cols-1 lg:grid-cols-2 gap-12 relative z-0 max-w-7xl mx-auto">
             <QRCard v-for="qr in userQRs" :key="qr.id" v-memo="[qr.status, qr.name, qr.scans, qr.lastScan]" :id="qr.id"
               :name="qr.name" :status="qr.status" :scans="qr.scans" :lastScan="qr.lastScan" :docId="qr.docId"
               :link="qr.link" :isActive="qr.isActive" :isBanned="qr.isBanned" :banReason="qr.banReason"

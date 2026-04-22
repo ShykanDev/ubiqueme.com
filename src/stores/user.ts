@@ -6,6 +6,7 @@ export const useUserStore = defineStore('userStore', {
     creationDate: '',
     userId: '',
     email: '',
+    plan: '',
   }),
   getters: {
     getFullName: (state) => state.fullName,
@@ -13,6 +14,7 @@ export const useUserStore = defineStore('userStore', {
     getCreationDate: (state) => state.creationDate,
     getUserId: (state) => state.userId,
     getEmail: (state) => state.email,
+    getPlan: (state) => state.plan,
   },
   actions: {
     setFullName(fullName: string) {
@@ -26,6 +28,9 @@ export const useUserStore = defineStore('userStore', {
     },
     setEmail(email: string) {
       this.email = email
+    },
+    setPLan(plan: string) {
+      this.plan = plan
     },
     clearFullName() {
       this.fullName = ''

@@ -1,21 +1,23 @@
 <template>
   <HomeLayout>
     <template #main>
-      <section class="relative min-h-screen w-full flex flex-col md:flex-row bg-[#070b14] font-google-sans overflow-hidden">
-        
-        <!-- 📐 BACKGROUND CROSSHATCH (Lightweight) -->
-        <div class="absolute inset-0 z-0 opacity-[0.03]" 
-             style="background-image: repeating-linear-gradient(45deg, #fff 0, #fff 1px, transparent 0, transparent 40px), repeating-linear-gradient(-45deg, #fff 0, #fff 1px, transparent 0, transparent 40px);">
-        </div>
-        
-        <!-- 💠 LEFT SIDE: LOGOS & TABS (Desktop) -->
-        <div class="relative hidden md:flex md:w-1/2 lg:w-3/5 flex-col justify-center p-16 lg:p-24 border-r border-white/5">
+      <section
+        class="relative min-h-screen w-full flex flex-col md:flex-row bg-[#070b14] font-google-sans overflow-hidden">
 
-          
+        <!-- 📐 BACKGROUND CROSSHATCH (Lightweight) -->
+        <div class="absolute inset-0 z-0 opacity-[0.03]"
+          style="background-image: repeating-linear-gradient(45deg, #fff 0, #fff 1px, transparent 0, transparent 40px), repeating-linear-gradient(-45deg, #fff 0, #fff 1px, transparent 0, transparent 40px);">
+        </div>
+
+        <!-- 💠 LEFT SIDE: LOGOS & TABS (Desktop) -->
+        <div
+          class="relative hidden md:flex md:w-1/2 lg:w-3/5 flex-col justify-center p-16 lg:p-24 border-r border-white/5">
+
+
           <div class="relative z-10 space-y-10">
             <div class="inline-flex items-center gap-3">
               <div class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-2xl">
-                 <span class="text-black font-black text-2xl">U</span>
+                <span class="text-black font-black text-2xl">U</span>
               </div>
               <h2 class="text-4xl font-black text-white tracking-tighter uppercase">Ubiqueme</h2>
             </div>
@@ -31,14 +33,14 @@
             </div>
 
             <div class="grid grid-cols-2 gap-4 max-w-sm">
-               <div class="p-4 bg-white/[0.03] border border-white/10 rounded-2xl">
-                  <span class="material-symbols-outlined text-primary mb-2">shield_check</span>
-                  <p class="text-[10px] font-black text-white/50 uppercase tracking-widest">Protección Total</p>
-               </div>
-               <div class="p-4 bg-white/[0.03] border border-white/10 rounded-2xl">
-                  <span class="material-symbols-outlined text-primary mb-2">bolt</span>
-                  <p class="text-[10px] font-black text-white/50 uppercase tracking-widest">Aviso al Instante</p>
-               </div>
+              <div class="p-4 bg-white/[0.03] border border-white/10 rounded-2xl">
+                <span class="material-symbols-outlined text-primary mb-2">shield_check</span>
+                <p class="text-[10px] font-black text-white/50 uppercase tracking-widest">Protección Total</p>
+              </div>
+              <div class="p-4 bg-white/[0.03] border border-white/10 rounded-2xl">
+                <span class="material-symbols-outlined text-primary mb-2">bolt</span>
+                <p class="text-[10px] font-black text-white/50 uppercase tracking-widest">Aviso al Instante</p>
+              </div>
             </div>
           </div>
         </div>
@@ -46,12 +48,12 @@
         <!-- 🚀 RIGHT SIDE: REGISTER FORM -->
         <div class="relative grow md:w-1/2 lg:w-2/5 flex items-center justify-center p-8 sm:p-16 z-10">
           <div class="w-full max-w-md space-y-8">
-            
+
             <div class="md:hidden flex flex-col items-center mb-8 text-center">
-               <div class="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center mb-6">
-                  <span class="text-black font-black text-3xl">U</span>
-               </div>
-               <h2 class="text-2xl font-black text-white uppercase tracking-widest">Registro de Red</h2>
+              <div class="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center mb-6">
+                <span class="text-black font-black text-3xl">U</span>
+              </div>
+              <h2 class="text-2xl font-black text-white uppercase tracking-widest">Registro de Red</h2>
             </div>
 
             <header class="space-y-2">
@@ -61,13 +63,15 @@
 
             <form @submit.prevent="handleRegister" class="space-y-5">
               <div class="space-y-2">
-                <label class="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] ml-1">Nombre Completo</label>
+                <label class="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] ml-1">Nombre
+                  Completo</label>
                 <input id="name" v-model="form.name" type="text" placeholder="Juan Pérez"
                   class="w-full px-5 py-4 bg-white/[0.03] border border-white/10 rounded-2xl text-white placeholder:text-white/20 focus:border-primary focus:outline-none focus:bg-white/[0.05] transition-all" />
               </div>
 
               <div class="space-y-2">
-                <label class="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] ml-1">Correo Electrónico</label>
+                <label class="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] ml-1">Correo
+                  Electrónico</label>
                 <input id="email" v-model="form.email" type="email" placeholder="nombre@dominio.com"
                   class="w-full px-5 py-4 bg-white/[0.03] border border-white/10 rounded-2xl text-white placeholder:text-white/20 focus:border-primary focus:outline-none focus:bg-white/[0.05] transition-all" />
               </div>
@@ -89,14 +93,18 @@
                 <input id="terms" v-model="form.terms" type="checkbox"
                   class="mt-1 w-4 h-4 rounded border-white/10 bg-white/5 text-primary focus:ring-primary/20" />
                 <label for="terms" class="text-[10px] font-bold text-white/40 uppercase tracking-wider leading-relaxed">
-                  Acepto los <span class="text-white hover:text-primary cursor-pointer transition-colors">Términos</span> y la <span class="text-white hover:text-primary cursor-pointer transition-colors">Política de Privacidad</span>.
+                  Acepto los <span
+                    class="text-white hover:text-primary cursor-pointer transition-colors">Términos</span> y la <span
+                    class="text-white hover:text-primary cursor-pointer transition-colors">Política de
+                    Privacidad</span>.
                 </label>
               </div>
 
               <button type="submit"
                 class="group w-full h-16 bg-white text-black rounded-2xl font-black text-lg transition-all duration-300 hover:bg-primary active:scale-[0.98] flex items-center justify-center gap-3">
                 <span>Registrarme</span>
-                <span class="material-symbols-outlined font-black transition-transform group-hover:translate-x-1">app_registration</span>
+                <span
+                  class="material-symbols-outlined font-black transition-transform group-hover:translate-x-1">app_registration</span>
               </button>
             </form>
 
@@ -149,11 +157,12 @@ const handleRegister = async () => {
     const user = credentials.user;
     await updateProfile(user, { displayName: form.name.trim() });
     await sendEmailVerification(user);
-    
+
     const batch = writeBatch(db);
     batch.set(doc(db, `users/${user.uid}`), {
       uid: user.uid,
       isActive: true,
+      plan: 'alpha',
       createdAt: Timestamp.now(),
     });
 
