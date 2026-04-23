@@ -3,6 +3,7 @@ import FeaturesComponent from '@/components/home/Features/FeaturesComponent.vue'
 import PricingPlans from '@/components/home/Pricing/PricingPlans.vue'
 import StepByStep from '@/components/home/StepByStep/StepByStep.vue'
 import HomeLayout from '@/layouts/HomeLayout.vue'
+import { useUserStore } from '@/stores/user';
 </script>
 
 <template>
@@ -51,7 +52,7 @@ import HomeLayout from '@/layouts/HomeLayout.vue'
                   class="px-10 py-5 bg-white text-black font-black uppercase tracking-widest text-sm rounded-2xl transition-all duration-300 hover:bg-primary hover:text-black active:scale-95 shadow-2xl font-google-sans">
                   Obtener Código QR
                 </router-link>
-                <router-link :to="{ name: 'login' }"
+                <router-link v-if="!useUserStore().getUserId" :to="{ name: 'login' }"
                   class="px-10 py-5 bg-white/5 border border-white/10 text-white font-black uppercase tracking-widest text-sm rounded-2xl hover:bg-white/10 transition-all font-google-sans">
                   Iniciar Sesión
                 </router-link>

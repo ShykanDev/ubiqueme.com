@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { useUserStore } from '@/stores/user';
 import { RouterLink } from 'vue-router'
 
 const navLinks = [
@@ -12,7 +13,7 @@ const navLinks = [
 <template>
   <div class="font-google-sans">
     <!-- TopNavBar -->
-    <nav class="fixed top-0 w-full z-50 bg-slate-950/90 border-b border-white/5 shadow-md">
+    <nav class="fixed top-0 w-full z-50 bg-[#020617] border-b border-white/5 shadow-md">
       <div class="flex justify-between items-center h-20 px-8 md:px-24 w-full max-w-screen-2xl mx-auto">
 
         <!-- Logo -->
@@ -29,14 +30,13 @@ const navLinks = [
         </div>
 
         <!-- Buttons -->
-        <div class="flex items-center space-x-6 font-rubik">
-          <RouterLink :to="{ name: 'login' }"
-            class="text-slate-400 hover:text-slate-100 transition-all text-sm font-semibold">
+        <div class="flex items-center space-x-6 font-rubik" v-if="!useUserStore().getUserId">
+          <RouterLink :to="{ name: 'login' }" class="text-slate-400 hover:text-slate-100 transition-all text-sm ">
             Iniciar Sesión
           </RouterLink>
 
           <RouterLink :to="{ name: 'register' }"
-            class="bg-sky-400 text-white px-6 py-2.5 rounded-full text-sm font-bold hover:opacity-80 active:scale-95 transition-all">
+            class="bg-sky-950 border-white/30 border text-white px-6 py-2.5 rounded-full text-sm  hover:opacity-80 active:scale-95 transition-all">
             Registrarse
           </RouterLink>
         </div>

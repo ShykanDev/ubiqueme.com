@@ -117,29 +117,32 @@ const images = imageStore.getImages;
           <h2 class="text-2xl font-black text-white tracking-tight uppercase">Mis Registros</h2>
         </div>
         <button
-          class="w-full md:w-auto flex items-center justify-center gap-3 px-8 py-4 rounded-xl bg-white text-black font-black uppercase tracking-widest text-xs shadow-xl hover:bg-primary transition-all active:scale-95">
+          class="w-full cursor-pointer md:w-auto flex items-center justify-center gap-3 px-8 py-4 rounded-xl   font-black  text-xs  bg-primary-container text-primary transition-all active:scale-95">
           <span class="material-symbols-outlined font-black">add</span>
-          Vincular Nuevo Código
+          Agregar nuevo QR
         </button>
       </div>
 
-      <div class="relative min-h-[400px]">
-        <Transition name="fade">
+      <div class="relative">
+        <Transition name="fade" mode="out-in">
+          <!-- Loading Grid -->
           <div v-if="isLoading" key="loading"
-            class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 absolute inset-0 w-full z-10">
-            <QRCardSkeleton v-for="(_, i) in 3" :key="i" />
+            class="grid grid-cols-1 lg:grid-cols-2 gap-12 w-full max-w-[1500px] mx-auto z-10">
+            <QRCardSkeleton v-for="(_, i) in 2" :key="i" />
           </div>
 
+          <!-- Content Grid -->
           <div v-else-if="userQRs.length > 0" key="content"
-            class="grid grid-cols-1 lg:grid-cols-2 gap-12 relative z-0 max-w-7xl mx-auto">
+            class="grid grid-cols-1 lg:grid-cols-2 gap-12 relative z-0 max-w-[1500px] mx-auto">
             <QRCard v-for="qr in userQRs" :key="qr.id" v-memo="[qr.status, qr.name, qr.scans, qr.lastScan]" :id="qr.id"
               :name="qr.name" :status="qr.status" :scans="qr.scans" :lastScan="qr.lastScan" :docId="qr.docId"
               :link="qr.link" :isActive="qr.isActive" :isBanned="qr.isBanned" :banReason="qr.banReason"
               :planPurchasedAt="qr.planPurchasedAt" :planEndDate="qr.planEndDate" :createdAt="qr.createdAt" />
           </div>
 
+          <!-- Empty State -->
           <div v-else-if="noQRsFound" key="empty"
-            class="flex flex-col items-center justify-center py-20 text-center absolute inset-0 w-full">
+            class="flex flex-col items-center justify-center py-20 text-center w-full">
             <span class="material-symbols-outlined text-6xl text-slate-500 mb-4">qr_code_2</span>
             <h3 class="text-xl font-semibold text-white mb-2">Aún no tiene códigos QR registrados</h3>
             <p class="text-slate-400">¡Cree su primer código QR para empezar!</p>

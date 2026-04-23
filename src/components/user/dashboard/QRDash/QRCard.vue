@@ -10,6 +10,7 @@ import type { IQRCard } from '@/interfaces/IQRCard'
 import type { IPublicQR, IQRLog } from '@/interfaces/IPublicQR'
 import type { Unsubscribe } from 'firebase/auth'
 import QRCardLog from './QRCardLog.vue'
+import QRCardLogSkeleton from '@/components/ui/user/dashboard/QRCardLogSkeleton.vue'
 
 const props = defineProps<IQRCard>()
 
@@ -246,7 +247,8 @@ onUnmounted(() => {
 
 <template>
   <div
-    class="relative w-full max-w-[700px] bg-[#0d111d] rounded-[2.5rem] border border-white/5 overflow-hidden transition-all duration-300 hover:border-primary/20 shadow-lg group font-google-sans">
+    class="relative w-full max-w-[700px] bg-[#04050a] rounded-[2.5rem] border border-white/5 overflow-hidden transition-all duration-300 hover:border-primary/20 shadow-lg group font-google-sans">
+
 
     <!-- Hero Background Accent -->
     <div
@@ -301,16 +303,18 @@ onUnmounted(() => {
       <!-- Logs Section -->
       <div class="space-y-3 mb-6">
         <div class="flex items-center justify-between mb-2">
-          <h5 class="text-white/40 text-[10px] font-black  tracking-[0.2em] m-0 font-google-sans">Historial de
-            Actividad</h5>
+          <h5 class="text-white/40 text-[10px] font-semibold m-0 font-google-sans flex items-center gap-1">
+            <span class="material-symbols-outlined text-white text-[10px]">history</span>
+            Historial de Escaneos
+          </h5>
           <button v-if="!logsLoaded && !isLogsLoading" @click="loadLogs"
-            class="text-[10px] text-primary font-bold  tracking-wider hover:underline transition-all mt-0.5 font-google-sans cursor-pointer">
+            class="bg-primary-container text-secondary rounded-xl px-4 py-2 font-poppins text-xs font-normal cursor-pointer hover:bg-primary-container/80 transition-colors">
             Mostrar registros
           </button>
         </div>
 
-        <div v-if="isLogsLoading" class="flex items-center justify-center py-4">
-          <div class="w-4 h-4 border-2 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+        <div v-if="isLogsLoading" class="flex flex-col space-y-4">
+          <QRCardLogSkeleton v-for="i in 2" :key="i" />
         </div>
 
         <TransitionGroup v-else name="list" tag="ul"
@@ -455,6 +459,11 @@ onUnmounted(() => {
         </Transition>
       </div>
     </Transition>
+
+
+    <!-- Footer separator -->
+
+
   </div>
 </template>
 

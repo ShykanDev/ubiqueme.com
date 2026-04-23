@@ -63,10 +63,11 @@ const activateMap = () => {
       const lon = parseFloat(props.scanMetrics.lon);
 
       const map = L.map(`map-${props.id}`).setView([lat, lon], 11);
+      map.attributionControl.setPrefix(false);
 
-      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
         maxZoom: 13,
-        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'
       }).addTo(map);
 
       L.circle([lat, lon], {
@@ -126,7 +127,10 @@ import { ref } from 'vue'
       <!-- 4️⃣ SECCIÓN DE MAPA (On-Demand) -->
       <div v-if="scanMetrics.lat && scanMetrics.lon" class="space-y-2">
         <div class="flex items-center justify-between">
-          <p class="text-white/40 text-[10px] font-black uppercase tracking-[0.1em]">Ubicación aprox.</p>
+          <p class="text-white/40 text-[10px] font-normal flex items-center gap-1 ">
+            <span class="material-symbols-outlined text-[16px] font-black">location_on</span>
+            Ubicación aproximada
+          </p>
           <button v-if="!isMapActive" @click="activateMap"
             class="text-[9px] font-black text-primary uppercase tracking-widest hover:underline transition-all cursor-pointer">
             Ver Mapa de Ubicación

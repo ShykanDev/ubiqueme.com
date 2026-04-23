@@ -38,6 +38,9 @@ export const useUserStore = defineStore('userStore', {
     clearUser() {
       this.fullName = ''
       this.creationDate = ''
+      this.userId = ''
+      this.email = ''
+      this.plan = ''
     },
   },
   persist: true,

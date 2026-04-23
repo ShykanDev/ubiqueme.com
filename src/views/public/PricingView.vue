@@ -86,11 +86,11 @@ const handleSelect = (id: string) => {
               <span class="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Planes de Protección</span>
             </div>
             <h1 class="text-5xl md:text-7xl font-black text-white tracking-tighter uppercase leading-[0.9]">
-              Invierte en tu <br />
+              Invierta en su <br />
               <span class="text-primary italic">Tranquilidad.</span>
             </h1>
             <p class="text-white/40 text-lg font-medium">
-              Elige el nivel de blindaje que mejor se adapte a tus necesidades. Sin contratos forzosos.
+              Elija el nivel de blindaje que mejor se adapte a sus necesidades. Sin contratos forzosos.
             </p>
           </div>
 

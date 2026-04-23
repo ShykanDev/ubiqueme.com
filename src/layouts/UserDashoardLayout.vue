@@ -1,10 +1,11 @@
 <script lang="ts" setup>
+import { useUserStore } from '@/stores/user';
 import { RouterLink } from 'vue-router'
 
 const navLinks = [
   {
     name: 'Inicio',
-    pathName: 'dashboard',
+    pathName: 'home',
   },
   {
     name: 'Mis Códigos',
@@ -35,16 +36,16 @@ const navLinks = [
           </RouterLink>
         </div>
 
+
         <!-- Buttons -->
-        <div class="flex items-center space-x-6">
-          <RouterLink :to="{ name: 'login' }"
-            class="text-slate-400 hover:text-slate-100 transition-all text-sm font-semibold">
+        <div class="flex items-center space-x-6 font-rubik" v-if="!useUserStore().getUserId">
+          <RouterLink :to="{ name: 'login' }" class="text-slate-400 hover:text-slate-100 transition-all text-sm ">
             Iniciar Sesión
           </RouterLink>
 
           <RouterLink :to="{ name: 'register' }"
-            class="bg-sky-400 text-black px-6 py-2.5 rounded-full text-sm font-bold hover:opacity-80 active:scale-95 transition-all">
-            Nuevo Registro
+            class="bg-sky-950 border-white/30 border text-white px-6 py-2.5 rounded-full text-sm  hover:opacity-80 active:scale-95 transition-all">
+            Registrarse
           </RouterLink>
         </div>
       </div>
