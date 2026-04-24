@@ -93,13 +93,13 @@ const _setQrPublic = async () => {
     const publicQrRef = doc(db, 'publicQR', props.id);
     const publicQRData: IPublicQR = {
       id: props.id,
-      ownerName: props.name,
+      name: props.name,
       status: 'Active',
       isBanned: false,
       banReason: '',
-      totalScans: 0,
+      totalScans: props.scans,
       lastScan: null,
-      ownerId: userStore.getUserId,
+      uid: userStore.getUserId,
       tier: userStore.getPlan,
     }
     const qrDoc = doc(db, `users/${userStore.getUserId}/qrs/${props.docId}`)
@@ -260,13 +260,26 @@ onUnmounted(() => {
     </section>
 
     <!-- Main Card Content -->
-    <div class="p-6 md:p-8">
+    <div class="p-6 md:p-8 relative">
+      <!-- Actions Footer -->
+      <div class="flex absolute top-2 right-5">
+        <button @click="toggleMenu" :class="[
+          'p-2 rounded-xl transition-all duration-300 border flex items-center justify-center',
+          showMenu
+            ? 'bg-white/10 border-white/20'
+            : 'bg-white/5 border-white/10 hover:bg-white/10'
+        ]">
+          <span v-if="!showMenu" class="material-symbols-outlined text-white text-[20px]">more_vert</span>
+          <span v-else class="material-symbols-outlined text-white text-[20px]">close</span>
+        </button>
+      </div>
+
       <!-- Header -->
-      <div class="flex justify-between items-start mb-6">
+      <div class="flex justify-between items-start mb-6  px-10">
         <div class="flex flex-col gap-1">
           <h3 class="text-white text-xl font-black tracking-tight m-0 ">{{ propsComputed.name }}</h3>
           <span class="text-[9px] text-white/30 font-black uppercase tracking-widest font-mono">ID: {{ propsComputed.id
-            }}</span>
+          }}</span>
         </div>
 
         <div
@@ -348,19 +361,7 @@ onUnmounted(() => {
         </Transition>
       </section>
 
-      <!-- Actions Footer -->
-      <div class="flex items-center justify-end">
-        <!-- MENU -->
-        <button @click="toggleMenu" :class="[
-          'p-2 rounded-xl transition-all duration-300 border flex items-center justify-center',
-          showMenu
-            ? 'bg-white/10 border-white/20'
-            : 'bg-white/5 border-white/10 hover:bg-white/10'
-        ]">
-          <span v-if="!showMenu" class="material-symbols-outlined text-white text-[20px]">more_vert</span>
-          <span v-else class="material-symbols-outlined text-white text-[20px]">close</span>
-        </button>
-      </div>
+
     </div>
 
     <!-- Dropdown Menu -->
@@ -369,7 +370,7 @@ onUnmounted(() => {
       leave-active-class="transition-all duration-200 ease-in" leave-from-class="opacity-100 translate-y-0 scale-100"
       leave-to-class="opacity-0 -translate-y-2 scale-95">
       <div v-if="showMenu"
-        class="absolute bottom-[72px] right-6 w-[200px] bg-[#1a1d35] border border-white/10 rounded-2xl p-2 z-100">
+        class="absolute top-20 right-6 w-[200px] bg-[#1a1d35] border border-white/10 rounded-2xl p-2 z-100">
         <template v-for="(option, index) in menuOptions" :key="index">
           <div v-if="option.divider" class="h-1px bg-white/5 my-1.5"></div>
           <button v-else @click="option.action" :class="[

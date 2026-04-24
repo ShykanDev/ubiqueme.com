@@ -27,7 +27,7 @@ const capturedImage = ref<string | null>(null)
 const imagePreviewUrl = ref('')
 const processingImage = ref(false)
 
-const QRName = computed(() => qrData.value?.ownerName || 'objeto')
+const QRName = computed(() => qrData.value?.name || 'objeto')
 const reasons = ref<any[]>([]);
 const ownerPlan = userStore.getPlan || 'epsilon';
 
@@ -246,7 +246,7 @@ onUnmounted(clearImage)
                   </div>
 
                   <h1 class="text-4xl md:text-6xl font-black text-white leading-[0.9] tracking-tighter">
-                    {{ qrData?.ownerName || '---' }}
+                    {{ qrData?.name || '---' }}
                   </h1>
 
                   <p class="text-white/40 text-sm md:text-lg max-w-sm font-medium leading-relaxed mx-auto md:mx-0">
@@ -330,7 +330,7 @@ onUnmounted(clearImage)
                     </div>
 
                     <!-- 2. MESSAGING FLOW -->
-                    <div v-else-if="showContactForm && !isSuccess && !loading && qrData?.ownerName" class="space-y-8">
+                    <div v-else-if="showContactForm && !isSuccess && !loading && qrData?.name" class="space-y-8">
                       <!-- REASON SELECTION -->
                       <div class="space-y-4">
                         <label class="text-[10px] font-black text-white/50 uppercase tracking-[0.3em] ml-2">Motivo del

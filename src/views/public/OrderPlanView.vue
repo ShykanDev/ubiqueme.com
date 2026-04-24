@@ -27,9 +27,9 @@ const plans = [
     price: 'Gratis',
     icon: 'shield',
     color: '#ffffff',
-    description: 'Esencial para activos domésticos de bajo riesgo.',
+    description: 'Esencial para QRs domésticos de bajo riesgo.',
     features: [
-      { t: 'Capacidad', v: 'Hasta 3 Activos', d: 'Límite de dispositivos vinculados.', i: 'inventory_2', c: '#ffffff' },
+      { t: 'Capacidad', v: 'Hasta 3 QRs', d: 'Límite de dispositivos vinculados.', i: 'inventory_2', c: '#ffffff' },
       { t: 'Métricas', v: 'Contador Escaneos', d: 'Estadísticas básicas de acceso.', i: 'analytics', c: '#ffffff' },
       { t: 'Privacidad', v: 'Registro Básico', d: 'Protocolo estándar de protección.', i: 'vpn_lock', c: '#ffffff' }
     ]
@@ -43,9 +43,9 @@ const plans = [
     description: 'Seguridad profesional con alertas y logs avanzados.',
     features: [
       { t: 'Historial', v: '30 Días de Log', d: 'Registro detallado de actividad.', i: 'history', c: '#7bd0ff' },
-      { t: 'Evidencia', v: 'Foto Vigilancia', d: 'Captura visual en cada escaneo.', i: 'photo_camera', c: '#7bd0ff' },
+      { t: 'Evidencia', v: 'Foto del escaneo', d: 'Se permite al usuario subir una foto al momento de reportar el QR.', i: 'photo_camera', c: '#7bd0ff' },
       { t: 'Alertas', v: 'Email Instantáneo', d: 'Notificaciones en tiempo real.', i: 'notifications_active', c: '#7bd0ff' },
-      { t: 'Repos', v: '3 Digitales', d: 'Reposiciones inmediatas sin costo.', i: 'autorenew', c: '#7bd0ff' }
+      { t: 'Repos', v: '3 Digitales', d: 'Reposiciones digitales del QR inmediatas sin costo.', i: 'autorenew', c: '#7bd0ff' }
     ]
   },
   {
@@ -54,12 +54,12 @@ const plans = [
     price: '$199 MXN',
     icon: 'military_tech',
     color: '#ffd264',
-    description: 'Control absoluto con rastreo GPS y soporte 24/7.',
+    description: 'Control absoluto con todas las características premium (historial, mensajes códigos QR ilimitados) y soporte prioritario.',
     features: [
       { t: 'Tracking', v: 'Mapa / ScanLoc', d: 'Rastreo geográfico interactivo.', i: 'map', c: '#ffd264' },
       { t: 'Capacidad+', v: 'QRs Ilimitados', d: 'Sin restricciones de volumen.', i: 'all_inclusive', c: '#ffd264' },
-      { t: 'Soporte', v: 'Prioritario 24/7', d: 'Atención técnica especializada.', i: 'support_agent', c: '#ffd264' },
-      { t: 'Logs', v: 'Historial Eterno', d: 'Almacenamiento sin caducidad.', i: 'database', c: '#ffd264' }
+      { t: 'Soporte', v: 'Prioritario', d: 'Atención técnica especializada y prioritaria.', i: 'support_agent', c: '#ffd264' },
+      { t: 'Logs', v: 'Historial Ilimitado', d: 'Almacenamiento sin caducidad.', i: 'database', c: '#ffd264' }
     ]
   }
 ]
@@ -84,9 +84,6 @@ const handleSubmit = async () => {
   isSuccess.value = true
 }
 
-onMounted(() => {
-  window.scrollTo(0, 0)
-})
 </script>
 
 <template>
@@ -113,11 +110,11 @@ onMounted(() => {
             </button>
             <div class="space-y-2">
               <h1 class="text-5xl md:text-6xl font-medium tracking-tight leading-none text-white">
-                Elige tu <span class="bg-gradient-to-r from-primary to-blue-400 bg-clip-text text-transparent">Nivel de
-                  Seguridad</span>
+                Seleccione su <span
+                  class="bg-gradient-to-r from-primary to-blue-400 bg-clip-text text-transparent">Plan</span>
               </h1>
               <p class="text-lg text-white/40 font-light max-w-2xl">
-                Selecciona la infraestructura de protección que mejor se adapte a tus activos. Escalable en cualquier
+                Selecciona la infraestructura de protección que mejor se adapte a tus QRs. Escalable en cualquier
                 momento.
               </p>
             </div>
@@ -130,8 +127,8 @@ onMounted(() => {
               <button v-for="plan in plans" :key="plan.id" type="button" @click="selectedPlan = plan.id" :class="[
                 'relative group text-left rounded-[2rem] border transition-all duration-500 overflow-hidden outline-none',
                 selectedPlan === plan.id
-                  ? 'bg-white/[0.03] border-white/20 shadow-[0_20px_50px_rgba(0,0,0,0.5)]'
-                  : 'bg-white/[0.01] border-white/5 hover:border-white/10 opacity-60 hover:opacity-100'
+                  ? 'bg-black border-white/20 shadow-[0_20px_50px_rgba(0,0,0,0.5)]'
+                  : 'bg-black/20 opacity-40 border-white/5 hover:border-white/10 hover:opacity-100'
               ]">
 
                 <div class="p-8 h-full flex flex-col gap-8">

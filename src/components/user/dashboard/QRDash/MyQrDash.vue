@@ -2,38 +2,14 @@
 import { useUserStore } from '@/stores/user'
 import QRCard from './QRCard.vue'
 import { onMounted, onUnmounted, ref } from 'vue'
-import { collection, getFirestore, onSnapshot, Timestamp } from 'firebase/firestore'
+import { collection, getFirestore, onSnapshot, Timestamp, doc, runTransaction, increment } from 'firebase/firestore'
 import QRCardSkeleton from '@/components/ui/user/dashboard/QRCardSkeleton.vue'
 import { useImageStore } from '@/stores/imageStore'
 
 import type { IMyQR } from '@/interfaces/IMyQR'
+import { nanoid } from 'nanoid'
+import LineLoader from '@/components/ui/LineLoader.vue'
 
-const userQRsDemo: IMyQR[] = [
-  {
-    id: 'ABC123',
-    name: 'MacBook Pro',
-    status: 'Active',
-    scans: 12,
-    lastScan: 'Apr 8',
-    statusClass: 'bg-green-500/10 text-green-400',
-  },
-  {
-    id: 'XYZ789',
-    name: 'Llaves del auto',
-    status: 'Process',
-    scans: 5,
-    lastScan: 'Mar 15',
-    statusClass: 'bg-yellow-500/10 text-yellow-400',
-  },
-  {
-    id: 'LMN456',
-    name: 'Mochila',
-    status: 'Error',
-    scans: 34,
-    lastScan: 'Apr 2',
-    statusClass: 'bg-red-500/10 text-red-400',
-  },
-]
 const userQRs = ref<IMyQR[]>([])
 const userStore = useUserStore()
 const isLoading = ref(true);
@@ -42,6 +18,71 @@ const noQRsFound = ref(false);
 const db = getFirestore();
 const userId = userStore.getUserId ?? '';
 const userQrsCollection = collection(db, `users/${userId}/qrs`);
+
+//Add QR doc to user ATENTION THIS MUST BE ONLY FOR ADMIN ITS CREATED HERE FOR TEST PURPOUSE ONLY
+const createQR = async () => {
+  try {
+    await runTransaction(db, async (transaction) => {
+      // 1. Generamos el ID
+      const newQRId = nanoid(15);
+
+      // 2. Referencias a los documentos (Público y Privado)
+      const publicQrRef = doc(db, `publicQR/${newQRId}`);
+      const userQrRef = doc(db, `users/${userId}/qrs/${newQRId}`);
+
+      // 3. Verificamos idempotencia (Que no exista en la base de datos pública globalmente)
+      const qrDoc = await transaction.get(publicQrRef);
+      if (qrDoc.exists()) {
+        throw new Error("Colisión de ID. La transacción se cancelará y puede reintentar.");
+      }
+
+      // 4. Si no existe, creamos el documento en ambas colecciones atómicamente
+      // Colección Pública (Para cuando lo escaneen)
+      transaction.set(publicQrRef, {
+        id: newQRId,
+        name: 'Nuevo QR (Prueba)',
+        status: 'Active',
+        lastScan: null,
+        totalScans: 0,
+        isBanned: false,
+        banReason: '',
+        docId: newQRId,
+        uid: userId,
+        tier: 'free',
+        createdAt: Timestamp.now()
+      });
+
+      // Subcolección del Usuario (Para su Dashboard)
+      transaction.set(userQrRef, {
+        id: newQRId,
+        uid: userId,
+        name: 'Nuevo QR (Prueba)',
+        status: 'Active',
+        scans: 0,
+        lastScan: "",
+        isActive: true,
+        isBanned: false,
+        banReason: '',
+        planEndDate: null,
+        planPurchasedAt: null,
+        createdAt: Timestamp.now()
+      });
+
+      // Incrementamos el contador global de QRs en el documento PRINCIPAL del usuario
+      const userRootRef = doc(db, `users/${userId}`);
+      transaction.update(userRootRef, {
+        totalQRs: increment(1)
+      });
+
+    });
+
+    console.log("¡QR creado con éxito atómicamente!");
+  } catch (error) {
+    console.error("Fallo al crear el QR (Posible colisión o error de red):", error);
+  }
+}
+
+
 
 
 //listener to user QRs
@@ -116,7 +157,7 @@ const images = imageStore.getImages;
           <p class="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] mb-1">Visión General</p>
           <h2 class="text-2xl font-black text-white tracking-tight uppercase">Mis Registros</h2>
         </div>
-        <button
+        <button @click="createQR"
           class="w-full cursor-pointer md:w-auto flex items-center justify-center gap-3 px-8 py-4 rounded-xl   font-black  text-xs  bg-primary-container text-primary transition-all active:scale-95">
           <span class="material-symbols-outlined font-black">add</span>
           Agregar nuevo QR
@@ -124,30 +165,28 @@ const images = imageStore.getImages;
       </div>
 
       <div class="relative">
-        <Transition name="fade" mode="out-in">
-          <!-- Loading Grid -->
-          <div v-if="isLoading" key="loading"
-            class="grid grid-cols-1 lg:grid-cols-2 gap-12 w-full max-w-[1500px] mx-auto z-10">
-            <QRCardSkeleton v-for="(_, i) in 2" :key="i" />
-          </div>
+        <!-- Loading Grid -->
+        <div v-if="isLoading" key="loading"
+          class="flex justify-center items-center  w-full z-10 absolute  left-1/2 -translate-x-1/2 -translate-y-1/2">
+          <LineLoader />
+        </div>
 
-          <!-- Content Grid -->
-          <div v-else-if="userQRs.length > 0" key="content"
-            class="grid grid-cols-1 lg:grid-cols-2 gap-12 relative z-0 max-w-[1500px] mx-auto">
-            <QRCard v-for="qr in userQRs" :key="qr.id" v-memo="[qr.status, qr.name, qr.scans, qr.lastScan]" :id="qr.id"
-              :name="qr.name" :status="qr.status" :scans="qr.scans" :lastScan="qr.lastScan" :docId="qr.docId"
-              :link="qr.link" :isActive="qr.isActive" :isBanned="qr.isBanned" :banReason="qr.banReason"
-              :planPurchasedAt="qr.planPurchasedAt" :planEndDate="qr.planEndDate" :createdAt="qr.createdAt" />
-          </div>
+        <!-- Content Grid -->
+        <div v-show="userQRs.length > 0" key="content"
+          class="grid grid-cols-1 lg:grid-cols-2 gap-12 relative z-0 max-w-[1500px] mx-auto animate-fade-up">
+          <QRCard v-for="qr in userQRs" :key="qr.id" v-memo="[qr.status, qr.name, qr.scans, qr.lastScan]" :id="qr.id"
+            :name="qr.name" :status="qr.status" :scans="qr.scans" :lastScan="qr.lastScan" :docId="qr.docId"
+            :link="qr.link" :isActive="qr.isActive" :isBanned="qr.isBanned" :banReason="qr.banReason"
+            :planPurchasedAt="qr.planPurchasedAt" :planEndDate="qr.planEndDate" :createdAt="qr.createdAt" />
+        </div>
 
-          <!-- Empty State -->
-          <div v-else-if="noQRsFound" key="empty"
-            class="flex flex-col items-center justify-center py-20 text-center w-full">
-            <span class="material-symbols-outlined text-6xl text-slate-500 mb-4">qr_code_2</span>
-            <h3 class="text-xl font-semibold text-white mb-2">Aún no tiene códigos QR registrados</h3>
-            <p class="text-slate-400">¡Cree su primer código QR para empezar!</p>
-          </div>
-        </Transition>
+        <!-- Empty State -->
+        <div v-show="!isLoading && noQRsFound" key="empty"
+          class="flex flex-col items-center justify-center py-20 text-center w-full">
+          <span class="material-symbols-outlined text-6xl text-slate-500 mb-4">qr_code_2</span>
+          <h3 class="text-xl font-semibold text-white mb-2">Aún no tiene códigos QR registrados</h3>
+          <p class="text-slate-400">¡Cree su primer código QR para empezar!</p>
+        </div>
       </div>
     </div>
   </div>
@@ -156,7 +195,7 @@ const images = imageStore.getImages;
 <style scoped>
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity .7s ease;
+  transition: opacity .4s ease;
 }
 
 .fade-enter-from,

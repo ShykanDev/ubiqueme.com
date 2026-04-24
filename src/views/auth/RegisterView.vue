@@ -161,8 +161,25 @@ const handleRegister = async () => {
     const batch = writeBatch(db);
     batch.set(doc(db, `users/${user.uid}`), {
       uid: user.uid,
+      name: form.name.trim(),
+      email: form.email.trim(),
+      phone: '',
+      role: 'user',
       isActive: true,
+      isBanned: false,
+      banReason: '',
       plan: 'alpha',
+      subscriptionStatus: 'active',
+      planPurchasedAt: Timestamp.now(),
+      planEndDate: null,
+      paymentProviderId: '',
+      totalQRs: 0,
+      preferences: {
+        emailNotifications: false,
+        smsNotifications: false,
+        whatsappNotifications: false
+      },
+      lastLoginAt: Timestamp.now(),
       createdAt: Timestamp.now(),
     });
 

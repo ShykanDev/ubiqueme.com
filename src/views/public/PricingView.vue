@@ -47,7 +47,7 @@ const plans = [
     period: '/mes',
     tagline: 'Control Total',
     description: 'El estándar máximo de seguridad para activos críticos.',
-    icon: 'military_tech',
+    icon: 'crown',
     color: '#ffd264',
     features: [
       'QRs Ilimitados',
@@ -67,98 +67,118 @@ const handleSelect = (id: string) => {
 <template>
   <HomeLayout>
     <template #main>
-      <div class="relative min-h-screen bg-[#070b14] pt-32 pb-24 overflow-hidden font-google-sans">
+      <div class="bg-surface-container-lowest font-inter pt-32 pb-20 px-6 min-h-screen text-on-surface">
+        <div class="max-w-7xl mx-auto">
 
-        <!-- Background Accents -->
-        <div
-          class="absolute top-0 left-1/4 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] pointer-events-none">
-        </div>
-        <div
-          class="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-primary/10 rounded-full blur-[100px] pointer-events-none">
-        </div>
-
-        <div class="relative z-10 max-w-7xl mx-auto px-6">
-
-          <!-- Header -->
-          <div class="text-center max-w-3xl mx-auto mb-20 space-y-4">
-            <div class="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 rounded-full border border-primary/20">
-              <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
-              <span class="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Planes de Protección</span>
+          <!-- Hero Section -->
+          <header class="text-center mb-24 space-y-6">
+            <div class="inline-flex items-center px-4 py-1.5 rounded-full glass-panel border border-[#45464d]/20">
+              <span class="text-xs font-bold tracking-widest text-[#7bd0ff] uppercase">Planes de Protección</span>
             </div>
-            <h1 class="text-5xl md:text-7xl font-black text-white tracking-tighter uppercase leading-[0.9]">
-              Invierta en su <br />
-              <span class="text-primary italic">Tranquilidad.</span>
+            <h1 class="text-5xl md:text-7xl font-headline font-extrabold tracking-tighter text-on-surface">
+              Invierta en su <span class="text-gradient-primary">Tranquilidad.</span>
             </h1>
-            <p class="text-white/40 text-lg font-medium">
+            <p class="max-w-2xl mx-auto text-on-surface/80 text-lg font-body leading-relaxed">
               Elija el nivel de blindaje que mejor se adapte a sus necesidades. Sin contratos forzosos.
             </p>
-          </div>
+          </header>
 
           <!-- Pricing Grid -->
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-end">
             <div v-for="plan in plans" :key="plan.id" :class="[
-              'relative flex flex-col p-8 rounded-[2.5rem] border transition-all duration-500 group',
+              'transition-all duration-500 flex flex-col h-full group',
               plan.featured
-                ? 'bg-white/5 border-primary/30 shadow-[0_20px_50px_rgba(123,208,255,0.1)] scale-105 z-10'
-                : 'bg-white/[0.02] border-white/5 hover:border-white/20'
+                ? 'relative bg-[#191f31] p-12 rounded-xl scale-105  hover:-translate-y-3 glow-border border border-[#7bd0ff]/30'
+                : 'bg-[#151b2d] p-10 rounded-xl hover:-translate-y-2 border border-[#45464d]/10'
             ]">
 
               <!-- Badge for Featured -->
               <div v-if="plan.featured"
-                class="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-primary rounded-full shadow-xl">
-                <span class="text-[10px] font-black text-black uppercase tracking-widest">Más Popular</span>
+                class="absolute -top-4 left-1/2 -translate-x-1/2 bg-[#7bd0ff] px-4 py-1 rounded-full">
+                <span class="text-[10px] font-black uppercase tracking-tighter text-[#00354a]">Recomendado</span>
               </div>
 
               <!-- Content -->
-              <div class="space-y-6 flex-1">
-                <div class="flex items-center justify-between">
-                  <div
-                    class="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10 group-hover:border-primary/50 transition-colors">
-                    <span class="material-symbols-outlined text-3xl transition-transform group-hover:scale-110"
-                      :style="{ color: plan.color }">
-                      {{ plan.icon }}
-                    </span>
-                  </div>
-                  <h3 class="text-2xl font-black text-white uppercase tracking-tighter">{{ plan.name }}</h3>
-                </div>
-
-                <div>
-                  <p class="text-[10px] font-black uppercase tracking-widest" :style="{ color: plan.color }">{{
-                    plan.tagline }}</p>
-                  <div class="flex items-baseline gap-1 mt-1">
-                    <span v-if="plan.currency" class="text-white/40 text-lg font-bold">{{ plan.currency }}</span>
-                    <span class="text-5xl font-black text-white tracking-tighter">{{ plan.price }}</span>
-                    <span v-if="plan.period" class="text-white/40 text-sm font-bold">{{ plan.period }}</span>
-                  </div>
-                  <p class="text-white/40 text-xs mt-3 leading-relaxed">{{ plan.description }}</p>
-                </div>
-
-                <div class="space-y-4 pt-6">
-                  <div v-for="feature in plan.features" :key="feature" class="flex items-center gap-3">
-                    <span class="material-symbols-outlined text-sm" :style="{ color: plan.color }">check_circle</span>
-                    <span class="text-sm text-white/70 font-medium tracking-tight">{{ feature }}</span>
-                  </div>
+              <div class="mb-8">
+                <span class="material-symbols-outlined mb-4"
+                  :class="plan.featured ? 'text-5xl text-[#7bd0ff]' : 'text-4xl'"
+                  :style="plan.featured ? { fontVariationSettings: '\'FILL\' 1' } : { color: plan.color === '#ffffff' ? '#c6c6cd' : plan.color }">
+                  {{ plan.icon }}
+                </span>
+                <h3 :class="[
+                  'font-headline text-[#dce1fb]',
+                  plan.featured ? 'text-3xl font-extrabold' : 'text-2xl font-bold'
+                ]">{{ plan.name }}</h3>
+                <p :class="[
+                  'mb-6',
+                  plan.featured ? 'text-base text-[#7bd0ff] font-semibold' : 'text-sm text-[#c6c6cd] font-medium'
+                ]">{{ plan.tagline }}</p>
+                <div class="flex items-baseline gap-1">
+                  <span v-if="plan.currency" :class="[
+                    'font-headline font-black text-[#dce1fb]',
+                    plan.featured ? 'text-5xl' : 'text-4xl'
+                  ]">${{ plan.price }}</span>
+                  <span v-else :class="[
+                    'font-headline font-black text-[#dce1fb]',
+                    plan.featured ? 'text-5xl' : 'text-4xl'
+                  ]">{{ plan.price }}</span>
+                  <span v-if="plan.period" class="text-[#c6c6cd] font-medium">{{ plan.currency }} {{ plan.period
+                  }}</span>
                 </div>
               </div>
 
+              <ul :class="[
+                'flex-grow mb-12',
+                plan.featured ? 'space-y-6' : 'space-y-5'
+              ]">
+                <li v-for="feature in plan.features" :key="feature" :class="[
+                  'flex items-center gap-3 transition-colors',
+                  plan.featured ? 'text-[#dce1fb]' : 'text-[#c6c6cd] group-hover:text-[#dce1fb]'
+                ]">
+                  <span class="material-symbols-outlined text-xl" :class="plan.featured ? 'text-[#7bd0ff]' : ''"
+                    :style="!plan.featured ? { color: plan.color === '#ffffff' ? '#7bd0ff' : plan.color } : {}">
+                    check_circle
+                  </span>
+                  <span :class="plan.featured ? 'font-medium' : 'text-sm'">{{ feature }}</span>
+                </li>
+              </ul>
+
               <!-- Button -->
               <button @click="handleSelect(plan.id)" :class="[
-                'mt-10 w-full h-16 rounded-2xl font-black text-xs uppercase tracking-[0.2em] transition-all duration-300 active:scale-95',
+                'w-full rounded-lg font-headline transition-all active:scale-95',
                 plan.featured
-                  ? 'bg-primary text-black shadow-lg shadow-primary/20 hover:shadow-primary/40'
-                  : 'bg-white/5 text-white border border-white/10 hover:bg-white/10 hover:border-white/20'
+                  ? 'py-5 bg-gradient-to-r from-[#7bd0ff] to-[#008abb] text-[#00354a] font-black shadow-lg shadow-[#7bd0ff]/20 hover:brightness-110'
+                  : 'py-4 bg-[#2e3447] text-[#dce1fb] font-bold hover:bg-[#33394c]',
+                plan.id === 'epsilon' ? 'border border-[#ffd264]/20' : ''
               ]">
                 Seleccionar Plan
               </button>
             </div>
           </div>
 
-          <!-- Footer Note -->
-          <div class="mt-20 text-center py-12 border-t border-white/5">
-            <p class="text-white/20 text-[10px] font-black uppercase tracking-[0.4em]">
-              Seguridad y privacidad <span class="text-white/40">ubiqueme.com</span>
-            </p>
-          </div>
+          <!-- Decorative Map/Visual element -->
+          <section class="mt-24 relative overflow-hidden rounded-xl h-[400px] border border-[#45464d]/10 shadow-inner">
+            <div class="absolute inset-0 z-0">
+              <img class="w-full h-full object-cover opacity-30 grayscale" alt="abstract architectural blueprint"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCJydQWXb7WCm-6EPB-f3obKCWFjLVZrZl4R7xYn3FoM--yh7PaCjY_m1use6ENd31Sp847utuJXFeEKvB1BQHWp47MCLJ3TMf72zZ0bibc05pPWlrbr4RA3Nt1JBggcDWjqi17qHcD3prMiXr4Hqcys-cqD2qT1un1sbt88uQCzojztoo7p9Absk71AQmugehnnpmmQVnKCR9xISzfXavxCRn9Z8WM5WTZyFvTBdNnT3YfwFJ1RPbwBHdJ1aVYbBCjU2RzrXU2M_m7" />
+            </div>
+            <div class="absolute inset-0 bg-gradient-to-t from-[#0c1324] to-transparent z-10"></div>
+            <div class="relative z-20 h-full flex flex-col justify-end p-12 max-w-3xl">
+              <h4 class="text-3xl font-headline font-bold mb-4 text-[#dce1fb]">Arquitectura de Confianza</h4>
+              <p class="text-[#c6c6cd] text-base leading-relaxed mb-6">
+                Nuestra infraestructura obsidian está diseñada para transiciones seguras. Cada QR generado está
+                respaldado por protocolos de encriptación de grado bancario y monitoreo en tiempo real.
+              </p>
+              <div class="flex gap-4">
+                <div
+                  class="px-4 py-2 glass-panel rounded-lg border border-[#45464d]/10 text-xs font-bold text-[#7bd0ff]">
+                  AES-256 BIT</div>
+                <div
+                  class="px-4 py-2 glass-panel rounded-lg border border-[#45464d]/10 text-xs font-bold text-[#7bd0ff]">
+                  SCANLOC ENABLED</div>
+              </div>
+            </div>
+          </section>
 
         </div>
       </div>
@@ -167,7 +187,46 @@ const handleSelect = (id: string) => {
 </template>
 
 <style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Inter:wght@300;400;500&display=swap');
+
+.font-inter {
+  font-family: 'Inter', sans-serif;
+}
+
+.font-headline {
+  font-family: 'Manrope', sans-serif;
+}
+
+.font-body {
+  font-family: 'Inter', sans-serif;
+}
+
+.glass-panel {
+  background: rgba(51, 57, 76, 0.6);
+
+}
+
+.text-gradient-primary {
+  background: linear-gradient(135deg, #7bd0ff 0%, #008abb 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.glow-border {
+  position: relative;
+}
+
+.glow-border::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(135deg, #7bd0ff, transparent, #008abb);
+  z-index: -1;
+  border-radius: inherit;
+  opacity: 0.5;
+}
+
 .material-symbols-outlined {
-  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
 }
 </style>

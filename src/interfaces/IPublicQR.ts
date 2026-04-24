@@ -6,13 +6,13 @@ export interface IPublicQR {
   id: string
   status: string
   lastScan: Timestamp | null
-  totalScans: number
-  ownerName?: string
+  totalScans: number | null
+  name?: string
   isBanned: boolean
   banReason?: string
   docId?: string
   img?: string
-  ownerId?: string //User uid
+  uid?: string //User uid
   tier?: string
 }
 

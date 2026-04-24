@@ -34,7 +34,7 @@ export interface IQRCard {
   /** Total number of successful scans recorded */
   scans: number
   /** Formatted string representing the time of the last scan */
-  lastScan: string
+  lastScan: string | Timestamp | null
   /** Publicly shareable unique identifier */
   id: string
   /** Firestore timestamp of when the QR was first registered */
