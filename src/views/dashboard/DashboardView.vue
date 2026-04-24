@@ -21,15 +21,15 @@ const handleSideBarLeave = () => {
 }
 
 const dashButtons = [
-  { name: 'Inicio', icon: 'co-home', iconActive: 'md-home-round' },
   { name: 'Mis QR', icon: 'co-qr-code', iconActive: 'md-qrcodescanner-round' },
   { name: 'Notificaciones', icon: 'md-notificationsnone-outlined', iconActive: 'fa-bell' },
   { name: 'Configuración', icon: 'co-settings', iconActive: 'md-settings' },
-  { name: 'Cerrar Sesión', icon: 'io-log-in', iconActive: 'ri-logout-box-r-line' },
   { name: 'Soporte', icon: 'bi-question-circle', iconActive: 'md-help-sharp' },
+  { name: 'Perfil', icon: 'bi-person-fill', iconActive: 'bi-person-circle' },
+  { name: 'Cerrar Sesión', icon: 'io-log-in', iconActive: 'ri-logout-box-r-line' },
 ]
 
-type ComponentName = 'Inicio' | 'Mis QR' | 'Notificaciones' | 'Configuración' | 'Cerrar Sesión' | 'Soporte'
+type ComponentName = 'Perfil' | 'Mis QR' | 'Notificaciones' | 'Configuración' | 'Cerrar Sesión' | 'Soporte'
 
 const withLoader = (viewPath: () => Promise<any>) => {
   return defineAsyncComponent({
@@ -40,14 +40,14 @@ const withLoader = (viewPath: () => Promise<any>) => {
 }
 
 const componentsMap: Record<string, ReturnType<typeof defineAsyncComponent>> = {
-  Inicio: withLoader(() => import('../../components/user/dashboard/async/HomeDash.vue')),
+  Perfil: withLoader(() => import('../../components/user/dashboard/async/HomeDash.vue')),
   'Mis QR': withLoader(() => import('../../components/user/dashboard/QRDash/MyQrDash.vue')),
   Notificaciones: withLoader(() => import('../../components/user/dashboard/notifications/NotificationsDash.vue')),
   Configuración: withLoader(() => import('../../components/user/dashboard/settings/SettingsDash.vue')),
   Soporte: defineAsyncComponent(() => import('../../components/user/dashboard/support/SupportDash.vue')),
 }
 
-const currentComponent = shallowRef(componentsMap['Inicio'])
+const currentComponent = shallowRef(componentsMap['Mis QR'])
 const { handleLogout } = useAuth()
 
 const changeComponent = (component: ComponentName) => {

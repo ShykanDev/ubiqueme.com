@@ -24,6 +24,8 @@ import {
   MdNotificationsnoneOutlined,
   MdSettings,
   MdHelpSharp,
+  BiPersonFill,
+  BiPersonCircle,
 } from 'oh-vue-icons/icons'
 
 addIcons(
@@ -43,6 +45,8 @@ addIcons(
   MdNotificationsnoneOutlined,
   MdSettings,
   MdHelpSharp,
+  BiPersonFill,
+  BiPersonCircle,
 )
 
 const app = createApp(App)
