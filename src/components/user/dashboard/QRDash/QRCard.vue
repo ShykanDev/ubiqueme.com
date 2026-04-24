@@ -65,14 +65,14 @@ const handleEdit = async () => {
   try {
     isLoading.value = true;
     const userQRDoc = doc(db, `users/${userStore.getUserId}/qrs/${props.docId}`)
-    const publicQrDoc = doc(db, 'publicQR', props.id);
+    const publicQrDoc = doc(db, 'publicQR', props.docId);
 
     const batch = writeBatch(db);
     batch.update(userQRDoc, {
       name: qrName.value
     })
     batch.update(publicQrDoc, {
-      ownerName: qrName.value
+      name: qrName.value
     })
     await batch.commit();
     closeAll();
@@ -279,7 +279,7 @@ onUnmounted(() => {
         <div class="flex flex-col gap-1">
           <h3 class="text-white text-xl font-black tracking-tight m-0 ">{{ propsComputed.name }}</h3>
           <span class="text-[9px] text-white/30 font-black uppercase tracking-widest font-mono">ID: {{ propsComputed.id
-          }}</span>
+            }}</span>
         </div>
 
         <div
