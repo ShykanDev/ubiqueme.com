@@ -63,35 +63,35 @@
 
             <form @submit.prevent="handleRegister" class="space-y-5">
               <div class="space-y-2">
-                <label class="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] ml-1">Nombre
+                <label class="text-[10px] font-black text-white/50 uppercase tracking-[0.2em] ml-1">Nombre
                   Completo</label>
                 <input id="name" v-model="form.name" type="text" placeholder="Juan Pérez"
-                  class="w-full px-5 py-4 bg-white/[0.03] border border-white/10 rounded-2xl text-white placeholder:text-white/20 focus:border-primary focus:outline-none focus:bg-white/[0.05] transition-all" />
+                  class="w-full px-5 py-4 bg-white/5 border border-white/20 hover:border-white/30 rounded-2xl text-white placeholder:text-white/40 focus:border-primary focus:outline-none focus:bg-white/10 transition-all" />
               </div>
 
               <div class="space-y-2">
-                <label class="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] ml-1">Correo
+                <label class="text-[10px] font-black text-white/50 uppercase tracking-[0.2em] ml-1">Correo
                   Electrónico</label>
                 <input id="email" v-model="form.email" type="email" placeholder="nombre@dominio.com"
-                  class="w-full px-5 py-4 bg-white/[0.03] border border-white/10 rounded-2xl text-white placeholder:text-white/20 focus:border-primary focus:outline-none focus:bg-white/[0.05] transition-all" />
+                  class="w-full px-5 py-4 bg-white/5 border border-white/20 hover:border-white/30 rounded-2xl text-white placeholder:text-white/40 focus:border-primary focus:outline-none focus:bg-white/10 transition-all" />
               </div>
 
               <div class="grid grid-cols-2 gap-4">
                 <div class="space-y-2">
-                  <label class="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] ml-1">Contraseña</label>
+                  <label class="text-[10px] font-black text-white/50 uppercase tracking-[0.2em] ml-1">Contraseña</label>
                   <input id="password" v-model="form.password" type="password" placeholder="••••••••"
-                    class="w-full px-5 py-4 bg-white/[0.03] border border-white/10 rounded-2xl text-white placeholder:text-white/20 focus:border-primary focus:outline-none transition-all" />
+                    class="w-full px-5 py-4 bg-white/5 border border-white/20 hover:border-white/30 rounded-2xl text-white placeholder:text-white/40 focus:border-primary focus:outline-none focus:bg-white/10 transition-all" />
                 </div>
                 <div class="space-y-2">
-                  <label class="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] ml-1">Confirmar</label>
+                  <label class="text-[10px] font-black text-white/50 uppercase tracking-[0.2em] ml-1">Confirmar</label>
                   <input id="confirm" v-model="form.confirmPassword" type="password" placeholder="••••••••"
-                    class="w-full px-5 py-4 bg-white/[0.03] border border-white/10 rounded-2xl text-white placeholder:text-white/20 focus:border-primary focus:outline-none transition-all" />
+                    class="w-full px-5 py-4 bg-white/5 border border-white/20 hover:border-white/30 rounded-2xl text-white placeholder:text-white/40 focus:border-primary focus:outline-none focus:bg-white/10 transition-all" />
                 </div>
               </div>
 
               <div class="flex items-start gap-3 px-1 py-1">
                 <input id="terms" v-model="form.terms" type="checkbox"
-                  class="mt-1 w-4 h-4 rounded border-white/10 bg-white/5 text-primary focus:ring-primary/20" />
+                  class="mt-1 w-4 h-4 rounded border-white/20 bg-white/5 accent-primary cursor-pointer focus:ring-primary/20 transition-all" />
                 <label for="terms" class="text-[10px] font-bold text-white/40 uppercase tracking-wider leading-relaxed">
                   Acepto los <span
                     class="text-white hover:text-primary cursor-pointer transition-colors">Términos</span> y la <span
@@ -101,7 +101,7 @@
               </div>
 
               <button type="submit"
-                class="group w-full h-16 bg-white text-black rounded-2xl font-black text-lg transition-all duration-300 hover:bg-primary active:scale-[0.98] flex items-center justify-center gap-3">
+                class="group w-full h-16 bg-white text-black rounded-2xl font-black text-lg transition-all duration-300 hover:bg-primary hover:shadow-[0_0_20px_rgba(123,208,255,0.4)] active:scale-[0.98] flex items-center justify-center gap-3">
                 <span>Registrarme</span>
                 <span
                   class="material-symbols-outlined font-black transition-transform group-hover:translate-x-1">app_registration</span>

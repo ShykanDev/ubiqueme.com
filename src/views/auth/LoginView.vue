@@ -15,7 +15,14 @@
 
 
           <div class="relative z-10 space-y-8">
-            <div class="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 rounded-lg border border-primary/20">
+            <div class="inline-flex items-center gap-3">
+              <div class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-2xl">
+                <span class="text-black font-black text-2xl">U</span>
+              </div>
+              <h2 class="text-4xl font-black text-white tracking-tighter uppercase">Ubiqueme</h2>
+            </div>
+
+            <div class="inline-flex w-fit items-center gap-2 px-3 py-1 bg-primary/10 rounded-lg border border-primary/20">
               <span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
               <span class="text-[9px] font-black uppercase tracking-[0.3em] text-primary">Security Protocol v4.0</span>
             </div>
@@ -44,13 +51,7 @@
             </div>
           </div>
 
-          <!-- FOOTER LOGO -->
-          <div class="absolute bottom-16 left-16 lg:left-24 flex items-center gap-4 opacity-50">
-            <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center">
-              <span class="text-black font-black text-xl">U</span>
-            </div>
-            <span class="font-black text-xl tracking-[0.2em] text-white uppercase">Ubiqueme</span>
-          </div>
+
         </div>
 
         <!-- 🚀 RIGHT SIDE: LOGIN FORM -->
@@ -72,24 +73,24 @@
 
             <form @submit.prevent="handleLogin" class="space-y-6">
               <div class="space-y-2">
-                <label class="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] ml-1">Correo
+                <label class="text-[10px] font-black text-white/50 uppercase tracking-[0.2em] ml-1">Correo
                   Electrónico</label>
                 <div class="group relative">
                   <input id="email" v-model="form.email" type="email" placeholder="nombre@dominio.com"
-                    class="w-full px-5 py-4 bg-white/[0.03] border border-white/10 rounded-2xl text-white placeholder:text-white/20 focus:border-primary focus:outline-none focus:bg-white/[0.05] transition-all" />
+                    class="w-full px-5 py-4 bg-white/5 border border-white/20 hover:border-white/30 rounded-2xl text-white placeholder:text-white/40 focus:border-primary focus:outline-none focus:bg-white/10 transition-all" />
                 </div>
               </div>
 
               <div class="space-y-2">
                 <div class="flex justify-between items-center px-1">
-                  <label class="text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">Contraseña</label>
+                  <label class="text-[10px] font-black text-white/50 uppercase tracking-[0.2em]">Contraseña</label>
                   <a href="#"
                     class="text-[10px] font-black text-primary hover:text-white uppercase tracking-widest">Recuperar</a>
                 </div>
                 <div class="group relative">
                   <input id="password" v-model="form.password" :type="showPassword ? 'text' : 'password'"
                     placeholder="••••••••"
-                    class="w-full px-5 py-4 bg-white/[0.03] border border-white/10 rounded-2xl text-white placeholder:text-white/20 focus:border-primary focus:outline-none focus:bg-white/[0.05] transition-all" />
+                    class="w-full px-5 py-4 bg-white/5 border border-white/20 hover:border-white/30 rounded-2xl text-white placeholder:text-white/40 focus:border-primary focus:outline-none focus:bg-white/10 transition-all pr-12" />
                   <button type="button" @click="showPassword = !showPassword"
                     class="absolute right-5 top-1/2 -translate-y-1/2 text-white/20 hover:text-white transition-colors">
                     <span class="material-symbols-outlined text-xl">{{ showPassword ? 'visibility' : 'visibility_off'
@@ -99,7 +100,7 @@
               </div>
 
               <button type="submit"
-                class="group w-full h-16 bg-white text-black rounded-2xl font-black text-lg transition-all duration-300 hover:bg-primary active:scale-[0.98] flex items-center justify-center gap-3">
+                class="group w-full h-16 bg-white text-black rounded-2xl font-black text-lg transition-all duration-300 hover:bg-primary hover:shadow-[0_0_20px_rgba(123,208,255,0.4)] active:scale-[0.98] flex items-center justify-center gap-3">
                 <span>Entrar</span>
                 <span
                   class="material-symbols-outlined font-black transition-transform group-hover:translate-x-1">login</span>
@@ -111,7 +112,7 @@
                 <div class="w-full border-t border-white/5"></div>
               </div>
               <div class="relative flex justify-center">
-                <span class="bg-[#070b14] px-4 text-[9px] font-black text-white/20 uppercase tracking-[0.3em]">O
+                <span class="bg-[#070b14] px-4 text-[9px] font-black text-white/40 uppercase tracking-[0.3em]">O
                   CONECTAR CON</span>
               </div>
             </div>
