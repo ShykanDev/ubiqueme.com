@@ -38,7 +38,7 @@ const steps = [
 
 <template>
   <!-- Step-by-Step -->
-  <section class="bg-surface-container-low pb-24">
+  <section class="bg-[#070a0e] pb-24">
     <div class="px-8 md:px-24 max-w-screen-2xl mx-auto">
       <div class="text-center mb-24 pt-32">
         <h2 class="font-headline text-6xl font-bold mb-4 text-white">Ubiqueme en 4 pasos</h2>

@@ -1,7 +1,9 @@
 <script lang="ts" setup>
 import FeaturesComponent from '@/components/home/Features/FeaturesComponent.vue'
+import HowItWorks from '@/components/home/HowItWorks/HowItWorks.vue'
 import PricingPlans from '@/components/home/Pricing/PricingPlans.vue'
 import StepByStep from '@/components/home/StepByStep/StepByStep.vue'
+import VideoGrid from '@/components/home/VideoGrid/VideoGrid.vue'
 import HomeLayout from '@/layouts/HomeLayout.vue'
 import { useUserStore } from '@/stores/user';
 </script>
@@ -24,76 +26,63 @@ import { useUserStore } from '@/stores/user';
           </div>
         </div>
 
-        <!-- 🚀 HERO SECTION -->
-        <section class="relative z-10 px-8 md:px-24 pt-32 pb-20 mx-auto max-w-7xl ">
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-24 items-center ">
+        <!-- 🚀 HERO SECTION (Modern, Lightweight, Typography-Driven) -->
+        <section
+          class="relative z-10 px-6 sm:px-8 pt-32 pb-24 mx-auto max-w-5xl flex flex-col items-center text-center">
 
-            <!-- CONTENT -->
-            <div class="space-y-10">
-              <div class="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 rounded-lg border border-primary/20">
-                <span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
-                <span class="text-[9px] font-black uppercase tracking-[0.4em] text-primary">Sistema de Notificación
-                  Activo</span>
-              </div>
-
-              <h1 class="text-6xl lg:text-8xl font-black text-white leading-[0.85] tracking-[ -0.05em] uppercase">
-                Reciba<br />
-                <span class="text-primary">ALERTAS SEGURAS</span>
-              </h1>
-
-              <div class="text-white/40 text-xl font-medium leading-relaxed max-w-lg">
-                Mantenga sus pertenencias localizables. Reciba alertas instantáneas de su
-                <span class="text-white font-black italic">automóvil, bicicleta o equipaje</span>
-                sin exponer un solo dato de su información personal.
-              </div>
-
-              <div class="flex flex-wrap gap-4">
-                <router-link :to="{ name: 'register' }"
-                  class="px-10 py-5 bg-white text-black font-black uppercase tracking-widest text-sm rounded-2xl transition-all duration-300 hover:bg-primary hover:text-black active:scale-95 shadow-2xl font-google-sans">
-                  Obtener Código QR
-                </router-link>
-                <router-link v-if="!useUserStore().getUserId" :to="{ name: 'login' }"
-                  class="px-10 py-5 bg-white/5 border border-white/10 text-white font-black uppercase tracking-widest text-sm rounded-2xl hover:bg-white/10 transition-all font-google-sans">
-                  Iniciar Sesión
-                </router-link>
-              </div>
-
-              <!-- TECH STACK BADGES -->
-              <div class="flex items-center gap-8 pt-8 opacity-20 filter grayscale">
-                <span class="text-[10px] font-black tracking-widest uppercase">Encriptación P2P</span>
-                <span class="text-[10px] font-black tracking-widest uppercase">Privacidad Total</span>
-                <span class="text-[10px] font-black tracking-widest uppercase">Aviso Inmediato</span>
-              </div>
-            </div>
-
-            <!-- VISUAL -->
-            <div class="relative">
-
-
-              <div
-                class="relative aspect-square rounded-[3rem] overflow-hidden border border-white/10 bg-white/5 shadow-2xl group">
-                <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-10 pointer-events-none">
-                </div>
-                <video class="h-full w-full object-cover transition-transform duration-1000 group-hover:scale-110"
-                  src="../../assets/videos/laptop.mp4" autoplay loop muted></video>
-
-                <!-- OVERLAY CARD -->
-                <div
-                  class="absolute bottom-8 left-8 right-8 z-20 p-6 bg-white/[0.1] border border-white/10 rounded-2xl flex items-center justify-between">
-                  <div class="space-y-1">
-                    <p class="text-[10px] font-black text-primary uppercase tracking-widest">Estado del Servicio</p>
-                    <p class="text-white font-bold">Conexión Protegida</p>
-                  </div>
-                  <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-black">
-                    <span class="material-symbols-outlined text-sm font-bold">verified</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
+          <!-- Subtle Badge -->
+          <div
+            class="inline-flex items-center gap-2 px-4 py-2 bg-primary/5 rounded-full border border-primary/20 mb-8 transition-colors hover:bg-primary/10 cursor-default">
+            <span class="material-symbols-outlined text-primary text-sm">enhanced_encryption</span>
+            <span class="text-[11px] font-black uppercase tracking-[0.2em] text-primary">Privacidad Absoluta</span>
           </div>
+
+          <!-- Main Headline -->
+          <h1 class="text-5xl sm:text-7xl lg:text-[5.5rem] font-black text-white leading-[1.05] tracking-tight mb-6">
+            Códigos QR inteligentes para<br />
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-white to-white/80">su familia y
+              pertenencias.</span>
+          </h1>
+
+          <!-- Sub-headline (Formal tone) -->
+          <p class="text-white/50 text-lg sm:text-xl font-medium leading-relaxed max-w-3xl mx-auto mb-10">
+            Etiquetas físicas y pulseras que permiten a cualquiera reportar sus artículos perdidos o asistir a sus
+            mascotas, niños y adultos mayores al instante, manteniendo su información de contacto 100% oculta.
+          </p>
+
+          <!-- CTA Buttons -->
+          <div class="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
+            <router-link :to="{ name: 'pricing' }"
+              class="w-full sm:w-auto px-8 py-4 bg-white text-[#070b14] font-black text-base rounded-2xl transition-all duration-300 hover:bg-primary hover:scale-105 active:scale-95 shadow-[0_0_30px_rgba(255,255,255,0.1)] hover:shadow-[0_0_40px_rgba(123,208,255,0.3)]">
+              Obtener mi Código QR
+            </router-link>
+            <router-link v-if="!useUserStore().getUserId" :to="{ name: 'login' }"
+              class="w-full sm:w-auto px-8 py-4 bg-white/5 border border-white/10 text-white font-bold text-base rounded-2xl hover:bg-white/10 hover:border-white/20 transition-all duration-300">
+              Iniciar Sesión
+            </router-link>
+          </div>
+
+          <!-- Lightweight Features Grid -->
+          <div
+            class="grid grid-cols-1 sm:grid-cols-3 gap-8 sm:gap-12 mt-20 pt-10 border-t border-white/5 w-full max-w-3xl">
+            <div class="flex flex-col items-center gap-2 text-white/40">
+              <span class="material-symbols-outlined text-2xl mb-1 text-white/80">notifications_active</span>
+              <span class="text-xs font-black uppercase tracking-widest text-white/60">Alertas Inmediatas</span>
+            </div>
+            <div class="flex flex-col items-center gap-2 text-white/40">
+              <span class="material-symbols-outlined text-2xl mb-1 text-white/80">vpn_key</span>
+              <span class="text-xs font-black uppercase tracking-widest text-white/60">Cero Datos Expuestos</span>
+            </div>
+            <div class="flex flex-col items-center gap-2 text-white/40">
+              <span class="material-symbols-outlined text-2xl mb-1 text-white/80">public</span>
+              <span class="text-xs font-black uppercase tracking-widest text-white/60">Cobertura Global</span>
+            </div>
+          </div>
+
         </section>
 
+        <HowItWorks />
+        <VideoGrid />
         <StepByStep />
         <FeaturesComponent />
         <PricingPlans />
