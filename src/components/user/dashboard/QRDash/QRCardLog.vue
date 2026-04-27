@@ -138,7 +138,7 @@ import { ref } from 'vue'
         </div>
 
         <div
-          class="relative w-full h-[180px] rounded-xl overflow-hidden border border-white/10 shadow-inner bg-black/40">
+          class="relative w-full h-[280px] rounded-xl overflow-hidden border border-white/10 shadow-inner bg-black/40">
           <!-- Placeholder State -->
           <div v-if="!isMapActive" @click="activateMap"
             class="absolute inset-0 flex flex-col items-center justify-center gap-3 cursor-pointer group/map hover:bg-white/2 transition-colors">
@@ -152,7 +152,7 @@ import { ref } from 'vue'
           </div>
 
           <!-- Leaflet Container -->
-          <div :id="`map-${id}`" v-show="isMapActive" class="w-full h-full"></div>
+          <div :id="`map-${id}`" v-show="isMapActive" class="w-full h-full "></div>
         </div>
       </div>
 

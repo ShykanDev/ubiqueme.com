@@ -21,6 +21,14 @@ const router = createRouter({
       component: () => import('@/views/auth/RegisterView.vue'),
     },
     {
+      name: 'verify',
+      path: '/verify',
+      component: () => import('@/views/auth/VerifyView.vue'),
+      meta: {
+        requiresAuth: false,
+      },
+    },
+    {
       path: '/',
       name: 'home',
       meta: {
@@ -59,6 +67,14 @@ const router = createRouter({
         requiresAuth: false,
       },
       component: () => import('@/views/public/PricingView.vue'),
+    },
+    {
+      path: '/help',
+      name: 'help',
+      meta: {
+        requiresAuth: false,
+      },
+      component: () => import('@/views/public/HelpView.vue'),
     },
     {
       path: '/:pathMatch(.*)*',

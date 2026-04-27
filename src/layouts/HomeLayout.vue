@@ -5,7 +5,7 @@ import { RouterLink } from 'vue-router'
 const navLinks = [
   { name: 'Inicio', pathName: 'home' },
   { name: 'Dashboard', pathName: 'dashboard' },
-  { name: 'Ayuda', pathName: 'home' },
+  { name: 'Ayuda', pathName: 'help' },
   { name: 'Precios', pathName: 'pricing' },
 ]
 </script>
