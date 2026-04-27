@@ -66,6 +66,7 @@ import HomeLayout from '@/layouts/HomeLayout.vue';
 import { applyActionCode } from 'firebase/auth';
 import { onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
+import { toast } from 'vue-sonner';
 
 const route = useRoute();
 const query = route.query;
@@ -80,17 +81,17 @@ const handleValidateEmail = async () => {
     status.value = 'loading';
     await applyActionCode(auth, oobCode);
     status.value = 'success';
-    console.log('Email validated successfully');
+    toast.success('Email validated successfully');
   } catch (error) {
     status.value = 'error';
-    console.log(`Error while validating email: ${error}`);
+    toast.error(`Error while validating email: ${error}`);
   }
 }
 
 const handleActivateAccount = async (action: string) => {
   switch (action) {
     case 'resetPassword':
-      console.log('Action: Reset Password');
+      toast.info('Action: Reset Password');
       status.value = 'error'; // To be implemented later if needed
       break;
     case 'verifyEmail':
@@ -98,7 +99,7 @@ const handleActivateAccount = async (action: string) => {
       break;
     default:
       status.value = 'error';
-      console.log('Invalid action');
+      toast.error('Invalid action');
   }
 }
 

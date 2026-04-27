@@ -22,7 +22,8 @@
               <h2 class="text-4xl font-black text-white tracking-tighter uppercase">Ubiqueme</h2>
             </div>
 
-            <div class="inline-flex w-fit items-center gap-2 px-3 py-1 bg-primary/10 rounded-lg border border-primary/20">
+            <div
+              class="inline-flex w-fit items-center gap-2 px-3 py-1 bg-primary/10 rounded-lg border border-primary/20">
               <span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
               <span class="text-[9px] font-black uppercase tracking-[0.3em] text-primary">Security Protocol v4.0</span>
             </div>
@@ -95,7 +96,7 @@
                     <button type="button" @click="showPassword = !showPassword"
                       class="absolute right-5 top-1/2 -translate-y-1/2 text-white/20 hover:text-white transition-colors">
                       <span class="material-symbols-outlined text-xl">{{ showPassword ? 'visibility' : 'visibility_off'
-                      }}</span>
+                        }}</span>
                     </button>
                   </div>
                 </div>
@@ -138,7 +139,7 @@
               </button>
 
               <p class="text-center text-white/30 text-xs font-medium mt-6">
-                ¿Sin credenciales todavía?
+                ¿Sin cuenta todavía?
                 <RouterLink to="/register" class="text-primary font-black hover:text-white ml-2 transition-colors">
                   CREAR CUENTA</RouterLink>
               </p>
@@ -146,7 +147,8 @@
 
             <template v-else>
               <VerificationBanner />
-              <button @click="emailVerified = true" class="w-full mt-6 h-14 bg-white/5 border border-white/10 text-white rounded-2xl font-black text-sm transition-all duration-300 hover:bg-white/10 flex items-center justify-center gap-2">
+              <button @click="emailVerified = true"
+                class="w-full mt-6 h-14 bg-white/5 border border-white/10 text-white rounded-2xl font-black text-sm transition-all duration-300 hover:bg-white/10 flex items-center justify-center gap-2">
                 <span class="material-symbols-outlined text-lg">arrow_back</span>
                 <span>Volver al Login</span>
               </button>
@@ -167,6 +169,7 @@ import { signInWithEmailAndPassword, signOut } from 'firebase/auth'
 import { auth } from '@/firebase'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
+import { toast } from 'vue-sonner'
 
 const router = useRouter();
 const showPassword = ref(false)
@@ -181,16 +184,16 @@ const userStore = useUserStore()
 const handleLogin = async () => {
   try {
     const user = await signInWithEmailAndPassword(auth, form.email, form.password)
-    
+
     // Check if email is verified
     if (!user.user.emailVerified) {
       emailVerified.value = false;
       await signOut(auth); // Sign them out so they must verify first
       return;
     }
-    
+
     if (!user.user.displayName && !user.user.metadata.creationTime) {
-      console.log('User has no display name, user deleted')
+      toast.error('User has no display name, user deleted')
       return
     }
     userStore.setFullName(user.user.displayName || '')
@@ -199,7 +202,7 @@ const handleLogin = async () => {
     userStore.setEmail(user.user.email || '')
     router.push({ name: 'dashboard' });
   } catch (error) {
-    console.log(`Error while trying to login: ${error}`)
+    toast.error(`Error while trying to login: ${error}`)
   }
 }
 </script>

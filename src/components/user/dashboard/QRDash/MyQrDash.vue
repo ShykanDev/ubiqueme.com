@@ -9,6 +9,7 @@ import { useImageStore } from '@/stores/imageStore'
 import type { IMyQR } from '@/interfaces/IMyQR'
 import { nanoid } from 'nanoid'
 import LineLoader from '@/components/ui/LineLoader.vue'
+import { toast } from 'vue-sonner'
 
 const userQRs = ref<IMyQR[]>([])
 const userStore = useUserStore()
@@ -76,9 +77,9 @@ const createQR = async () => {
 
     });
 
-    console.log("¡QR creado con éxito atómicamente!");
+    toast.success("¡QR creado con éxito atómicamente!");
   } catch (error) {
-    console.error("Fallo al crear el QR (Posible colisión o error de red):", error);
+    toast.error(`Fallo al crear el QR: ${error}`);
   }
 }
 
@@ -92,7 +93,7 @@ onMounted(() => {
 
   unsub = onSnapshot(userQrsCollection, (snapshot) => {
     if (snapshot.empty) {
-      console.log('No Qrs were found');
+      toast.info('No Qrs were found');
       noQRsFound.value = true;
       isLoading.value = false;
       return;
@@ -110,7 +111,7 @@ onMounted(() => {
     }, 600);
   },
     (error) => {
-      console.log('Error while getting data', error);
+      toast.error(`Error while getting data: ${error}`);
       isLoading.value = false;
     }
   )

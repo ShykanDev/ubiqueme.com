@@ -3,6 +3,7 @@ import { useUserStore } from '@/stores/user'
 import { doc, getDoc, getFirestore } from 'firebase/firestore'
 import { onMounted, ref } from 'vue'
 import LineLoader from '@/components/ui/LineLoader.vue'
+import { toast } from 'vue-sonner'
 
 const userStore = useUserStore()
 const db = getFirestore()
@@ -23,7 +24,7 @@ onMounted(async () => {
       userData.value = snap.data()
     }
   } catch (error) {
-    console.error("Error fetching user data:", error)
+    toast.error(`Error al obtener datos de usuario: ${error}`)
   } finally {
     loading.value = false
   }

@@ -2,6 +2,7 @@ import { auth as firebaseAuth } from '@/firebase'
 import { signOut } from 'firebase/auth'
 import { useRouter } from 'vue-router'
 import { useUserStore } from './stores/user'
+import { toast } from 'vue-sonner'
 
 export const useAuth = () => {
   const router = useRouter()
@@ -13,7 +14,7 @@ export const useAuth = () => {
       userStore.clearUser()
       router.push({ name: 'login' })
     } catch (error) {
-      console.log(`Error while attempting to logout: ${error}`)
+      toast.error(`Error while attempting to logout: ${error}`)
     }
   }
 

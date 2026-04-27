@@ -132,6 +132,7 @@ import {
 import { doc, getFirestore, Timestamp, writeBatch } from 'firebase/firestore'
 import { useRouter } from 'vue-router'
 import { nanoid } from 'nanoid'
+import { toast } from 'vue-sonner'
 
 const form = reactive({
   name: '',
@@ -148,7 +149,7 @@ const generateRandomId = () => nanoid(10);
 
 const handleRegister = async () => {
   if (form.name === '' || form.email === '' || form.password === '' || form.password !== form.confirmPassword || !form.terms) {
-    alert('Verifique los campos obligatorios y términos.')
+    toast.error('Verifique los campos obligatorios y términos.')
     return
   }
 
@@ -184,9 +185,10 @@ const handleRegister = async () => {
     });
 
     await batch.commit()
+    toast.success('Registro completado con éxito')
     router.push({ name: 'login' })
   } catch (error) {
-    console.log(`Error: ${error}`)
+    toast.error(`Error: ${error}`)
   }
 }
 </script>

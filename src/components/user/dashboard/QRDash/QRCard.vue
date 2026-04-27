@@ -11,6 +11,7 @@ import type { IPublicQR, IQRLog } from '@/interfaces/IPublicQR'
 import type { Unsubscribe } from 'firebase/auth'
 import QRCardLog from './QRCardLog.vue'
 import QRCardLogSkeleton from '@/components/ui/user/dashboard/QRCardLogSkeleton.vue'
+import { toast } from 'vue-sonner'
 
 const props = defineProps<IQRCard>()
 
@@ -76,12 +77,12 @@ const handleEdit = async () => {
     })
     await batch.commit();
     closeAll();
-    console.log(`QR name updated successfully`);
+    toast.success(`Nombre de QR actualizado`);
     isLoading.value = false;
   } catch (error) {
     isLoading.value = false;
     const e = error as Error;
-    console.log(`Error while trying to edit the qr name`, e.message);
+    toast.error(`Error al editar el nombre del QR: ${e.message}`);
   }
 }
 
@@ -109,11 +110,11 @@ const _setQrPublic = async () => {
     batch.set(publicQrRef, publicQRData);
     await batch.commit();
     isLoading.value = false;
-    console.log(`QR set to public successfully`);
+    toast.success(`QR establecido como público`);
   } catch (error) {
     isLoading.value = false;
     const e = error as Error;
-    console.log(`Error while trying to set the qr to public`, e.message);
+    toast.error(`Error al hacer público el QR: ${e.message}`);
   }
 }
 
@@ -130,11 +131,11 @@ const _setQrPrivate = async () => {
     })
     await batch.commit();
     isLoading.value = false;
-    console.log(`QR set to private successfully`);
+    toast.success(`QR establecido como privado`);
   } catch (error) {
     isLoading.value = false;
     const e = error as Error;
-    console.log(`Error while trying to set the qr to private`, e.message);
+    toast.error(`Error al hacer privado el QR: ${e.message}`);
   }
 }
 
@@ -153,18 +154,18 @@ const loadCount = ref(0);
 onMounted(() => {
   unsubscribe = onSnapshot(doc(db, 'publicQR', props.id), (docSnapshot) => {
     if (!docSnapshot.exists()) {
-      console.log(`QR not found`);
+      toast.error(`QR no encontrado`);
       //errorMsg.value = "No se encontro informacion sobre este QR";
       //loading.value = false;
       return;
     }
     qrStatus.totalScans = docSnapshot.data().totalScans ?? 0;
     qrStatus.lastScan = docSnapshot.data().lastScan ?? 'No se ha escaneado aún';
-    console.log(`QR status updated`)
+    // toast.success(`Estado del QR actualizado`); // Silencing this success as it fires frequently
     loadCount.value++;
   }
     , (error) => {
-      console.log(`Error while trying to get data: ${error}`);
+      toast.error(`Error al obtener datos: ${error}`);
     }
   )
 })
@@ -180,7 +181,7 @@ const timestampToDate = (): string => {
     }
     return 'No se ha escaneado aún';
   } catch (error) {
-    console.log(`Error while trying to convert timestamp to date`, error);
+    toast.error(`Error al convertir la fecha: ${error}`);
     return 'No se ha escaneado aún';
   }
 }
@@ -219,7 +220,7 @@ const loadLogs = () => {
     logsLoaded.value = true;
 
     if (querySnapshot.empty) {
-      console.log(`QR logs empty`);
+      toast.info(`Registros del QR vacíos`);
       qrLogs.value = [];
       return;
     }
@@ -231,11 +232,11 @@ const loadLogs = () => {
       interaction: doc.data().interaction,
       img: doc.data().img
     }));
-    console.log(`QR logs updated`)
+    // toast.success(`Registros del QR actualizados`) // Silencing this as it fires on load
     loadCount.value++;
   }, (error) => {
     isLogsLoading.value = false;
-    console.log(`Error while trying to get data: ${error}`);
+    toast.error(`Error al obtener datos de registros: ${error}`);
   });
 }
 

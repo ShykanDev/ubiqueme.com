@@ -13,12 +13,13 @@ const navLinks = [
 <template>
   <div class="font-google-sans">
     <!-- TopNavBar -->
-    <nav class="fixed top-0 w-full z-50 bg-[#020617] border-b border-white/5 shadow-md">
+    <nav class="fixed top-0 w-full z-50 bg-[#000000] border-b border-white/5 shadow-md">
       <div class="flex justify-between items-center h-20 px-8 md:px-24 w-full max-w-screen-2xl mx-auto">
 
         <!-- Logo -->
-        <div class="text-xl font-bold text-slate-100 font-headline tracking-tight">
-          Ubiqueme.com
+        <div class="text-xl font-bold text-slate-100 font-headline tracking-tight relative">
+          <div class="absolute bottom-0 right-0 h-2 w-7 bg-black"></div>
+          <video src="../assets/videos/logoUbiqueme.webm" autoplay muted class="w-32 h-auto"></video>
         </div>
 
         <!-- Menu -->

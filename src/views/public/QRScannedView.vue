@@ -8,6 +8,7 @@ import HomeLayout from '@/layouts/HomeLayout.vue'
 import type { IPublicQR, IQRScanMetrics } from '@/interfaces/IPublicQR'
 import imageCompression from 'browser-image-compression'
 import { useUserStore } from '@/stores/user'
+import { toast } from 'vue-sonner'
 
 const route = useRoute()
 const qrId = route.params.qrId as string
@@ -69,7 +70,7 @@ const handleImageGet = async (e: Event) => {
       processingImage.value = false
     }
   } catch (err) {
-    console.error(err)
+    toast.error(`Error procesando la imagen: ${err}`)
     processingImage.value = false
   }
 }
@@ -122,7 +123,7 @@ const handleSubmitMessage = async () => {
     isSuccess.value = true
     if (qrData.value) qrData.value.totalScans++
   } catch (e) {
-    alert("Error al enviar el mensaje. Intenta de nuevo.")
+    toast.error("Error al enviar el mensaje. Intenta de nuevo.")
   } finally {
     sending.value = false
   }
