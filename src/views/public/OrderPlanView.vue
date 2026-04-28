@@ -72,8 +72,8 @@ const currentPlanFeatures = computed(() => {
 const inheritedFeatures = computed(() => {
   const currentPlanId = selectedPlan.value.toLowerCase()
   if (currentPlanId === 'alpha') return []
-  if (currentPlanId === 'beta') return plans[0].features
-  if (currentPlanId === 'epsilon') return [...plans[0].features, ...plans[1].features]
+  if (currentPlanId === 'beta') return plans[0]?.features || []
+  if (currentPlanId === 'epsilon') return [...(plans[0]?.features || []), ...(plans[1]?.features || [])]
   return []
 })
 
