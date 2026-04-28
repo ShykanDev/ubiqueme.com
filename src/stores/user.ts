@@ -7,6 +7,8 @@ export const useUserStore = defineStore('userStore', {
     userId: '',
     email: '',
     plan: '',
+    isAuthenticated: false,
+    authReady: false,
   }),
   getters: {
     getFullName: (state) => state.fullName,
@@ -15,6 +17,8 @@ export const useUserStore = defineStore('userStore', {
     getUserId: (state) => state.userId,
     getEmail: (state) => state.email,
     getPlan: (state) => state.plan,
+    getIsAuthenticated: (state) => state.isAuthenticated,
+    isAuthReady: (state) => state.authReady,
   },
   actions: {
     setFullName(fullName: string) {
@@ -32,6 +36,12 @@ export const useUserStore = defineStore('userStore', {
     setPLan(plan: string) {
       this.plan = plan
     },
+    setIsAuthenticated(val: boolean) {
+      this.isAuthenticated = val
+    },
+    setAuthReady(val: boolean) {
+      this.authReady = val
+    },
     clearFullName() {
       this.fullName = ''
     },
@@ -41,6 +51,7 @@ export const useUserStore = defineStore('userStore', {
       this.userId = ''
       this.email = ''
       this.plan = ''
+      this.isAuthenticated = false
     },
   },
   persist: true,

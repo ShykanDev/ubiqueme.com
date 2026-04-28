@@ -79,12 +79,14 @@
               <div class="grid grid-cols-2 gap-4">
                 <div class="space-y-2">
                   <label class="text-[10px] font-black text-white/50 uppercase tracking-[0.2em] ml-1">Contraseña</label>
-                  <input id="password" v-model="form.password" type="password" placeholder="••••••••" :disabled="loading"
+                  <input id="password" v-model="form.password" type="password" placeholder="••••••••"
+                    :disabled="loading"
                     class="w-full px-5 py-4 bg-white/5 border border-white/20 hover:border-white/30 rounded-2xl text-white placeholder:text-white/40 focus:border-primary focus:outline-none focus:bg-white/10 transition-all disabled:opacity-50" />
                 </div>
                 <div class="space-y-2">
                   <label class="text-[10px] font-black text-white/50 uppercase tracking-[0.2em] ml-1">Confirmar</label>
-                  <input id="confirm" v-model="form.confirmPassword" type="password" placeholder="••••••••" :disabled="loading"
+                  <input id="confirm" v-model="form.confirmPassword" type="password" placeholder="••••••••"
+                    :disabled="loading"
                     class="w-full px-5 py-4 bg-white/5 border border-white/20 hover:border-white/30 rounded-2xl text-white placeholder:text-white/40 focus:border-primary focus:outline-none focus:bg-white/10 transition-all disabled:opacity-50" />
                 </div>
               </div>
@@ -123,7 +125,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive } from 'vue'
+import { reactive, ref } from 'vue'
 import HomeLayout from '@/layouts/HomeLayout.vue'
 import { auth as authFirebase } from '@/firebase'
 import {

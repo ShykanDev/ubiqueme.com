@@ -1,4 +1,5 @@
 import { useUserStore } from '@/stores/user'
+import { watch } from 'vue'
 import { createRouter, createWebHistory } from 'vue-router'
 
 const router = createRouter({
@@ -91,16 +92,38 @@ const router = createRouter({
   },
 })
 
-router.beforeEach((to, from, next) => {
-  const userAuth = useUserStore().getUserId
-  const toRouteRequiresAuth = to.meta.requiresAuth
+// Helper to wait for Auth to be ready
+const waitForAuth = () => {
+  const store = useUserStore()
+  return new Promise<void>((resolve) => {
+    if (store.isAuthReady) return resolve()
+    const unwatch = watch(
+      () => store.isAuthReady,
+      (ready) => {
+        if (ready) {
+          unwatch()
+          resolve()
+        }
+      }
+    )
+  })
+}
 
-  if (toRouteRequiresAuth && !userAuth) {
+router.beforeEach(async (to, from, next) => {
+  // Esperar a que Firebase valide el estado inicial
+  await waitForAuth()
+
+  const userStore = useUserStore()
+  const isAuth = userStore.isAuthenticated
+  const requiresAuth = to.meta.requiresAuth
+
+  if (requiresAuth && !isAuth) {
     next({ name: 'home' })
-    return
+  } else if ((to.name === 'login' || to.name === 'register') && isAuth) {
+    next({ name: 'dashboard' })
+  } else {
+    next()
   }
-
-  next()
 })
 
 export default router
