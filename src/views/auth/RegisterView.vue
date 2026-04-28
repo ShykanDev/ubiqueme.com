@@ -65,27 +65,27 @@
               <div class="space-y-2">
                 <label class="text-[10px] font-black text-white/50 uppercase tracking-[0.2em] ml-1">Nombre
                   Completo</label>
-                <input id="name" v-model="form.name" type="text" placeholder="Juan Pérez"
-                  class="w-full px-5 py-4 bg-white/5 border border-white/20 hover:border-white/30 rounded-2xl text-white placeholder:text-white/40 focus:border-primary focus:outline-none focus:bg-white/10 transition-all" />
+                <input id="name" v-model="form.name" type="text" placeholder="Juan Pérez" :disabled="loading"
+                  class="w-full px-5 py-4 bg-white/5 border border-white/20 hover:border-white/30 rounded-2xl text-white placeholder:text-white/40 focus:border-primary focus:outline-none focus:bg-white/10 transition-all disabled:opacity-50" />
               </div>
 
               <div class="space-y-2">
                 <label class="text-[10px] font-black text-white/50 uppercase tracking-[0.2em] ml-1">Correo
                   Electrónico</label>
-                <input id="email" v-model="form.email" type="email" placeholder="nombre@dominio.com"
-                  class="w-full px-5 py-4 bg-white/5 border border-white/20 hover:border-white/30 rounded-2xl text-white placeholder:text-white/40 focus:border-primary focus:outline-none focus:bg-white/10 transition-all" />
+                <input id="email" v-model="form.email" type="email" placeholder="nombre@dominio.com" :disabled="loading"
+                  class="w-full px-5 py-4 bg-white/5 border border-white/20 hover:border-white/30 rounded-2xl text-white placeholder:text-white/40 focus:border-primary focus:outline-none focus:bg-white/10 transition-all disabled:opacity-50" />
               </div>
 
               <div class="grid grid-cols-2 gap-4">
                 <div class="space-y-2">
                   <label class="text-[10px] font-black text-white/50 uppercase tracking-[0.2em] ml-1">Contraseña</label>
-                  <input id="password" v-model="form.password" type="password" placeholder="••••••••"
-                    class="w-full px-5 py-4 bg-white/5 border border-white/20 hover:border-white/30 rounded-2xl text-white placeholder:text-white/40 focus:border-primary focus:outline-none focus:bg-white/10 transition-all" />
+                  <input id="password" v-model="form.password" type="password" placeholder="••••••••" :disabled="loading"
+                    class="w-full px-5 py-4 bg-white/5 border border-white/20 hover:border-white/30 rounded-2xl text-white placeholder:text-white/40 focus:border-primary focus:outline-none focus:bg-white/10 transition-all disabled:opacity-50" />
                 </div>
                 <div class="space-y-2">
                   <label class="text-[10px] font-black text-white/50 uppercase tracking-[0.2em] ml-1">Confirmar</label>
-                  <input id="confirm" v-model="form.confirmPassword" type="password" placeholder="••••••••"
-                    class="w-full px-5 py-4 bg-white/5 border border-white/20 hover:border-white/30 rounded-2xl text-white placeholder:text-white/40 focus:border-primary focus:outline-none focus:bg-white/10 transition-all" />
+                  <input id="confirm" v-model="form.confirmPassword" type="password" placeholder="••••••••" :disabled="loading"
+                    class="w-full px-5 py-4 bg-white/5 border border-white/20 hover:border-white/30 rounded-2xl text-white placeholder:text-white/40 focus:border-primary focus:outline-none focus:bg-white/10 transition-all disabled:opacity-50" />
                 </div>
               </div>
 
@@ -100,11 +100,13 @@
                 </label>
               </div>
 
-              <button type="submit"
-                class="group w-full h-16 bg-white text-black rounded-2xl font-black text-lg transition-all duration-300 hover:bg-primary hover:shadow-[0_0_20px_rgba(123,208,255,0.4)] active:scale-[0.98] flex items-center justify-center gap-3">
-                <span>Registrarme</span>
-                <span
+              <button type="submit" :disabled="loading"
+                class="group w-full h-16 bg-white text-black rounded-2xl font-black text-lg transition-all duration-300 hover:bg-primary hover:shadow-[0_0_20px_rgba(123,208,255,0.4)] active:scale-[0.98] flex items-center justify-center gap-3 disabled:opacity-50 disabled:grayscale">
+                <span v-if="!loading">Registrarme</span>
+                <span v-else>Procesando...</span>
+                <span v-if="!loading"
                   class="material-symbols-outlined font-black transition-transform group-hover:translate-x-1">app_registration</span>
+                <span v-else class="w-5 h-5 border-2 border-black/20 border-t-black rounded-full animate-spin"></span>
               </button>
             </form>
 
@@ -146,6 +148,7 @@ const auth = authFirebase
 const router = useRouter()
 const db = getFirestore()
 const generateRandomId = () => nanoid(10);
+const loading = ref(false)
 
 const handleRegister = async () => {
   if (form.name === '' || form.email === '' || form.password === '' || form.password !== form.confirmPassword || !form.terms) {
@@ -154,6 +157,7 @@ const handleRegister = async () => {
   }
 
   try {
+    loading.value = true
     const credentials = await createUserWithEmailAndPassword(auth, form.email, form.password);
     const user = credentials.user;
     await updateProfile(user, { displayName: form.name.trim() });
@@ -185,10 +189,13 @@ const handleRegister = async () => {
     });
 
     await batch.commit()
-    toast.success('Registro completado con éxito')
+    toast.success('Registro completado con éxito. Por favor verifique su correo.')
     router.push({ name: 'login' })
   } catch (error) {
-    toast.error(`Error: ${error}`)
+    console.error(error)
+    toast.error(`Error al registrarse: ${error}`)
+  } finally {
+    loading.value = false
   }
 }
 </script>

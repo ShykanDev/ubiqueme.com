@@ -9,6 +9,8 @@ import { useUserStore } from '@/stores/user';
 import { ref } from 'vue';
 import { toast } from 'vue-sonner';
 
+import QrcodeVue from 'qrcode.vue'
+
 const heroVideos = [
   { src: new URL('../../assets/videos/vid04.mp4', import.meta.url).href, id: 'hero-vid-1' },
   { src: new URL('../../assets/videos/vid02.mp4', import.meta.url).href, id: 'hero-vid-2' },
@@ -18,6 +20,7 @@ const heroVideos = [
 const mutedStates = ref(heroVideos.map(() => true));
 
 const toggleSound = (index: number) => {
+  if (!heroVideos[index]) return;
   const video = document.getElementById(heroVideos[index].id) as HTMLVideoElement;
   if (!video) return;
 
@@ -37,7 +40,7 @@ const toggleSound = (index: number) => {
     });
     video.play();
   }
-  
+
   toast.info(video.muted ? 'Sonido desactivado' : 'Sonido activado');
 };
 </script>
@@ -47,7 +50,7 @@ const toggleSound = (index: number) => {
     <template #main>
       <main class="relative bg-[#09090b] overflow-hidden font-google-sans">
 
-        <!-- 📐 BACKGROUND ORNAMENTATION (Blueprint Style) -->
+        <!-- 🎨 BACKGROUND ORNAMENTATION (Blueprint Style) -->
         <div class="absolute inset-0 z-0">
           <div
             class="absolute top-[-10%] right-[-10%] w-[600px] h-[600px] border border-white/5 rounded-full pointer-events-none">
@@ -60,11 +63,54 @@ const toggleSound = (index: number) => {
           </div>
         </div>
 
+        <!-- ✨ DECORATIVE FLOATING ICONS -->
+        <div class="absolute inset-0 pointer-events-none overflow-hidden z-[5] select-none">
+          <!-- QR Icon Top Left -->
+          <span
+            class="material-symbols-outlined absolute top-[15%] left-[5%] text-amber-500/20 text-8xl animate-float-slow">qr_code_2</span>
+          <!-- Smartphone Mid Right -->
+          <span
+            class="material-symbols-outlined absolute top-[40%] right-[8%] text-red-500/20 text-9xl animate-float-medium">smartphone</span>
+          <!-- Alert Bottom Left -->
+          <span
+            class="material-symbols-outlined absolute bottom-[20%] left-[10%] text-amber-500/20 text-7xl animate-float-fast">notifications_active</span>
+          <!-- Security Top Right -->
+          <span
+            class="material-symbols-outlined absolute top-[10%] right-[15%] text-white/10 text-[12rem] animate-float-slow">security</span>
+          <!-- Location Mid Left -->
+          <span
+            class="material-symbols-outlined absolute top-[60%] left-[15%] text-amber-500/15 text-6xl animate-float-medium">location_on</span>
+          <!-- Pets Bottom Right -->
+          <span
+            class="material-symbols-outlined absolute bottom-[10%] right-[12%] text-red-500/20 text-8xl animate-float-slow">pets</span>
+          <!-- Shopping Bag scattered -->
+          <span
+            class="material-symbols-outlined absolute top-[25%] right-[30%] text-white/10 text-5xl animate-float-fast">shopping_bag</span>
+          <!-- Emergency scattered -->
+          <span
+            class="material-symbols-outlined absolute bottom-[45%] left-[5%] text-amber-500/20 text-[10rem] animate-float-medium">emergency_share</span>
+          <!-- Shield Mid Right -->
+          <span
+            class="material-symbols-outlined absolute top-[75%] right-[25%] text-white/10 text-7xl animate-float-slow">verified_user</span>
+        </div>
 
-        <article class="relative z-10 w-full flex flex-col lg:flex-row pt-24 lg:pt-32 px-6 sm:px-8 max-w-7xl mx-auto gap-12 lg:gap-8">
+
+        <article
+          class="relative z-10 w-full flex flex-col lg:flex-row pt-24 lg:pt-32 px-6 sm:px-8 max-w-7xl mx-auto gap-12 lg:gap-8">
 
           <!-- Left Content -->
-          <section class="w-full lg:w-1/2 flex flex-col items-center lg:items-start text-center lg:text-left">
+          <section class="w-full lg:w-1/2 flex flex-col items-center lg:items-start text-center lg:text-left relative">
+
+            <!-- Live QR Tag (Mobile Hidden or Responsive) -->
+            <div class="hidden  absolute -left-12 top-0 flex-col items-center gap-3 animate-float-medium z-20">
+              <div
+                class="bg-white p-3 rounded-2xl shadow-[0_0_50px_rgba(255,255,255,0.1)] border border-white/20 hover:scale-110 transition-transform">
+                <QrcodeVue value="https://ubiqueme.com" :size="80" render-as="canvas" />
+              </div>
+              <span
+                class="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 rotate-90 origin-left translate-x-4 mt-8">Escanee
+                para probar</span>
+            </div>
 
             <!-- Subtle Badge -->
             <div
@@ -99,8 +145,7 @@ const toggleSound = (index: number) => {
             </div>
 
             <!-- Lightweight Features Grid -->
-            <div
-              class="grid grid-cols-1 sm:grid-cols-3 gap-8 sm:gap-12 mt-20 pt-10 border-t border-white/5 w-full">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-8 sm:gap-12 mt-20 pt-10 border-t border-white/5 w-full">
               <div class="flex flex-col items-center lg:items-start gap-2 text-white/40 group">
                 <span
                   class="material-symbols-outlined text-2xl mb-1 text-amber-500 group-hover:scale-110 transition-transform">notifications_active</span>
@@ -121,17 +166,18 @@ const toggleSound = (index: number) => {
 
           <!-- Right Content: Responsive Video Grid -->
           <section class="w-full lg:w-1/2 flex flex-col gap-6 lg:gap-8 items-center">
-            <div v-for="(video, index) in heroVideos" :key="index" 
+            <div v-for="(video, index) in heroVideos" :key="index"
               class="relative w-full max-w-md lg:max-w-none aspect-video sm:aspect-[21/9] lg:aspect-video rounded-[2rem] overflow-hidden group border border-white/10">
-              <video :id="video.id" :src="video.src" autoplay muted loop playsinline
-                class="w-full h-full object-cover">
+              <video :id="video.id" :src="video.src" autoplay muted loop playsinline class="w-full h-full object-cover">
               </video>
-              <div class="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors pointer-events-none"></div>
-              
+              <div class="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors pointer-events-none">
+              </div>
+
               <!-- Sound Toggle Button -->
               <button @click="toggleSound(index)"
                 class="absolute bottom-4 right-4 z-30 p-3 bg-black/60 backdrop-blur-md border border-white/10 text-white rounded-full hover:bg-amber-500 transition-all hover:scale-110 shadow-lg">
-                <span class="material-symbols-outlined text-xl">{{ mutedStates[index] ? 'volume_off' : 'volume_up' }}</span>
+                <span class="material-symbols-outlined text-xl">{{ mutedStates[index] ? 'volume_off' : 'volume_up'
+                  }}</span>
               </button>
             </div>
           </section>
@@ -163,5 +209,31 @@ const toggleSound = (index: number) => {
 
 button {
   transition: all 0.2s ease;
+}
+
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+
+  50% {
+    transform: translateY(-20px) rotate(5deg);
+  }
+}
+
+.animate-float-slow {
+  animation: float 8s ease-in-out infinite;
+}
+
+.animate-float-medium {
+  animation: float 6s ease-in-out infinite;
+  animation-delay: 1s;
+}
+
+.animate-float-fast {
+  animation: float 4s ease-in-out infinite;
+  animation-delay: 0.5s;
 }
 </style>

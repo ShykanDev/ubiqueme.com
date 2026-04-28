@@ -78,8 +78,8 @@
                   <label class="text-[10px] font-black text-white/50 uppercase tracking-[0.2em] ml-1">Correo
                     Electrónico</label>
                   <div class="group relative">
-                    <input id="email" v-model="form.email" type="email" placeholder="nombre@dominio.com"
-                      class="w-full px-5 py-4 bg-white/5 border border-white/20 hover:border-white/30 rounded-2xl text-white placeholder:text-white/40 focus:border-primary focus:outline-none focus:bg-white/10 transition-all" />
+                    <input id="email" v-model="form.email" type="email" placeholder="nombre@dominio.com" :disabled="loading"
+                      class="w-full px-5 py-4 bg-white/5 border border-white/20 hover:border-white/30 rounded-2xl text-white placeholder:text-white/40 focus:border-primary focus:outline-none focus:bg-white/10 transition-all disabled:opacity-50" />
                   </div>
                 </div>
 
@@ -90,9 +90,9 @@
                       class="text-[10px] font-black text-primary hover:text-white uppercase tracking-widest">Recuperar</a>
                   </div>
                   <div class="group relative">
-                    <input id="password" v-model="form.password" :type="showPassword ? 'text' : 'password'"
+                    <input id="password" v-model="form.password" :type="showPassword ? 'text' : 'password'" :disabled="loading"
                       placeholder="••••••••"
-                      class="w-full px-5 py-4 bg-white/5 border border-white/20 hover:border-white/30 rounded-2xl text-white placeholder:text-white/40 focus:border-primary focus:outline-none focus:bg-white/10 transition-all pr-12" />
+                      class="w-full px-5 py-4 bg-white/5 border border-white/20 hover:border-white/30 rounded-2xl text-white placeholder:text-white/40 focus:border-primary focus:outline-none focus:bg-white/10 transition-all pr-12 disabled:opacity-50" />
                     <button type="button" @click="showPassword = !showPassword"
                       class="absolute right-5 top-1/2 -translate-y-1/2 text-white/20 hover:text-white transition-colors">
                       <span class="material-symbols-outlined text-xl">{{ showPassword ? 'visibility' : 'visibility_off'
@@ -101,11 +101,13 @@
                   </div>
                 </div>
 
-                <button type="submit"
-                  class="group w-full h-16 bg-white text-black rounded-2xl font-black text-lg transition-all duration-300 hover:bg-primary hover:shadow-[0_0_20px_rgba(123,208,255,0.4)] active:scale-[0.98] flex items-center justify-center gap-3">
-                  <span>Entrar</span>
-                  <span
+                <button type="submit" :disabled="loading"
+                  class="group w-full h-16 bg-white text-black rounded-2xl font-black text-lg transition-all duration-300 hover:bg-primary hover:shadow-[0_0_20px_rgba(123,208,255,0.4)] active:scale-[0.98] flex items-center justify-center gap-3 disabled:opacity-50 disabled:grayscale">
+                  <span v-if="!loading">Entrar</span>
+                  <span v-else>Iniciando...</span>
+                  <span v-if="!loading"
                     class="material-symbols-outlined font-black transition-transform group-hover:translate-x-1">login</span>
+                  <span v-else class="w-5 h-5 border-2 border-black/20 border-t-black rounded-full animate-spin"></span>
                 </button>
               </form>
 
@@ -180,9 +182,16 @@ const form = reactive({
 })
 
 const userStore = useUserStore()
+const loading = ref(false)
 
 const handleLogin = async () => {
+  if (!form.email || !form.password) {
+    toast.error('Por favor, complete todos los campos.')
+    return
+  }
+
   try {
+    loading.value = true
     const user = await signInWithEmailAndPassword(auth, form.email, form.password)
 
     // Check if email is verified
@@ -193,7 +202,7 @@ const handleLogin = async () => {
     }
 
     if (!user.user.displayName && !user.user.metadata.creationTime) {
-      toast.error('User has no display name, user deleted')
+      toast.error('El usuario no tiene nombre para mostrar')
       return
     }
     userStore.setFullName(user.user.displayName || '')
@@ -202,7 +211,10 @@ const handleLogin = async () => {
     userStore.setEmail(user.user.email || '')
     router.push({ name: 'dashboard' });
   } catch (error) {
-    toast.error(`Error while trying to login: ${error}`)
+    console.error(error)
+    toast.error('Error al iniciar sesión. Verifique sus credenciales.')
+  } finally {
+    loading.value = false
   }
 }
 </script>

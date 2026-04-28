@@ -32,7 +32,8 @@
               <span class="material-symbols-outlined text-green-500 text-3xl">check_circle</span>
             </div>
             <p class="text-white/70 text-base font-medium">
-              Su cuenta ha sido verificada exitosamente. El acceso a los protocolos de seguridad está ahora habilitado.
+              Su cuenta ha sido verificada exitosamente. Le damos la bienvenida a ubiqueme.com, ahora podra crear y
+              gestionar sus QRs con total libertad.
             </p>
             <RouterLink to="/login"
               class="w-full mt-4 h-14 bg-white text-black rounded-2xl font-black text-base transition-all duration-300 hover:bg-primary hover:shadow-[0_0_20px_rgba(123,208,255,0.4)] flex items-center justify-center gap-2">

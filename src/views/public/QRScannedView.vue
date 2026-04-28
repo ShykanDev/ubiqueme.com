@@ -177,9 +177,8 @@ const updateReasons = () => {
   ]
 }
 
-const selectPreset = (preset: string) => {
-  messageText.value = preset;
-}
+// selectPreset function is already defined at line 78
+
 
 onMounted(loadQRData)
 onUnmounted(clearImage)
