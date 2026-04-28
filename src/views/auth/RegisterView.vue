@@ -28,7 +28,7 @@
                 <span class="text-primary uppercase">Comunidad.</span>
               </h1>
               <p class="text-white/40 text-lg font-medium leading-relaxed max-w-sm">
-                Empieza a proteger tus pertenencias y comunicaciones con el estándar de seguridad de Ubiqueme.
+                Empiece a proteger sus pertenencias y comunicaciones con el estándar de seguridad de Ubiqueme.
               </p>
             </div>
 
@@ -51,14 +51,14 @@
 
             <div class="md:hidden flex flex-col items-center mb-8 text-center">
               <div class="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center mb-6">
-                <span class="text-black font-black text-3xl">U</span>
+                <span class="text-black font-black text-3xl">Ubiqueme</span>
               </div>
-              <h2 class="text-2xl font-black text-white uppercase tracking-widest">Registro de Red</h2>
+              <h2 class="text-2xl font-black text-white uppercase tracking-widest">Registro de Usuario</h2>
             </div>
 
             <header class="space-y-2">
-              <h2 class="text-3xl font-black text-white tracking-tight">Crea tu cuenta</h2>
-              <p class="text-white/40 text-sm font-medium">Comienza a proteger tus pertenencias hoy mismo.</p>
+              <h2 class="text-3xl font-black text-white tracking-tight">Crear su cuenta</h2>
+              <p class="text-white/40 text-sm font-medium">Comience a proteger sus pertenencias hoy mismo.</p>
             </header>
 
             <form @submit.prevent="handleRegister" class="space-y-5">
