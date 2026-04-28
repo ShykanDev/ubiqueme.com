@@ -9,15 +9,21 @@ const plans = [
     id: 'alpha',
     name: 'Alpha',
     price: 'Gratis',
-    tagline: 'Seguridad Esencial',
-    description: 'Para proteger tus objetos cotidianos sin costo alguno.',
+    priceNote: 'Sin tarjeta requerida',
+    description: 'Para empezar a proteger',
     icon: 'shield',
     color: '#ffffff',
+    cta: 'Comenzar Gratis',
     features: [
-      'Hasta 3 QRs Activos',
-      'Contador de Escaneos',
-      'Registro Básico',
-      'Alertas en Dashboard'
+      { label: 'Hasta 3 códigos QR activos', included: true },
+      { label: 'Contador de escaneos básico', included: true },
+      { label: 'Página pública de contacto', included: true },
+      { label: 'Mensajes predefinidos de contacto', included: true },
+      { label: 'Pausar o reactivar QR', included: false },
+      { label: 'Historial de escaneos', included: false },
+      { label: 'Ubicación con Mapa dinámico', included: false },
+      { label: 'Evidencia fotográfica adjunta', included: false },
+      { label: 'Notificaciones por correo', included: false }
     ]
   },
   {
@@ -25,18 +31,23 @@ const plans = [
     name: 'Beta',
     price: '79',
     currency: 'MXN',
-    period: '/mes',
-    tagline: 'Protección Avanzada',
-    description: 'Ideal para usuarios activos que buscan trazabilidad real.',
+    period: '/ mes',
+    priceNote: 'Cancela cuando quieras',
+    description: 'Para quienes toman en serio sus bienes',
     icon: 'verified_user',
     color: '#7bd0ff',
     featured: true,
+    cta: 'Activar Beta',
     features: [
-      '15 QRs Protegidos',
-      'Logs por 30 días',
-      '3 Reposiciones Digitales',
-      'Captura Fotográfica',
-      'Notificaciones Email'
+      { label: 'Hasta 15 códigos QR activos', included: true },
+      { label: 'Contador de escaneos en tiempo real', included: true },
+      { label: 'Página pública de contacto', included: true },
+      { label: '3 Regeneraciones digitales sin costo', included: true },
+      { label: 'Pausar o reactivar QR', included: true },
+      { label: 'Historial de escaneos (últimos 30 días)', included: true },
+      { label: 'Ubicación aproximada del escaneo', included: true },
+      { label: 'Evidencia fotográfica adjunta', included: true },
+      { label: 'Notificaciones por correo', included: true }
     ]
   },
   {
@@ -44,17 +55,22 @@ const plans = [
     name: 'Epsilon',
     price: '199',
     currency: 'MXN',
-    period: '/mes',
-    tagline: 'Control Total',
-    description: 'El estándar máximo de seguridad para activos críticos.',
-    icon: 'crown',
+    period: '/ mes',
+    priceNote: 'Facturación mensual',
+    description: 'Control total. Sin compromisos.',
+    icon: 'military_tech',
     color: '#ffd264',
+    cta: 'Seleccionar Premium',
     features: [
-      'QRs Ilimitados',
-      'Mapa Interactivo (ScanLoc)',
-      '5 Reposiciones Digitales',
-      'Logs Ilimitados',
-      'Soporte Prioritario'
+      { label: 'Códigos QR ilimitados', included: true },
+      { label: 'Ubicación con Mapa dinámico incluido', included: true },
+      { label: 'Ubicación aproximada del escaneo', included: true },
+      { label: '5 Regeneraciones digitales sin costo', included: true },
+      { label: 'Mensajes predefinidos y personalizados', included: true },
+      { label: 'Pausar o reactivar QR', included: true },
+      { label: 'Historial de escaneos ilimitado', included: true },
+      { label: 'Evidencia fotográfica adjunta', included: true },
+      { label: 'Notificaciones por correo prioritarias', included: true }
     ]
   }
 ]
@@ -67,118 +83,91 @@ const handleSelect = (id: string) => {
 <template>
   <HomeLayout>
     <template #main>
-      <div class="bg-surface-container-lowest font-inter pt-32 pb-20 px-6 min-h-screen text-on-surface">
-        <div class="max-w-7xl mx-auto">
+      <div class="bg-[#070b14] font-google-sans pt-32 pb-20 px-6 min-h-screen">
+        <div class="max-w-6xl mx-auto">
 
           <!-- Hero Section -->
-          <header class="text-center mb-24 space-y-6">
-            <div class="inline-flex items-center px-4 py-1.5 rounded-full glass-panel border border-[#45464d]/20">
-              <span class="text-xs font-bold tracking-widest text-[#7bd0ff] uppercase">Planes de Protección</span>
+          <header class="text-center mb-24 space-y-4">
+            <div class="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 rounded-lg border border-primary/20">
+              <span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+              <span class="text-[9px] font-black uppercase tracking-[0.4em] text-primary">Planes de Protección</span>
             </div>
-            <h1 class="text-5xl md:text-7xl font-headline font-extrabold tracking-tighter text-on-surface">
-              Invierta en su <span class="text-gradient-primary">Tranquilidad.</span>
+            <h1 class="text-4xl md:text-6xl font-black text-white tracking-tighter uppercase leading-none">
+              Elegir <span class="text-primary italic">Plan</span>
             </h1>
-            <p class="max-w-2xl mx-auto text-on-surface/80 text-lg font-body leading-relaxed">
-              Elija el nivel de blindaje que mejor se adapte a sus necesidades. Sin contratos forzosos.
+            <p class="max-w-xl mx-auto text-white/40 text-sm md:text-base font-medium leading-relaxed mt-4">
+              Elija el nivel de blindaje que mejor se adapte a sus necesidades. Sin contratos forzosos ni complicaciones.
             </p>
           </header>
 
           <!-- Pricing Grid -->
-          <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-end">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 items-stretch">
             <div v-for="plan in plans" :key="plan.id" :class="[
-              'transition-all duration-500 flex flex-col h-full group',
-              plan.featured
-                ? 'relative bg-[#191f31] p-12 rounded-xl scale-105  hover:-translate-y-3 glow-border border border-[#7bd0ff]/30'
-                : 'bg-[#151b2d] p-10 rounded-xl hover:-translate-y-2 border border-[#45464d]/10'
+              'relative flex flex-col p-8 rounded-[2rem] border transition-all duration-300',
+              plan.featured 
+                ? 'bg-[#0f1524] border-primary/30 md:-translate-y-4 md:scale-[1.02] shadow-[0_0_40px_rgba(123,208,255,0.05)]' 
+                : 'bg-white/[0.02] border-white/10 hover:border-white/20 hover:bg-white/[0.04]'
             ]">
-
-              <!-- Badge for Featured -->
-              <div v-if="plan.featured"
-                class="absolute -top-4 left-1/2 -translate-x-1/2 bg-[#7bd0ff] px-4 py-1 rounded-full">
-                <span class="text-[10px] font-black uppercase tracking-tighter text-[#00354a]">Recomendado</span>
-              </div>
-
-              <!-- Content -->
-              <div class="mb-8">
-                <span class="material-symbols-outlined mb-4"
-                  :class="plan.featured ? 'text-5xl text-[#7bd0ff]' : 'text-4xl'"
-                  :style="plan.featured ? { fontVariationSettings: '\'FILL\' 1' } : { color: plan.color === '#ffffff' ? '#c6c6cd' : plan.color }">
-                  {{ plan.icon }}
-                </span>
-                <h3 :class="[
-                  'font-headline text-[#dce1fb]',
-                  plan.featured ? 'text-3xl font-extrabold' : 'text-2xl font-bold'
-                ]">{{ plan.name }}</h3>
-                <p :class="[
-                  'mb-6',
-                  plan.featured ? 'text-base text-[#7bd0ff] font-semibold' : 'text-sm text-[#c6c6cd] font-medium'
-                ]">{{ plan.tagline }}</p>
-                <div class="flex items-baseline gap-1">
-                  <span v-if="plan.currency" :class="[
-                    'font-headline font-black text-[#dce1fb]',
-                    plan.featured ? 'text-5xl' : 'text-4xl'
-                  ]">${{ plan.price }}</span>
-                  <span v-else :class="[
-                    'font-headline font-black text-[#dce1fb]',
-                    plan.featured ? 'text-5xl' : 'text-4xl'
-                  ]">{{ plan.price }}</span>
-                  <span v-if="plan.period" class="text-[#c6c6cd] font-medium">{{ plan.currency }} {{ plan.period
-                  }}</span>
+              
+              <!-- Badge -->
+              <div v-if="plan.featured" class="absolute -top-4 left-1/2 -translate-x-1/2">
+                <div class="px-5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.3em] bg-primary text-[#070b14] whitespace-nowrap">
+                  Más Popular
                 </div>
               </div>
 
-              <ul :class="[
-                'flex-grow mb-12',
-                plan.featured ? 'space-y-6' : 'space-y-5'
-              ]">
-                <li v-for="feature in plan.features" :key="feature" :class="[
-                  'flex items-center gap-3 transition-colors',
-                  plan.featured ? 'text-[#dce1fb]' : 'text-[#c6c6cd] group-hover:text-[#dce1fb]'
-                ]">
-                  <span class="material-symbols-outlined text-xl" :class="plan.featured ? 'text-[#7bd0ff]' : ''"
-                    :style="!plan.featured ? { color: plan.color === '#ffffff' ? '#7bd0ff' : plan.color } : {}">
-                    check_circle
+              <!-- Header -->
+              <div class="flex items-center justify-between mb-8">
+                <div>
+                  <p class="text-[10px] font-black uppercase tracking-[0.4em] mb-1" :style="{ color: plan.featured ? '#7bd0ff' : 'rgba(255,255,255,0.4)' }">
+                    Plan
+                  </p>
+                  <h3 class="text-3xl font-black text-white tracking-tight leading-none uppercase">{{ plan.name }}</h3>
+                </div>
+                <div class="w-12 h-12 rounded-2xl border flex items-center justify-center shrink-0"
+                  :style="plan.featured ? { borderColor: 'rgba(123,208,255,0.3)', background: 'rgba(123,208,255,0.1)' } : { borderColor: 'rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.05)' }">
+                  <span class="material-symbols-outlined text-xl" :style="{ color: plan.color }">
+                    {{ plan.icon }}
                   </span>
-                  <span :class="plan.featured ? 'font-medium' : 'text-sm'">{{ feature }}</span>
+                </div>
+              </div>
+
+              <!-- Price -->
+              <div class="mb-8 pb-8 border-b border-white/[0.06]">
+                <div class="flex items-baseline gap-2">
+                  <span class="text-5xl font-black text-white tracking-tighter">{{ plan.currency ? `$${plan.price}` : plan.price }}</span>
+                  <span v-if="plan.period" class="text-white/20 text-xs font-black uppercase tracking-widest">{{ plan.period }}</span>
+                </div>
+                <p class="text-white/40 text-[10px] font-bold mt-2 h-4 uppercase tracking-widest">{{ plan.priceNote }}</p>
+                <p class="text-white/60 text-sm font-medium mt-4 min-h-[2.5rem]">{{ plan.description }}</p>
+              </div>
+
+              <!-- Features -->
+              <ul class="flex-1 space-y-4 mb-10">
+                <li v-for="(feature, idx) in plan.features" :key="idx" class="flex items-start gap-3">
+                  <div class="w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5" 
+                    :style="feature.included 
+                      ? (plan.featured ? { background: 'rgba(123,208,255,0.15)', color: '#7bd0ff' } : { background: 'rgba(255,255,255,0.05)', color: 'rgba(255,255,255,0.8)' })
+                      : { background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', color: 'rgba(255,255,255,0.2)' }">
+                    <span class="material-symbols-outlined text-[12px]! font-black">{{ feature.included ? 'check' : 'remove' }}</span>
+                  </div>
+                  <span class="text-sm font-medium leading-snug" 
+                    :class="feature.included 
+                      ? (plan.featured ? 'text-white/90' : 'text-white/80') 
+                      : 'text-white/20 line-through decoration-white/10'">
+                    {{ feature.label }}
+                  </span>
                 </li>
               </ul>
 
-              <!-- Button -->
-              <button @click="handleSelect(plan.id)" :class="[
-                'w-full rounded-lg font-headline transition-all active:scale-95',
-                plan.featured
-                  ? 'py-5 bg-gradient-to-r from-[#7bd0ff] to-[#008abb] text-[#00354a] font-black shadow-lg shadow-[#7bd0ff]/20 hover:brightness-110'
-                  : 'py-4 bg-[#2e3447] text-[#dce1fb] font-bold hover:bg-[#33394c]',
-                plan.id === 'epsilon' ? 'border border-[#ffd264]/20' : ''
-              ]">
-                Seleccionar Plan
+              <!-- CTA -->
+              <button @click="handleSelect(plan.id)" class="w-full h-14 rounded-2xl font-black text-xs uppercase tracking-widest transition-all duration-300 active:scale-[0.97] border flex items-center justify-center gap-2"
+                :class="plan.featured ? 'bg-primary text-[#070b14] border-primary hover:bg-primary/90' : 'bg-white/5 border-white/10 text-white hover:bg-white/10'">
+                {{ plan.cta }}
+                <span v-if="plan.featured" class="material-symbols-outlined text-[16px] font-black">arrow_forward</span>
               </button>
             </div>
           </div>
-
-          <!-- Decorative Map/Visual element -->
-          <section class="mt-24 relative overflow-hidden rounded-xl h-[400px] border border-[#45464d]/10 shadow-inner">
-            <div class="absolute inset-0 z-0">
-              <img class="w-full h-full object-cover opacity-30 grayscale" alt="abstract architectural blueprint"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCJydQWXb7WCm-6EPB-f3obKCWFjLVZrZl4R7xYn3FoM--yh7PaCjY_m1use6ENd31Sp847utuJXFeEKvB1BQHWp47MCLJ3TMf72zZ0bibc05pPWlrbr4RA3Nt1JBggcDWjqi17qHcD3prMiXr4Hqcys-cqD2qT1un1sbt88uQCzojztoo7p9Absk71AQmugehnnpmmQVnKCR9xISzfXavxCRn9Z8WM5WTZyFvTBdNnT3YfwFJ1RPbwBHdJ1aVYbBCjU2RzrXU2M_m7" />
-            </div>
-            <div class="absolute inset-0 bg-gradient-to-t from-[#0c1324] to-transparent z-10"></div>
-            <div class="relative z-20 h-full flex flex-col justify-end p-12 max-w-3xl">
-              <h4 class="text-3xl font-headline font-bold mb-4 text-[#dce1fb]">Arquitectura de Confianza</h4>
-              <p class="text-[#c6c6cd] text-base leading-relaxed mb-6">
-                Nuestra infraestructura obsidian está diseñada para transiciones seguras. Cada QR generado está
-                respaldado por protocolos de encriptación de grado bancario y monitoreo en tiempo real.
-              </p>
-              <div class="flex gap-4">
-                <div
-                  class="px-4 py-2 glass-panel rounded-lg border border-[#45464d]/10 text-xs font-bold text-[#7bd0ff]">
-                  AES-256 BIT</div>
-                <div
-                  class="px-4 py-2 glass-panel rounded-lg border border-[#45464d]/10 text-xs font-bold text-[#7bd0ff]">
-                  SCANLOC ENABLED</div>
-              </div>
-            </div>
-          </section>
 
         </div>
       </div>
@@ -187,46 +176,11 @@ const handleSelect = (id: string) => {
 </template>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Inter:wght@300;400;500&display=swap');
-
-.font-inter {
-  font-family: 'Inter', sans-serif;
-}
-
-.font-headline {
-  font-family: 'Manrope', sans-serif;
-}
-
-.font-body {
-  font-family: 'Inter', sans-serif;
-}
-
-.glass-panel {
-  background: rgba(51, 57, 76, 0.6);
-
-}
-
-.text-gradient-primary {
-  background: linear-gradient(135deg, #7bd0ff 0%, #008abb 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.glow-border {
-  position: relative;
-}
-
-.glow-border::after {
-  content: '';
-  position: absolute;
-  inset: -2px;
-  background: linear-gradient(135deg, #7bd0ff, transparent, #008abb);
-  z-index: -1;
-  border-radius: inherit;
-  opacity: 0.5;
+.font-google-sans {
+  font-family: 'Google Sans', 'Inter', sans-serif;
 }
 
 .material-symbols-outlined {
-  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
 }
 </style>

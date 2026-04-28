@@ -37,7 +37,7 @@ const features = [
 </script>
 
 <template>
-  <section class="pb-5 bg-[#0a0c10] px-8 md:px-24 mx-auto">
+  <section class="pb-5 bg-[#09090b] px-8 md:px-24 mx-auto">
     <div class="flex flex-col md:flex-row justify-between items-end mb-20 gap-8">
       <div class="max-w-xl">
         <h2 class="font-headline text-4xl font-bold mb-6 text-white">

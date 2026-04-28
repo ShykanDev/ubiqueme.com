@@ -134,7 +134,7 @@ const images = imageStore.getImages;
   <div class="space-y-12 font-google-sans ">
     <!-- component -->
     <viewer :images="images">
-      <img v-for="(src, index) in images" :key="index" :src="src.href">
+      <img v-for="(src, index) in images" :key="index" :src="src">
     </viewer>
     <!-- Header Section -->
     <header class="max-w-3xl mx-auto text-center space-y-4">

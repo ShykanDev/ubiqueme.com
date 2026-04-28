@@ -33,9 +33,9 @@ const plans = [
     tagline: 'Para quienes toman en serio sus bienes',
     price: '$79',
     priceNote: 'MXN / mes · Cancela cuando quieras',
-    accent: 'rgba(123,208,255,0.12)',
-    accentBorder: 'rgba(123,208,255,0.35)',
-    accentText: '#7bd0ff',
+    accent: 'rgba(249,115,22,0.12)',
+    accentBorder: 'rgba(249,115,22,0.35)',
+    accentText: '#f97316',
     badge: 'Más Popular',
     cta: 'Activar Beta',
     features: [
@@ -81,12 +81,12 @@ const plans = [
 
     <!-- Section Header -->
     <div class="text-center space-y-6 mb-20">
-      <div class="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 rounded-lg border border-primary/20">
-        <span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
-        <span class="text-[9px] font-black uppercase tracking-[0.4em] text-primary">Planes de Protección</span>
+      <div class="inline-flex items-center gap-2 px-3 py-1 bg-orange-500/10 rounded-lg border border-orange-500/20">
+        <span class="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse"></span>
+        <span class="text-[9px] font-black uppercase tracking-[0.4em] text-orange-500">Planes de Protección</span>
       </div>
       <h2 class="text-5xl md:text-7xl font-black text-white leading-[0.9] tracking-tighter uppercase">
-        Elige tu<br /><span class="text-primary">Nivel</span>
+        Elegir <br /><span class="text-orange-500">Plan</span> <span class="material-symbols-outlined text-5xl md:text-7xl text-amber-500 align-middle">shopping_bag</span>
       </h2>
       <p class="text-white/40 text-lg max-w-xl mx-auto font-medium leading-relaxed">
         Desde protección básica hasta control total de tus bienes. Sin contratos, sin complicaciones.
@@ -116,7 +116,7 @@ const plans = [
         <div v-if="plan.badge" class="absolute -top-4 left-1/2 -translate-x-1/2">
           <div
             class="px-5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.3em] border"
-            :style="{ color: plan.accentText, borderColor: plan.accentBorder, background: '#070b14' }"
+            :style="{ color: plan.accentText, borderColor: plan.accentBorder, background: '#09090b' }"
           >
             {{ plan.badge }}
           </div>
@@ -184,7 +184,7 @@ const plans = [
           class="w-full h-14 rounded-2xl font-black text-xs uppercase tracking-widest transition-all duration-300 active:scale-[0.97] border"
           :style="plan.id === 'alpha'
             ? { background: 'rgba(255,255,255,0.05)', borderColor: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.5)' }
-            : { background: plan.accentText, borderColor: plan.accentText, color: '#070b14' }"
+            : { background: plan.accentText, borderColor: plan.accentText, color: '#09090b' }"
         >
           {{ plan.cta }}
         </button>

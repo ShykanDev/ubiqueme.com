@@ -4,7 +4,7 @@
     <!-- Header -->
     <div class="text-center mb-20" data-aos="fade-up">
       <h2 class="text-3xl sm:text-5xl font-black text-white tracking-tight mb-4">
-        Protección en <span class="text-primary">3 simples pasos.</span>
+        Protección en <span class="text-orange-500">3 simples pasos.</span> <span class="material-symbols-outlined text-3xl sm:text-4xl text-amber-500 align-middle">verified_user</span>
       </h2>
       <p class="text-white/50 text-base sm:text-lg font-medium max-w-2xl mx-auto">
         Nuestro sistema actúa como un puente anónimo entre quien encuentra su pertenencia y usted, sin intermediarios físicos ni aplicaciones extra.
@@ -73,7 +73,7 @@
       </div>
 
       <div class="bg-white/5 border border-white/10 rounded-3xl p-6 flex items-start gap-4 hover:bg-white/10 transition-colors">
-        <span class="material-symbols-outlined text-primary text-2xl">chat</span>
+        <span class="material-symbols-outlined text-amber-500 text-2xl">chat</span>
         <div>
           <h4 class="text-white font-bold text-sm mb-1">Contacto Opcional</h4>
           <p class="text-white/40 text-xs font-medium leading-relaxed">Quien escanea puede dejarle un mensaje.</p>
@@ -81,7 +81,7 @@
       </div>
 
       <div class="bg-white/5 border border-white/10 rounded-3xl p-6 flex items-start gap-4 hover:bg-white/10 transition-colors">
-        <span class="material-symbols-outlined text-primary text-2xl">public</span>
+        <span class="material-symbols-outlined text-amber-500 text-2xl">public</span>
         <div>
           <h4 class="text-white font-bold text-sm mb-1">Alcance Global</h4>
           <p class="text-white/40 text-xs font-medium leading-relaxed">Alertas por email y WA en todo el mundo.</p>

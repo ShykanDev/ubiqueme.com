@@ -19,8 +19,8 @@ const props = defineProps<{
     <div
       class="relative z-10 inset-0 flex flex-col justify-around h-full text-center px-2 bg-black/45 items-center rounded-3xl">
       <div
-        class="w-16 h-16 rounded-2xl bg-primary-container flex items-center justify-center mb-8 border border-primary/20">
-        <span class="material-symbols-outlined text-primary text-3xl" :data-icon="steps.icon">{{
+        class="w-16 h-16 rounded-2xl bg-orange-950/30 flex items-center justify-center mb-8 border border-orange-500/20">
+        <span class="material-symbols-outlined text-orange-500 text-3xl" :data-icon="steps.icon">{{
           steps.icon
           }}</span>
       </div>

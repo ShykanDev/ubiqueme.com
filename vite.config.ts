@@ -12,7 +12,7 @@ const __dirname = path.dirname(__filename)
 // Force the editor to our script
 process.env.LAUNCH_EDITOR = path.resolve(
   __dirname,
-  process.platform === 'win32' ? './scripts/agy.cmd' : './scripts/agy-wrapper.sh'
+  process.platform === 'win32' ? './scripts/agy.cmd' : './scripts/agy-wrapper.sh',
 )
 
 // https://vite.dev/config/
@@ -22,11 +22,12 @@ export default defineConfig({
     vueDevTools({
       launchEditor: path.resolve(
         __dirname,
-        process.platform === 'win32' ? './scripts/agy.cmd' : './scripts/agy-wrapper.sh'
+        process.platform === 'win32' ? './scripts/agy.cmd' : './scripts/agy-wrapper.sh',
       ),
     }),
     tailwindcss(),
   ],
+  base: '/ubiqueme.com/',
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),

@@ -121,7 +121,7 @@ const handleSubmitMessage = async () => {
 
     await batch.commit()
     isSuccess.value = true
-    if (qrData.value) qrData.value.totalScans++
+    if (qrData.value) qrData.value.totalScans = (qrData.value.totalScans || 0) + 1
   } catch (e) {
     toast.error("Error al enviar el mensaje. Intenta de nuevo.")
   } finally {
@@ -171,6 +171,10 @@ const updateReasons = () => {
       presets: []
     }
   ]
+}
+
+const selectPreset = (preset: string) => {
+  messageText.value = preset;
 }
 
 onMounted(loadQRData)
