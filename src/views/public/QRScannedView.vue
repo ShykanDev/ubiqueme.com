@@ -75,6 +75,10 @@ const handleImageGet = async (e: Event) => {
   }
 }
 
+const selectPreset = (preset: string) => {
+  messageText.value = preset
+}
+
 const getMetrics = async (typePlan: string) => {
   const metrics: IQRScanMetrics = { country: "", city: "", region: "" };
   try {

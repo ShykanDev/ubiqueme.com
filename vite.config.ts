@@ -27,7 +27,7 @@ export default defineConfig({
     }),
     tailwindcss(),
   ],
-  base: '/ubiqueme.com/',
+  base: './',
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
