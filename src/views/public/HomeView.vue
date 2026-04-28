@@ -41,8 +41,7 @@ import { useUserStore } from '@/stores/user';
           <h1 class="text-5xl sm:text-7xl lg:text-[5.5rem] font-black text-white leading-[1.05] tracking-tight mb-6">
             Códigos QR inteligentes para<br />
             <span class="text-transparent bg-clip-text bg-gradient-to-r from-white to-white/80">su familia y
-              pertenencias.</span> <span
-              class="material-symbols-outlined text-5xl sm:text-7xl text-orange-500 align-middle inline-block animate-pulse">family_home</span>
+              pertenencias.</span>
           </h1>
 
           <!-- Sub-headline (Formal tone) -->
