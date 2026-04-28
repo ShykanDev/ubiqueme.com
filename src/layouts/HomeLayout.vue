@@ -3,10 +3,10 @@ import { useUserStore } from '@/stores/user';
 import { RouterLink } from 'vue-router'
 
 const navLinks = [
-  { name: 'Inicio', pathName: 'home' },
-  { name: 'Dashboard', pathName: 'dashboard' },
-  { name: 'Ayuda', pathName: 'help' },
-  { name: 'Precios', pathName: 'pricing' },
+  { name: 'Inicio', pathName: 'home', requiredLogin: false },
+  { name: 'Dashboard', pathName: 'dashboard', requiredLogin: true },
+  { name: 'Ayuda', pathName: 'help', requiredLogin: false },
+  { name: 'Precios', pathName: 'pricing', requiredLogin: false },
 ]
 </script>
 
@@ -25,7 +25,9 @@ const navLinks = [
         <!-- Menu -->
         <div class="hidden md:flex items-center space-x-10 tracking-tight font-rubik">
           <RouterLink v-for="link in navLinks" :key="link.name" :to="{ name: link.pathName }"
+            :class="{ 'hidden': !useUserStore().getUserId && link.requiredLogin }"
             class="text-slate-400 hover:text-amber-500 transition-all duration-300 hover:-translate-y-0.5 p-1 px-2 rounded-full relative z-20 group cursor-pointer hover:drop-shadow-[0_0_8px_rgba(245,158,11,0.5)]">
+
             {{ link.name }}
           </RouterLink>
         </div>

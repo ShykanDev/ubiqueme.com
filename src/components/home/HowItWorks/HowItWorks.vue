@@ -56,35 +56,43 @@
     <!-- Benefits Summary -->
     <div class="mt-24 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" data-aos="fade-up" data-aos-delay="400">
       
-      <div class="bg-white/5 border border-white/10 rounded-3xl p-6 flex items-start gap-4 hover:bg-white/10 transition-colors">
-        <span class="material-symbols-outlined text-primary text-2xl">gpp_good</span>
+      <div class="bg-white/5 border border-white/10 rounded-3xl p-6 flex items-start gap-4 hover:bg-white/10 transition-all duration-300 group">
+        <span class="material-symbols-outlined text-primary text-2xl group-hover:scale-110 transition-transform">gpp_good</span>
         <div>
-          <h4 class="text-white font-bold text-sm mb-1">Sin Datos Expuestos</h4>
-          <p class="text-white/40 text-xs font-medium leading-relaxed">Privacidad absoluta en todo momento.</p>
+          <h4 class="text-white font-bold text-sm mb-2">Sin Datos Expuestos</h4>
+          <p class="text-white/40 text-xs font-medium leading-relaxed">
+            Su privacidad es nuestra prioridad. En ningún momento se muestra su nombre o número personal; el sistema actúa como un puente seguro y anónimo.
+          </p>
         </div>
       </div>
 
-      <div class="bg-white/5 border border-white/10 rounded-3xl p-6 flex items-start gap-4 hover:bg-white/10 transition-colors">
-        <span class="material-symbols-outlined text-primary text-2xl">bolt</span>
+      <div class="bg-white/5 border border-white/10 rounded-3xl p-6 flex items-start gap-4 hover:bg-white/10 transition-all duration-300 group">
+        <span class="material-symbols-outlined text-primary text-2xl group-hover:scale-110 transition-transform">bolt</span>
         <div>
-          <h4 class="text-white font-bold text-sm mb-1">Sin Aplicaciones</h4>
-          <p class="text-white/40 text-xs font-medium leading-relaxed">Funciona nativamente en cualquier celular.</p>
+          <h4 class="text-white font-bold text-sm mb-2">Sin Aplicaciones</h4>
+          <p class="text-white/40 text-xs font-medium leading-relaxed">
+            Cero fricción. Quien escanea su código no necesita descargar apps, crear cuentas ni iniciar sesión. Todo funciona desde cualquier navegador móvil.
+          </p>
         </div>
       </div>
 
-      <div class="bg-white/5 border border-white/10 rounded-3xl p-6 flex items-start gap-4 hover:bg-white/10 transition-colors">
-        <span class="material-symbols-outlined text-amber-500 text-2xl">chat</span>
+      <div class="bg-white/5 border border-white/10 rounded-3xl p-6 flex items-start gap-4 hover:bg-white/10 transition-all duration-300 group">
+        <span class="material-symbols-outlined text-amber-500 text-2xl group-hover:scale-110 transition-transform">chat</span>
         <div>
-          <h4 class="text-white font-bold text-sm mb-1">Contacto Opcional</h4>
-          <p class="text-white/40 text-xs font-medium leading-relaxed">Quien escanea puede dejarle un mensaje.</p>
+          <h4 class="text-white font-bold text-sm mb-2">Contacto Inteligente</h4>
+          <p class="text-white/40 text-xs font-medium leading-relaxed">
+            Elija cómo ser contactado (WhatsApp, llamada, SMS o Email) sin mostrar su número. Quien lo encuentre puede enviarle un mensaje directo.
+          </p>
         </div>
       </div>
 
-      <div class="bg-white/5 border border-white/10 rounded-3xl p-6 flex items-start gap-4 hover:bg-white/10 transition-colors">
-        <span class="material-symbols-outlined text-amber-500 text-2xl">public</span>
+      <div class="bg-white/5 border border-white/10 rounded-3xl p-6 flex items-start gap-4 hover:bg-white/10 transition-all duration-300 group">
+        <span class="material-symbols-outlined text-amber-500 text-2xl group-hover:scale-110 transition-transform">public</span>
         <div>
-          <h4 class="text-white font-bold text-sm mb-1">Alcance Global</h4>
-          <p class="text-white/40 text-xs font-medium leading-relaxed">Alertas por email y WA en todo el mundo.</p>
+          <h4 class="text-white font-bold text-sm mb-2">Alcance Global</h4>
+          <p class="text-white/40 text-xs font-medium leading-relaxed">
+            Reciba alertas en tiempo real vía WhatsApp y Correo en cualquier parte del mundo. Protección sin fronteras para lo que más importa.
+          </p>
         </div>
       </div>
 

@@ -3,19 +3,11 @@ import StepsCard from './StepsCard.vue'
 
 const steps = [
   {
-    icon: 'shopping_cart',
-    title: 'Obtenga su QR',
-    description:
-      'Compre y reciba sus etiquetas adhesivas QR únicas para colocar en su vehículo o propiedad.',
-    number: 1,
-    video: new URL('@/assets/videos/step_one.mp4', import.meta.url).href,
-  },
-  {
     icon: 'layers',
-    title: 'Coloque el QR',
+    title: 'Compre y adhiera el QR',
     description:
-      'Adhiera el QR en su parabrisas, puerta, reja o cualquier lugar visible para un fácil acceso.',
-    number: 2,
+      'Compre su QR y péguelo en su maleta, reja, puerta o cualquier lugar visible para un fácil acceso.',
+    number: 1,
     video: new URL('@/assets/videos/step_two.mp4', import.meta.url).href,
   },
   {
@@ -23,14 +15,14 @@ const steps = [
     title: 'Alguien escanea el QR',
     description:
       'En caso de emergencia, cualquier persona puede escanear el QR y seleccionar un mensaje predefinido.',
-    number: 3,
+    number: 2,
     video: new URL('@/assets/videos/step_three.mp4', import.meta.url).href,
   },
   {
     icon: 'notifications_active',
     title: 'Reciba alerta instantánea',
     description: 'Reciba una notificación vía WhatsApp o SMS sin exponer su información personal.',
-    number: 4,
+    number: 3,
     video: new URL('@/assets/videos/step_four.mp4', import.meta.url).href,
   },
 ]
@@ -46,7 +38,7 @@ const steps = [
           fluida y confiable.
         </p>
       </div>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
         <StepsCard v-for="step in steps" :key="step.number" :steps="step" />
       </div>
     </div>

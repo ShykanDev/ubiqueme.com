@@ -6,6 +6,40 @@ import StepByStep from '@/components/home/StepByStep/StepByStep.vue'
 import VideoGrid from '@/components/home/VideoGrid/VideoGrid.vue'
 import HomeLayout from '@/layouts/HomeLayout.vue'
 import { useUserStore } from '@/stores/user';
+import { ref } from 'vue';
+import { toast } from 'vue-sonner';
+
+const heroVideos = [
+  { src: new URL('../../assets/videos/vid04.mp4', import.meta.url).href, id: 'hero-vid-1' },
+  { src: new URL('../../assets/videos/vid02.mp4', import.meta.url).href, id: 'hero-vid-2' },
+  { src: new URL('../../assets/videos/vid03.mp4', import.meta.url).href, id: 'hero-vid-3' },
+];
+
+const mutedStates = ref(heroVideos.map(() => true));
+
+const toggleSound = (index: number) => {
+  const video = document.getElementById(heroVideos[index].id) as HTMLVideoElement;
+  if (!video) return;
+
+  video.muted = !video.muted;
+  mutedStates.value[index] = video.muted;
+
+  if (!video.muted) {
+    // Mute other hero videos
+    heroVideos.forEach((v, i) => {
+      if (i !== index) {
+        const otherVideo = document.getElementById(v.id) as HTMLVideoElement;
+        if (otherVideo) {
+          otherVideo.muted = true;
+          mutedStates.value[i] = true;
+        }
+      }
+    });
+    video.play();
+  }
+  
+  toast.info(video.muted ? 'Sonido desactivado' : 'Sonido activado');
+};
 </script>
 
 <template>
@@ -26,63 +60,83 @@ import { useUserStore } from '@/stores/user';
           </div>
         </div>
 
-        <!-- 🚀 HERO SECTION (Modern, Lightweight, Typography-Driven) -->
-        <section
-          class="relative z-10 px-6 sm:px-8 pt-32 pb-24 mx-auto max-w-5xl flex flex-col items-center text-center">
 
-          <!-- Subtle Badge -->
-          <div
-            class="inline-flex items-center gap-2 px-4 py-2 bg-amber-500/10 rounded-full border border-amber-500/20 mb-8 transition-colors hover:bg-amber-500/20 cursor-default">
-            <span class="material-symbols-outlined text-amber-500 text-sm">enhanced_encryption</span>
-            <span class="text-[11px] font-black uppercase tracking-[0.2em] text-amber-500">Privacidad Absoluta</span>
-          </div>
+        <article class="relative z-10 w-full flex flex-col lg:flex-row pt-24 lg:pt-32 px-6 sm:px-8 max-w-7xl mx-auto gap-12 lg:gap-8">
 
-          <!-- Main Headline -->
-          <h1 class="text-5xl sm:text-7xl lg:text-[5.5rem] font-black text-white leading-[1.05] tracking-tight mb-6">
-            Códigos QR inteligentes para<br />
-            <span class="text-transparent bg-clip-text bg-gradient-to-r from-white to-white/80">su familia y
-              pertenencias.</span>
-          </h1>
+          <!-- Left Content -->
+          <section class="w-full lg:w-1/2 flex flex-col items-center lg:items-start text-center lg:text-left">
 
-          <!-- Sub-headline (Formal tone) -->
-          <p class="text-white/50 text-lg sm:text-xl font-medium leading-relaxed max-w-3xl mx-auto mb-10">
-            Etiquetas físicas y pulseras que permiten a cualquiera reportar sus artículos perdidos o asistir a sus
-            mascotas, niños y adultos mayores al instante, manteniendo su información de contacto 100% oculta.
-          </p>
-
-          <!-- CTA Buttons -->
-          <div class="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
-            <router-link :to="{ name: 'pricing' }"
-              class="w-full sm:w-auto flex justify-center items-center gap-2 px-8 py-4 bg-gradient-to-r from-red-500 to-amber-500 text-white font-black text-base rounded-2xl transition-all duration-300 hover:from-red-400 hover:to-amber-400 hover:scale-105 active:scale-95 shadow-[0_0_30px_rgba(249,115,22,0.15)] hover:shadow-[0_0_40px_rgba(249,115,22,0.3)]">
-              Obtener mi Código QR <span class="material-symbols-outlined text-xl">qr_code_scanner</span>
-            </router-link>
-            <router-link v-if="!useUserStore().getUserId" :to="{ name: 'login' }"
-              class="w-full sm:w-auto px-8 py-4 bg-white/5 border border-white/10 text-white font-bold text-base rounded-2xl hover:bg-white/10 hover:border-white/20 transition-all duration-300">
-              Iniciar Sesión
-            </router-link>
-          </div>
-
-          <!-- Lightweight Features Grid -->
-          <div
-            class="grid grid-cols-1 sm:grid-cols-3 gap-8 sm:gap-12 mt-20 pt-10 border-t border-white/5 w-full max-w-3xl">
-            <div class="flex flex-col items-center gap-2 text-white/40 group">
-              <span
-                class="material-symbols-outlined text-2xl mb-1 text-amber-500 group-hover:scale-110 transition-transform">notifications_active</span>
-              <span class="text-xs font-black uppercase tracking-widest text-white/60">Alertas Inmediatas</span>
+            <!-- Subtle Badge -->
+            <div
+              class="inline-flex items-center gap-2 px-4 py-2 bg-amber-500/10 rounded-full border border-amber-500/20 mb-8 transition-colors hover:bg-amber-500/20 cursor-default">
+              <span class="material-symbols-outlined text-amber-500 text-sm">enhanced_encryption</span>
+              <span class="text-[11px] font-black uppercase tracking-[0.2em] text-amber-500">Privacidad Absoluta</span>
             </div>
-            <div class="flex flex-col items-center gap-2 text-white/40 group">
-              <span
-                class="material-symbols-outlined text-2xl mb-1 text-amber-500 group-hover:scale-110 transition-transform">vpn_key</span>
-              <span class="text-xs font-black uppercase tracking-widest text-white/60">Cero Datos Expuestos</span>
-            </div>
-            <div class="flex flex-col items-center gap-2 text-white/40 group">
-              <span
-                class="material-symbols-outlined text-2xl mb-1 text-amber-500 group-hover:scale-110 transition-transform">public</span>
-              <span class="text-xs font-black uppercase tracking-widest text-white/60">Cobertura Global</span>
-            </div>
-          </div>
 
-        </section>
+            <!-- Main Headline -->
+            <h1 class="text-4xl sm:text-6xl lg:text-[4rem] font-black text-white tracking-tight mb-6 leading-[1.1]">
+              Códigos QR inteligentes para<br />
+              <span class="text-transparent bg-clip-text bg-gradient-to-r from-white to-white/80">su familia y
+                pertenencias.</span>
+            </h1>
+
+            <!-- Sub-headline -->
+            <p class="text-white/50 text-lg sm:text-xl font-medium leading-relaxed max-w-2xl mb-10">
+              Etiquetas físicas y pulseras que permiten a cualquiera reportar sus artículos perdidos o asistir a sus
+              mascotas, niños y adultos mayores al instante, manteniendo su información de contacto 100% oculta.
+            </p>
+
+            <!-- CTA Buttons -->
+            <div class="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
+              <router-link :to="{ name: 'pricing' }"
+                class="w-full sm:w-auto flex justify-center items-center gap-2 px-8 py-4 bg-gradient-to-r from-red-500 to-amber-500 text-white font-black text-base rounded-2xl transition-all duration-300 hover:from-red-400 hover:to-amber-400 hover:scale-105 active:scale-95 shadow-[0_0_30px_rgba(249,115,22,0.15)] hover:shadow-[0_0_40px_rgba(249,115,22,0.3)]">
+                Obtener mi Código QR <span class="material-symbols-outlined text-xl">qr_code_scanner</span>
+              </router-link>
+              <router-link v-if="!useUserStore().getUserId" :to="{ name: 'login' }"
+                class="w-full sm:w-auto px-8 py-4 bg-white/5 border border-white/10 text-white font-bold text-base rounded-2xl hover:bg-white/10 hover:border-white/20 transition-all duration-300 text-center">
+                Iniciar Sesión
+              </router-link>
+            </div>
+
+            <!-- Lightweight Features Grid -->
+            <div
+              class="grid grid-cols-1 sm:grid-cols-3 gap-8 sm:gap-12 mt-20 pt-10 border-t border-white/5 w-full">
+              <div class="flex flex-col items-center lg:items-start gap-2 text-white/40 group">
+                <span
+                  class="material-symbols-outlined text-2xl mb-1 text-amber-500 group-hover:scale-110 transition-transform">notifications_active</span>
+                <span class="text-xs font-black uppercase tracking-widest text-white/60">Alertas Inmediatas</span>
+              </div>
+              <div class="flex flex-col items-center lg:items-start gap-2 text-white/40 group">
+                <span
+                  class="material-symbols-outlined text-2xl mb-1 text-amber-500 group-hover:scale-110 transition-transform">vpn_key</span>
+                <span class="text-xs font-black uppercase tracking-widest text-white/60">Cero Datos Expuestos</span>
+              </div>
+              <div class="flex flex-col items-center lg:items-start gap-2 text-white/40 group">
+                <span
+                  class="material-symbols-outlined text-2xl mb-1 text-amber-500 group-hover:scale-110 transition-transform">public</span>
+                <span class="text-xs font-black uppercase tracking-widest text-white/60">Cobertura Global</span>
+              </div>
+            </div>
+          </section>
+
+          <!-- Right Content: Responsive Video Grid -->
+          <section class="w-full lg:w-1/2 flex flex-col gap-6 lg:gap-8 items-center">
+            <div v-for="(video, index) in heroVideos" :key="index" 
+              class="relative w-full max-w-md lg:max-w-none aspect-video sm:aspect-[21/9] lg:aspect-video rounded-[2rem] overflow-hidden group border border-white/10">
+              <video :id="video.id" :src="video.src" autoplay muted loop playsinline
+                class="w-full h-full object-cover">
+              </video>
+              <div class="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors pointer-events-none"></div>
+              
+              <!-- Sound Toggle Button -->
+              <button @click="toggleSound(index)"
+                class="absolute bottom-4 right-4 z-30 p-3 bg-black/60 backdrop-blur-md border border-white/10 text-white rounded-full hover:bg-amber-500 transition-all hover:scale-110 shadow-lg">
+                <span class="material-symbols-outlined text-xl">{{ mutedStates[index] ? 'volume_off' : 'volume_up' }}</span>
+              </button>
+            </div>
+          </section>
+
+        </article>
 
         <HowItWorks />
         <VideoGrid />
@@ -95,6 +149,10 @@ import { useUserStore } from '@/stores/user';
 </template>
 
 <style scoped>
+.cursor-custom {
+  cursor: url('../../assets/phone_cursor.png'), auto;
+}
+
 .font-google-sans {
   font-family: 'Google Sans', sans-serif;
 }
