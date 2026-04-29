@@ -35,12 +35,40 @@ const statusConfig = {
 }
 
 const currentStatus = computed(() => {
+  if (propsComputed.value.isBanned) {
+    return {
+      bg: 'bg-red-500/20',
+      text: 'text-red-500',
+      dot: 'bg-red-500',
+      label: 'Baneado'
+    }
+  }
   return statusConfig[propsComputed.value.status] || {
     bg: 'bg-slate-500/10',
     text: 'text-slate-400',
     dot: 'bg-slate-400',
     label: 'Desconocido'
   }
+})
+
+const cardStyle = computed(() => {
+  if (props.isBanned) {
+    return 'grayscale opacity-50 brightness-[0.4] blur-[0.5px] cursor-not-allowed'
+  }
+  
+  if (props.status === 'Canceled') {
+    return 'grayscale opacity-60 brightness-75'
+  }
+
+  if (props.status === 'Paused' || !props.isActive) {
+    return 'grayscale-[0.8] opacity-80 brightness-90'
+  }
+
+  if (props.status === 'Error') {
+    return 'border-rose-500/40 shadow-[0_0_15px_rgba(244,63,94,0.1)]'
+  }
+
+  return ''
 })
 
 const toggleMenu = () => {
@@ -244,10 +272,12 @@ onUnmounted(() => {
   if (unsubscribeLogs) unsubscribeLogs();
 })
 
+
 </script>
 
 <template>
   <div
+    :class="[cardStyle]"
     class="relative w-full max-w-[700px] bg-[#04050a] rounded-[2.5rem] border border-white/5 overflow-hidden transition-all duration-300 hover:border-primary/20 shadow-lg group font-google-sans">
 
 

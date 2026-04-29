@@ -34,6 +34,8 @@ export interface IQRLog {
     reason: string
     message?: string
     type: string
+    email?: string
+    phone?: string
   }
   img?: string
 }

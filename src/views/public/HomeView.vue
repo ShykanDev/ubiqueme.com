@@ -95,8 +95,7 @@ const toggleSound = (index: number) => {
         </div>
 
 
-        <article
-          class="relative z-10 w-full flex flex-col lg:flex-row pt-24 lg:pt-32 px-6 sm:px-8 max-w-7xl mx-auto gap-12 lg:gap-8">
+        <article class="relative z-10 w-full flex flex-col lg:flex-row pt-24 lg:pt-32 px-6 sm:px-8  gap-12 lg:gap-8">
 
           <!-- Left Content -->
           <section class="w-full lg:w-1/2 flex flex-col items-center lg:items-start text-center lg:text-left relative">
@@ -123,7 +122,9 @@ const toggleSound = (index: number) => {
             <h1 class="text-4xl sm:text-6xl lg:text-[4rem] font-black text-white tracking-tight mb-6 leading-[1.1]">
               Códigos QR inteligentes para<br />
               <div class="flex justify-center items-center">
-                <span class="text-transparent bg-clip-text bg-linear-to-r m-0! p-0! from-white to-white/80">su familia y
+                <span class="text-transparent bg-clip-text bg-linear-to-r m-0! p-0! from-white to-white/80">recibir
+                  alertas
+                  de su familia y
                   pertenencias.</span>
                 <article class="p-2 bg-white rounded-xl pb-8 relative">
                   <qrcode-vue value="https://ubiqueme.com" :size="100" render-as="canvas" />
