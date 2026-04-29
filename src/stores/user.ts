@@ -1,58 +1,90 @@
 import { defineStore } from 'pinia'
+import 'pinia-plugin-persistedstate'
+import { ref, computed } from 'vue'
 
-export const useUserStore = defineStore('userStore', {
-  state: () => ({
-    fullName: '',
-    creationDate: '',
-    userId: '',
-    email: '',
-    plan: '',
-    isAuthenticated: false,
-    authReady: false,
-  }),
-  getters: {
-    getFullName: (state) => state.fullName,
-    getFirstName: (state) => state.fullName.split(' ')[0],
-    getCreationDate: (state) => state.creationDate,
-    getUserId: (state) => state.userId,
-    getEmail: (state) => state.email,
-    getPlan: (state) => state.plan,
-    getIsAuthenticated: (state) => state.isAuthenticated,
-    isAuthReady: (state) => state.authReady,
-  },
-  actions: {
-    setFullName(fullName: string) {
-      this.fullName = fullName
-    },
-    setUserId(id: string) {
-      this.userId = id
-    },
-    setCreationDate(creationDate: string) {
-      this.creationDate = creationDate
-    },
-    setEmail(email: string) {
-      this.email = email
-    },
-    setPLan(plan: string) {
-      this.plan = plan
-    },
-    setIsAuthenticated(val: boolean) {
-      this.isAuthenticated = val
-    },
-    setAuthReady(val: boolean) {
-      this.authReady = val
-    },
-    clearFullName() {
-      this.fullName = ''
-    },
-    clearUser() {
-      this.fullName = ''
-      this.creationDate = ''
-      this.userId = ''
-      this.email = ''
-      this.plan = ''
-      this.isAuthenticated = false
-    },
-  },
-  persist: true,
+export const useUserStore = defineStore('userStore', () => {
+  // State
+  const fullName = ref('')
+  const creationDate = ref('')
+  const userId = ref('')
+  const email = ref('')
+  const plan = ref('')
+  const isAuthenticated = ref(false)
+  const authReady = ref(false)
+
+  // Getters
+  const getFullName = computed(() => fullName.value)
+  const getFirstName = computed(() => fullName.value.split(' ')[0] || '')
+  const getCreationDate = computed(() => creationDate.value)
+  const getUserId = computed(() => userId.value)
+  const getEmail = computed(() => email.value)
+  const getPlan = computed(() => plan.value)
+  const getIsAuthenticated = computed(() => isAuthenticated.value)
+  const isAuthReady = computed(() => authReady.value)
+
+  // Actions
+  function setFullName(val: string) {
+    fullName.value = val
+  }
+  function setUserId(id: string) {
+    userId.value = id
+  }
+  function setCreationDate(date: string) {
+    creationDate.value = date
+  }
+  function setEmail(val: string) {
+    email.value = val
+  }
+  function setPlan(val: string) {
+    plan.value = val
+  }
+  function setIsAuthenticated(val: boolean) {
+    isAuthenticated.value = val
+  }
+  function setAuthReady(val: boolean) {
+    authReady.value = val
+  }
+  function clearFullName() {
+    fullName.value = ''
+  }
+  function clearUser() {
+    fullName.value = ''
+    creationDate.value = ''
+    userId.value = ''
+    email.value = ''
+    plan.value = ''
+    isAuthenticated.value = false
+  }
+
+  return {
+    // State
+    fullName,
+    creationDate,
+    userId,
+    email,
+    plan,
+    isAuthenticated,
+    authReady,
+    // Getters
+    getFullName,
+    getFirstName,
+    getCreationDate,
+    getUserId,
+    getEmail,
+    getPlan,
+    getIsAuthenticated,
+    isAuthReady,
+    // Actions
+    setFullName,
+    setUserId,
+    setCreationDate,
+    setEmail,
+    setPlan,
+    setIsAuthenticated,
+    setAuthReady,
+    clearFullName,
+    clearUser,
+  }
+}, {
+  persist: true
 })

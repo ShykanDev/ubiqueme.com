@@ -122,8 +122,15 @@ const toggleSound = (index: number) => {
             <!-- Main Headline -->
             <h1 class="text-4xl sm:text-6xl lg:text-[4rem] font-black text-white tracking-tight mb-6 leading-[1.1]">
               Códigos QR inteligentes para<br />
-              <span class="text-transparent bg-clip-text bg-gradient-to-r from-white to-white/80">su familia y
-                pertenencias.</span>
+              <div class="flex justify-center items-center">
+                <span class="text-transparent bg-clip-text bg-linear-to-r m-0! p-0! from-white to-white/80">su familia y
+                  pertenencias.</span>
+                <article class="p-2 bg-white rounded-xl pb-8 relative">
+                  <qrcode-vue value="https://ubiqueme.com" :size="100" render-as="canvas" />
+                  <span
+                    class="absolute bottom-2 left-1/2 -translate-x-1/2 text-sm text-black/50 leading-tight">ubiqueme.com</span>
+                </article>
+              </div>
             </h1>
 
             <!-- Sub-headline -->
@@ -135,12 +142,14 @@ const toggleSound = (index: number) => {
             <!-- CTA Buttons -->
             <div class="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
               <router-link :to="{ name: 'pricing' }"
-                class="w-full sm:w-auto flex justify-center items-center gap-2 px-8 py-4 bg-gradient-to-r from-red-500 to-amber-500 text-white font-black text-base rounded-2xl transition-all duration-300 hover:from-red-400 hover:to-amber-400 hover:scale-105 active:scale-95 shadow-[0_0_30px_rgba(249,115,22,0.15)] hover:shadow-[0_0_40px_rgba(249,115,22,0.3)]">
-                Obtener mi Código QR <span class="material-symbols-outlined text-xl">qr_code_scanner</span>
+                class="w-full max-w-xs flex justify-center items-center gap-2 px-6 py-3 bg-slate-700/50 border border-white/20 text-amber-400 font-semibold rounded-lg hover:bg-amber-400 hover:text-black transition-all duration-300">
+                Obtener mi Código QR <span class="material-symbols-outlined">qr_code_scanner</span>
               </router-link>
+
+
               <router-link v-if="!useUserStore().getUserId" :to="{ name: 'login' }"
-                class="w-full sm:w-auto px-8 py-4 bg-white/5 border border-white/10 text-white font-bold text-base rounded-2xl hover:bg-white/10 hover:border-white/20 transition-all duration-300 text-center">
-                Iniciar Sesión
+                class="w-full sm:w-auto px-6 py-3 bg-transparent border border-[#ff9800]/50 text-[#ff9800] font-bold text-sm tracking-wider rounded-lg hover:bg-[#ff9800]/10 hover:border-[#ff9800] transition-all duration-200 text-center">
+                INICIAR SESIÓN
               </router-link>
             </div>
 
@@ -175,9 +184,9 @@ const toggleSound = (index: number) => {
 
               <!-- Sound Toggle Button -->
               <button @click="toggleSound(index)"
-                class="absolute bottom-4 right-4 z-30 p-3 bg-black/60 backdrop-blur-md border border-white/10 text-white rounded-full hover:bg-amber-500 transition-all hover:scale-110 shadow-lg">
+                class="absolute bottom-1 right-1 z-30 p-3 bg-black/60 backdrop-blur-md border border-white/10 text-white rounded-full hover:bg-amber-500 transition-all hover:scale-110 shadow-lg">
                 <span class="material-symbols-outlined text-xl">{{ mutedStates[index] ? 'volume_off' : 'volume_up'
-                  }}</span>
+                }}</span>
               </button>
             </div>
           </section>
