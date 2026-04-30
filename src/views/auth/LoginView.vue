@@ -2,11 +2,22 @@
   <HomeLayout>
     <template #main>
       <section
-        class="relative min-h-screen w-full flex flex-col md:flex-row bg-[#070b14] font-google-sans overflow-hidden py-10">
+        class="relative min-h-screen w-full flex flex-col md:flex-row bg-[#09090b] font-google-sans overflow-hidden py-10">
 
-        <!-- 📐 BACKGROUND DOT MATRIX (Lightweight) -->
-        <div class="absolute inset-0 z-0 opacity-[0.05]"
-          style="background-image: radial-gradient(#fff 1px, transparent 1px); background-size: 24px 24px;">
+        <!-- 🎨 BACKGROUND ORNAMENTATION (Blueprint Style) -->
+        <div class="absolute inset-0 z-0 pointer-events-none">
+          <!-- Circular shapes -->
+          <div
+            class="absolute top-[-10%] right-[-10%] w-[600px] h-[600px] border border-white/5 rounded-full pointer-events-none">
+          </div>
+          <div
+            class="absolute bottom-[-10%] left-[-5%] w-[400px] h-[400px] border border-orange-500/5 rounded-full pointer-events-none">
+          </div>
+
+          <!-- Grid Pattern -->
+          <div class="absolute inset-0 z-0 opacity-[0.22]"
+            style="background-image: linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px); background-size: 100px 100px;">
+          </div>
         </div>
 
         <!-- 💠 LEFT SIDE: BRAND NARRATIVE (Desktop) -->
@@ -15,22 +26,25 @@
 
 
           <div class="relative z-10 space-y-8">
-            <div class="inline-flex items-center gap-3">
-              <div class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-2xl">
-                <span class="text-black font-black text-2xl">U</span>
+            <div class="flex items-center gap-4 group">
+              <span
+                class="material-symbols-outlined text-orange-500 text-6xl group-hover:rotate-12 transition-transform">location_on</span>
+              <div class="flex flex-col">
+                <h2 class="text-3xl font-black text-white tracking-tighter uppercase leading-none">Ubiqueme</h2>
+                <span class="text-orange-500/60 text-[10px] font-black uppercase tracking-[0.3em]">Security
+                  Protocol</span>
               </div>
-              <h2 class="text-4xl font-black text-white tracking-tighter uppercase">Ubiqueme</h2>
             </div>
 
             <div
-              class="inline-flex w-fit items-center gap-2 px-3 py-1 bg-primary/10 rounded-lg border border-primary/20">
-              <span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
-              <span class="text-[9px] font-black uppercase tracking-[0.3em] text-primary">Security Protocol v4.0</span>
+              class="inline-flex w-fit items-center gap-2 px-3 py-1 bg-orange-500/10 rounded-lg border border-orange-500/20">
+              <span class="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse"></span>
+              <span class="text-[9px] font-black uppercase tracking-[0.3em] text-orange-500">Acceso Seguro v4.0</span>
             </div>
 
             <h1 class="text-6xl lg:text-8xl font-black text-white leading-[0.9] tracking-tighter">
               Inicio de<br />
-              <span class="text-primary">Sesión.</span>
+              <span class="text-orange-500">Sesión.</span>
             </h1>
 
             <div class="max-w-md space-y-6">
@@ -40,15 +54,23 @@
 
               <div class="flex gap-4 items-center pt-4">
                 <div class="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center">
-                  <span class="material-symbols-outlined text-white/50">key</span>
+                  <span class="material-symbols-outlined text-orange-500/50">key</span>
                 </div>
                 <div class="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center">
-                  <span class="material-symbols-outlined text-white/50">shield</span>
+                  <span class="material-symbols-outlined text-orange-500/50">shield</span>
                 </div>
                 <div class="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center">
-                  <span class="material-symbols-outlined text-white/50">fingerprint</span>
+                  <span class="material-symbols-outlined text-orange-500/50">fingerprint</span>
                 </div>
               </div>
+            </div>
+
+            <!-- Decorative Floating Icons -->
+            <div class="absolute inset-0 pointer-events-none opacity-[0.05] select-none">
+              <span
+                class="material-symbols-outlined absolute top-[10%] left-[10%] text-9xl animate-float-slow text-orange-500">security</span>
+              <span
+                class="material-symbols-outlined absolute bottom-[20%] right-[10%] text-8xl animate-float-medium">qr_code_2</span>
             </div>
           </div>
 
@@ -60,11 +82,10 @@
           <div class="w-full max-w-sm space-y-10">
 
             <div class="md:hidden flex flex-col items-center mb-10 text-center">
-              <div
-                class="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(123,208,255,0.3)]">
-                <span class="text-black font-black text-3xl">U</span>
-              </div>
-              <h2 class="text-2xl font-black text-white uppercase tracking-widest">Ubiqueme</h2>
+              <span class="material-symbols-outlined text-orange-500 text-6xl mb-4">location_on</span>
+              <h2 class="text-2xl font-black text-white uppercase tracking-widest leading-none">Ubiqueme</h2>
+              <span class="text-orange-500/60 text-[10px] font-black uppercase tracking-[0.3em] mt-1">Security
+                Protocol</span>
             </div>
 
             <template v-if="emailVerified">
@@ -87,12 +108,13 @@
                   <div class="flex justify-between items-center px-1">
                     <label class="text-[10px] font-black text-white/50 uppercase tracking-[0.2em]">Contraseña</label>
                     <a href="#"
-                      class="text-[10px] font-black text-primary hover:text-white uppercase tracking-widest">Recuperar</a>
+                      class="text-[10px] font-black text-orange-500 hover:text-white uppercase tracking-widest transition-colors">¿Olvidó
+                      su clave?</a>
                   </div>
                   <div class="group relative">
-                    <input id="password" v-model="form.password" :type="showPassword ? 'text' : 'password'" :disabled="loading"
-                      placeholder="••••••••"
-                      class="w-full px-5 py-4 bg-white/5 border border-white/20 hover:border-white/30 rounded-2xl text-white placeholder:text-white/40 focus:border-primary focus:outline-none focus:bg-white/10 transition-all pr-12 disabled:opacity-50" />
+                    <input id="password" v-model="form.password" :type="showPassword ? 'text' : 'password'"
+                      :disabled="loading" placeholder="••••••••"
+                      class="w-full px-5 py-4 bg-white/5 border border-white/20 hover:border-white/30 rounded-2xl text-white placeholder:text-white/40 focus:border-orange-500 focus:outline-none focus:bg-white/10 transition-all pr-12 disabled:opacity-50" />
                     <button type="button" @click="showPassword = !showPassword"
                       class="absolute right-5 top-1/2 -translate-y-1/2 text-white/20 hover:text-white transition-colors">
                       <span class="material-symbols-outlined text-xl">{{ showPassword ? 'visibility' : 'visibility_off'
@@ -102,11 +124,11 @@
                 </div>
 
                 <button type="submit" :disabled="loading"
-                  class="group w-full h-16 bg-white text-black rounded-2xl font-black text-lg transition-all duration-300 hover:bg-primary hover:shadow-[0_0_20px_rgba(123,208,255,0.4)] active:scale-[0.98] flex items-center justify-center gap-3 disabled:opacity-50 disabled:grayscale">
-                  <span v-if="!loading">Entrar</span>
-                  <span v-else>Iniciando...</span>
+                  class="group w-full h-16 bg-orange-500 text-[#09090b] rounded-2xl font-black text-xs uppercase tracking-widest transition-all duration-300 hover:bg-white hover:shadow-[0_0_20px_rgba(249,115,22,0.4)] active:scale-[0.98] flex items-center justify-center gap-3 disabled:opacity-50 disabled:grayscale">
+                  <span v-if="!loading">Iniciar Sesión</span>
+                  <span v-else>Autenticando...</span>
                   <span v-if="!loading"
-                    class="material-symbols-outlined font-black transition-transform group-hover:translate-x-1">login</span>
+                    class="material-symbols-outlined text-lg font-black transition-transform group-hover:translate-x-1">arrow_forward</span>
                   <span v-else class="w-5 h-5 border-2 border-black/20 border-t-black rounded-full animate-spin"></span>
                 </button>
               </form>
@@ -142,7 +164,7 @@
 
               <p class="text-center text-white/30 text-xs font-medium mt-6">
                 ¿Sin cuenta todavía?
-                <RouterLink to="/register" class="text-primary font-black hover:text-white ml-2 transition-colors">
+                <RouterLink to="/register" class="text-orange-500 font-black hover:text-white ml-2 transition-colors">
                   CREAR CUENTA</RouterLink>
               </p>
             </template>
@@ -225,7 +247,28 @@ const handleLogin = async () => {
 }
 
 .material-symbols-outlined {
-  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  font-variation-settings: 'FILL' 1, 'wght' 600, 'GRAD' 0, 'opsz' 24;
+}
+
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+
+  50% {
+    transform: translateY(-20px) rotate(5deg);
+  }
+}
+
+.animate-float-slow {
+  animation: float 8s ease-in-out infinite;
+}
+
+.animate-float-medium {
+  animation: float 6s ease-in-out infinite;
+  animation-delay: 1s;
 }
 
 /* Custom smooth easing for interactions */

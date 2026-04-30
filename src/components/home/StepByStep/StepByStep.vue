@@ -32,7 +32,7 @@ const steps = [
   <section class="bg-[#09090b] pb-24">
     <div class="px-8 md:px-24 max-w-screen-2xl mx-auto">
       <div class="text-center mb-24 pt-32">
-        <h2 class="font-headline text-6xl font-bold mb-4 text-white">Ubiqueme en 4 pasos</h2>
+        <h2 class="font-headline text-6xl font-bold mb-4 text-white">Ubiqueme en 3 pasos</h2>
         <p class="text-on-surface-variant max-w-2xl mx-auto">
           Desde la configuración hasta la seguridad, hemos diseñado cada interacción para que sea
           fluida y confiable.

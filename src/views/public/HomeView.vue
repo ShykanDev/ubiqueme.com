@@ -14,7 +14,7 @@ import QrcodeVue from 'qrcode.vue'
 const heroVideos = [
   { src: new URL('../../assets/videos/vid04.mp4', import.meta.url).href, id: 'hero-vid-1' },
   { src: new URL('../../assets/videos/vid02.mp4', import.meta.url).href, id: 'hero-vid-2' },
-  { src: new URL('../../assets/videos/vid03.mp4', import.meta.url).href, id: 'hero-vid-3' },
+  // { src: new URL('../../assets/videos/vid03.mp4', import.meta.url).href, id: 'hero-vid-3' },
 ];
 
 const mutedStates = ref(heroVideos.map(() => true));
@@ -185,7 +185,9 @@ const toggleSound = (index: number) => {
 
               <!-- Sound Toggle Button -->
               <button @click="toggleSound(index)"
-                class="absolute bottom-1 right-1 z-30 p-3 bg-black/60 backdrop-blur-md border border-white/10 text-white rounded-full hover:bg-amber-500 transition-all hover:scale-110 shadow-lg">
+                class="absolute bottom-1 right-1 z-30 p-3 gap-2 flex items-center bg-black/60 backdrop-blur-md border border-white/10 text-white rounded-full hover:bg-amber-500 transition-all hover:scale-[1.01] cursor-pointer shadow-lg">
+                <span>Haga click para {{ !mutedStates[index] ? 'apagar' :
+                  'encender' }} el sonido</span>
                 <span class="material-symbols-outlined text-xl">{{ mutedStates[index] ? 'volume_off' : 'volume_up'
                 }}</span>
               </button>

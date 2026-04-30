@@ -1,22 +1,24 @@
 <template>
   <HomeLayout>
     <template #main>
-      <section class="relative min-h-screen w-full flex flex-col items-center bg-[#070b14] font-google-sans overflow-hidden py-24 px-4 sm:px-6">
-        
+      <section
+        class="relative min-h-screen w-full flex flex-col items-center bg-[#070b14] font-google-sans overflow-hidden py-24 px-4 sm:px-6">
+
         <!-- 📐 BACKGROUND DOT MATRIX (Lightweight) -->
         <div class="absolute inset-0 z-0 opacity-[0.05]"
           style="background-image: radial-gradient(#fff 1px, transparent 1px); background-size: 24px 24px;">
         </div>
 
         <div class="relative z-10 w-full max-w-4xl mx-auto flex flex-col items-center">
-          
+
           <!-- Header Section -->
           <div class="text-center mb-16 space-y-4">
-            <div class="inline-flex w-fit items-center gap-2 px-3 py-1 bg-primary/10 rounded-lg border border-primary/20 mb-4">
+            <div
+              class="inline-flex w-fit items-center gap-2 px-3 py-1 bg-primary/10 rounded-lg border border-primary/20 mb-4">
               <span class="material-symbols-outlined text-[14px] text-primary">help</span>
               <span class="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Soporte y Ayuda</span>
             </div>
-            
+
             <h1 class="text-4xl md:text-6xl font-black text-white leading-tight tracking-tighter">
               Preguntas <span class="text-primary">Frecuentes.</span>
             </h1>
@@ -27,30 +29,21 @@
 
           <!-- FAQ Accordion -->
           <div class="w-full space-y-4">
-            <div 
-              v-for="(faq, index) in faqs" 
-              :key="index"
-              class="group bg-white/5 border border-white/10 rounded-3xl overflow-hidden transition-colors hover:bg-white/[0.07] hover:border-white/20"
-            >
-              <button 
-                @click="toggleFaq(index)" 
-                class="w-full flex items-center justify-between p-6 md:p-8 text-left focus:outline-none"
-              >
+            <div v-for="(faq, index) in faqs" :key="index"
+              class="group bg-white/5 border border-white/10 rounded-3xl overflow-hidden transition-colors hover:bg-white/[0.07] hover:border-white/20">
+              <button @click="toggleFaq(index)"
+                class="w-full flex items-center justify-between p-6 md:p-8 text-left focus:outline-none">
                 <h3 class="text-lg md:text-xl font-bold text-white tracking-tight pr-8">
                   {{ faq.question }}
                 </h3>
-                <span 
-                  class="material-symbols-outlined text-white/40 transition-transform duration-300"
-                  :class="{ 'rotate-180 text-primary': activeIndex === index }"
-                >
+                <span class="material-symbols-outlined text-white/40 transition-transform duration-300"
+                  :class="{ 'rotate-180 text-primary': activeIndex === index }">
                   keyboard_arrow_down
                 </span>
               </button>
-              
-              <div 
-                class="grid transition-all duration-300 ease-in-out"
-                :class="activeIndex === index ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'"
-              >
+
+              <div class="grid transition-all duration-300 ease-in-out"
+                :class="activeIndex === index ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'">
                 <div class="overflow-hidden">
                   <p class="px-6 md:px-8 pb-6 md:pb-8 text-white/60 font-medium leading-relaxed text-sm md:text-base">
                     {{ faq.answer }}
@@ -63,8 +56,10 @@
           <!-- Contact Prompt -->
           <div class="mt-16 text-center bg-primary/5 border border-primary/10 rounded-3xl p-8 md:p-12 w-full">
             <h4 class="text-2xl font-black text-white tracking-tight mb-3">¿Aún tiene dudas?</h4>
-            <p class="text-white/50 mb-8 font-medium">Nuestro equipo de soporte está listo para ayudarle con su configuración o resolver problemas específicos.</p>
-            <a href="mailto:soporte@ubiqueme.com" class="inline-flex h-14 items-center justify-center gap-3 bg-white text-black px-8 rounded-2xl font-black text-base transition-all duration-300 hover:bg-primary hover:shadow-[0_0_20px_rgba(123,208,255,0.4)] active:scale-[0.98]">
+            <p class="text-white/50 mb-8 font-medium">Nuestro equipo de soporte está listo para ayudarle con su
+              configuración o resolver problemas específicos.</p>
+            <a href="mailto:soporte@ubiqueme.com"
+              class="inline-flex h-14 items-center justify-center gap-3 bg-white text-black px-8 rounded-2xl font-black text-base transition-all duration-300 hover:bg-primary hover:shadow-[0_0_20px_rgba(123,208,255,0.4)] active:scale-[0.98]">
               <span class="material-symbols-outlined">mail</span>
               <span>Contactar Soporte</span>
             </a>
@@ -89,7 +84,7 @@ const toggleFaq = (index: number) => {
 const faqs = [
   {
     question: '¿En qué formatos puedo obtener mi código QR?',
-    answer: 'Nuestros códigos QR se entregan impresos físicamente. Pueden adquirirse en formato de tarjeta o como etiquetas adhesivas (con pegamento frontal o trasero), diseñadas específicamente para adaptarse a distintas superficies como parabrisas de vehículos, laptops, maletas o paredes.'
+    answer: 'Nuestros códigos QR se entregan impresos físicamente. Pueden adquirirse en formato de tarjeta o como etiquetas adhesivas (con pegamento frontal o trasero) con tres medidas a escoger, diseñadas específicamente para adaptarse a distintas superficies como parabrisas de vehículos, laptops, maletas o paredes.'
   },
   {
     question: '¿Qué sucede cuando alguien escanea mi código QR?',

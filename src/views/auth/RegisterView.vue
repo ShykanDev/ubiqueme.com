@@ -2,11 +2,22 @@
   <HomeLayout>
     <template #main>
       <section
-        class="relative min-h-screen w-full flex flex-col md:flex-row bg-[#070b14] font-google-sans overflow-hidden">
+        class="relative min-h-screen w-full flex flex-col md:flex-row bg-[#09090b] font-google-sans overflow-hidden">
 
-        <!-- 📐 BACKGROUND CROSSHATCH (Lightweight) -->
-        <div class="absolute inset-0 z-0 opacity-[0.03]"
-          style="background-image: repeating-linear-gradient(45deg, #fff 0, #fff 1px, transparent 0, transparent 40px), repeating-linear-gradient(-45deg, #fff 0, #fff 1px, transparent 0, transparent 40px);">
+        <!-- 🎨 BACKGROUND ORNAMENTATION (Blueprint Style) -->
+        <div class="absolute inset-0 z-0 pointer-events-none">
+          <!-- Circular shapes -->
+          <div
+            class="absolute top-[-10%] right-[-10%] w-[600px] h-[600px] border border-white/5 rounded-full pointer-events-none">
+          </div>
+          <div
+            class="absolute bottom-[-10%] left-[-5%] w-[400px] h-[400px] border border-orange-500/5 rounded-full pointer-events-none">
+          </div>
+
+          <!-- Grid Pattern -->
+          <div class="absolute inset-0 z-0 opacity-[0.22]"
+            style="background-image: linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px); background-size: 100px 100px;">
+          </div>
         </div>
 
         <!-- 💠 LEFT SIDE: LOGOS & TABS (Desktop) -->
@@ -15,17 +26,19 @@
 
 
           <div class="relative z-10 space-y-10">
-            <div class="inline-flex items-center gap-3">
-              <div class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-2xl">
-                <span class="text-black font-black text-2xl">U</span>
+            <div class="flex items-center gap-4 group">
+              <span
+                class="material-symbols-outlined text-orange-500 text-6xl group-hover:rotate-12 transition-transform">location_on</span>
+              <div class="flex flex-col">
+                <h2 class="text-3xl font-black text-[#E8EFFE] tracking-tighter uppercase leading-none">Ubiqueme</h2>
+
               </div>
-              <h2 class="text-4xl font-black text-white tracking-tighter uppercase">Ubiqueme</h2>
             </div>
 
             <div class="space-y-6">
-              <h1 class="text-6xl lg:text-8xl font-black text-white leading-[0.9] tracking-tighter">
+              <h1 class="text-6xl lg:text-8xl font-black text-[#dce7ff] leading-[0.9] tracking-tighter">
                 ÚNASE A LA<br />
-                <span class="text-primary uppercase">Comunidad.</span>
+                <span class="text-orange-500 uppercase">Comunidad.</span>
               </h1>
               <p class="text-white/40 text-lg font-medium leading-relaxed max-w-sm">
                 Empiece a proteger sus pertenencias y comunicaciones con el estándar de seguridad de Ubiqueme.
@@ -34,13 +47,21 @@
 
             <div class="grid grid-cols-2 gap-4 max-w-sm">
               <div class="p-4 bg-white/[0.03] border border-white/10 rounded-2xl">
-                <span class="material-symbols-outlined text-primary mb-2">shield_check</span>
+                <span class="material-symbols-outlined text-orange-500 mb-2">shield_check</span>
                 <p class="text-[10px] font-black text-white/50 uppercase tracking-widest">Protección Total</p>
               </div>
               <div class="p-4 bg-white/[0.03] border border-white/10 rounded-2xl">
-                <span class="material-symbols-outlined text-primary mb-2">bolt</span>
+                <span class="material-symbols-outlined text-orange-500 mb-2">bolt</span>
                 <p class="text-[10px] font-black text-white/50 uppercase tracking-widest">Aviso al Instante</p>
               </div>
+            </div>
+
+            <!-- Decorative Floating Icons -->
+            <div class="absolute inset-0 pointer-events-none opacity-[0.05] select-none">
+              <span
+                class="material-symbols-outlined absolute top-[10%] left-[10%] text-9xl animate-float-slow text-orange-500">security</span>
+              <span
+                class="material-symbols-outlined absolute bottom-[20%] right-[10%] text-8xl animate-float-medium">qr_code_2</span>
             </div>
           </div>
         </div>
@@ -49,11 +70,11 @@
         <div class="relative grow md:w-1/2 lg:w-2/5 flex items-center justify-center p-8 sm:p-16 z-10">
           <div class="w-full max-w-md space-y-8">
 
-            <div class="md:hidden flex flex-col items-center mb-8 text-center">
-              <div class="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center mb-6">
-                <span class="text-black font-black text-3xl">Ubiqueme</span>
-              </div>
-              <h2 class="text-2xl font-black text-white uppercase tracking-widest">Registro de Usuario</h2>
+            <div class="md:hidden flex flex-col items-center mb-10 text-center">
+              <span class="material-symbols-outlined text-orange-500 text-6xl mb-4">location_on</span>
+              <h2 class="text-2xl font-black text-white uppercase tracking-widest leading-none">Ubiqueme</h2>
+              <span class="text-orange-500/60 text-[10px] font-black uppercase tracking-[0.3em] mt-1">Security
+                Protocol</span>
             </div>
 
             <header class="space-y-2">
@@ -66,14 +87,14 @@
                 <label class="text-[10px] font-black text-white/50 uppercase tracking-[0.2em] ml-1">Nombre
                   Completo</label>
                 <input id="name" v-model="form.name" type="text" placeholder="Juan Pérez" :disabled="loading"
-                  class="w-full px-5 py-4 bg-white/5 border border-white/20 hover:border-white/30 rounded-2xl text-white placeholder:text-white/40 focus:border-primary focus:outline-none focus:bg-white/10 transition-all disabled:opacity-50" />
+                  class="w-full px-5 py-4 bg-white/5 border border-white/20 hover:border-white/30 rounded-2xl text-white placeholder:text-white/40 focus:border-orange-500 focus:outline-none focus:bg-white/10 transition-all disabled:opacity-50" />
               </div>
 
               <div class="space-y-2">
                 <label class="text-[10px] font-black text-white/50 uppercase tracking-[0.2em] ml-1">Correo
                   Electrónico</label>
                 <input id="email" v-model="form.email" type="email" placeholder="nombre@dominio.com" :disabled="loading"
-                  class="w-full px-5 py-4 bg-white/5 border border-white/20 hover:border-white/30 rounded-2xl text-white placeholder:text-white/40 focus:border-primary focus:outline-none focus:bg-white/10 transition-all disabled:opacity-50" />
+                  class="w-full px-5 py-4 bg-white/5 border border-white/20 hover:border-white/30 rounded-2xl text-white placeholder:text-white/40 focus:border-orange-500 focus:outline-none focus:bg-white/10 transition-all disabled:opacity-50" />
               </div>
 
               <div class="grid grid-cols-2 gap-4">
@@ -81,40 +102,40 @@
                   <label class="text-[10px] font-black text-white/50 uppercase tracking-[0.2em] ml-1">Contraseña</label>
                   <input id="password" v-model="form.password" type="password" placeholder="••••••••"
                     :disabled="loading"
-                    class="w-full px-5 py-4 bg-white/5 border border-white/20 hover:border-white/30 rounded-2xl text-white placeholder:text-white/40 focus:border-primary focus:outline-none focus:bg-white/10 transition-all disabled:opacity-50" />
+                    class="w-full px-5 py-4 bg-white/5 border border-white/20 hover:border-white/30 rounded-2xl text-white placeholder:text-white/40 focus:border-orange-500 focus:outline-none focus:bg-white/10 transition-all disabled:opacity-50" />
                 </div>
                 <div class="space-y-2">
                   <label class="text-[10px] font-black text-white/50 uppercase tracking-[0.2em] ml-1">Confirmar</label>
                   <input id="confirm" v-model="form.confirmPassword" type="password" placeholder="••••••••"
                     :disabled="loading"
-                    class="w-full px-5 py-4 bg-white/5 border border-white/20 hover:border-white/30 rounded-2xl text-white placeholder:text-white/40 focus:border-primary focus:outline-none focus:bg-white/10 transition-all disabled:opacity-50" />
+                    class="w-full px-5 py-4 bg-white/5 border border-white/20 hover:border-white/30 rounded-2xl text-white placeholder:text-white/40 focus:border-orange-500 focus:outline-none focus:bg-white/10 transition-all disabled:opacity-50" />
                 </div>
               </div>
 
               <div class="flex items-start gap-3 px-1 py-1">
                 <input id="terms" v-model="form.terms" type="checkbox"
-                  class="mt-1 w-4 h-4 rounded border-white/20 bg-white/5 accent-primary cursor-pointer focus:ring-primary/20 transition-all" />
+                  class="mt-1 w-4 h-4 rounded border-white/20 bg-white/5 accent-orange-500 cursor-pointer focus:ring-orange-500/20 transition-all" />
                 <label for="terms" class="text-[10px] font-bold text-white/40 uppercase tracking-wider leading-relaxed">
                   Acepto los <span
-                    class="text-white hover:text-primary cursor-pointer transition-colors">Términos</span> y la <span
-                    class="text-white hover:text-primary cursor-pointer transition-colors">Política de
+                    class="text-white hover:text-orange-500 cursor-pointer transition-colors">Términos</span> y la <span
+                    class="text-white hover:text-orange-500 cursor-pointer transition-colors">Política de
                     Privacidad</span>.
                 </label>
               </div>
 
               <button type="submit" :disabled="loading"
-                class="group w-full h-16 bg-white text-black rounded-2xl font-black text-lg transition-all duration-300 hover:bg-primary hover:shadow-[0_0_20px_rgba(123,208,255,0.4)] active:scale-[0.98] flex items-center justify-center gap-3 disabled:opacity-50 disabled:grayscale">
+                class="group w-full h-16 bg-orange-500 text-[#09090b] rounded-2xl font-black text-[11px] uppercase tracking-widest transition-all duration-300 hover:bg-white hover:shadow-[0_0_20px_rgba(249,115,22,0.4)] active:scale-[0.98] flex items-center justify-center gap-3 disabled:opacity-50 disabled:grayscale">
                 <span v-if="!loading">Registrarme</span>
                 <span v-else>Procesando...</span>
                 <span v-if="!loading"
-                  class="material-symbols-outlined font-black transition-transform group-hover:translate-x-1">app_registration</span>
+                  class="material-symbols-outlined text-lg font-black transition-transform group-hover:translate-x-1">arrow_forward</span>
                 <span v-else class="w-5 h-5 border-2 border-black/20 border-t-black rounded-full animate-spin"></span>
               </button>
             </form>
 
             <p class="text-center text-white/30 text-xs font-medium">
               ¿Ya es parte de la red?
-              <RouterLink to="/login" class="text-primary font-black hover:text-white ml-2 transition-colors">
+              <RouterLink to="/login" class="text-orange-500 font-black hover:text-white ml-2 transition-colors">
                 INICIAR SESIÓN</RouterLink>
             </p>
           </div>
@@ -208,7 +229,28 @@ const handleRegister = async () => {
 }
 
 .material-symbols-outlined {
-  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  font-variation-settings: 'FILL' 1, 'wght' 600, 'GRAD' 0, 'opsz' 24;
+}
+
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+
+  50% {
+    transform: translateY(-20px) rotate(5deg);
+  }
+}
+
+.animate-float-slow {
+  animation: float 8s ease-in-out infinite;
+}
+
+.animate-float-medium {
+  animation: float 6s ease-in-out infinite;
+  animation-delay: 1s;
 }
 
 /* Custom smooth easing for interactions */
