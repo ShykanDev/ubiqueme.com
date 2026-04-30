@@ -46,7 +46,7 @@ onUnmounted(() => {
             <Transition name="slide-up">
               <div :key="currentDomainIndex"
                 class="absolute left-0 flex items-baseline text-[#dce7ff] font-black tracking-tighter text-[22px] lowercase leading-none whitespace-nowrap">
-                <span>{{ domains[currentDomainIndex].split('.com')[0] }}</span>
+                <span>{{ domains[currentDomainIndex]?.split('.com')[0] }}</span>
                 <span class="text-orange-500">.com</span>
               </div>
             </Transition>
