@@ -62,17 +62,13 @@ const changeComponent = (component: ComponentName) => {
 <template>
   <UserDashoardLayout>
     <template #main>
-      <div class="flex relative min-h-screen bg-[#070b14] overflow-hidden font-google-sans">
+      <div class="flex relative min-h-screen bg-[#09090b] overflow-hidden font-google-sans">
 
-        <!-- 📐 BACKGROUND GRID (Lightweight) -->
-        <div class="absolute inset-x-20 inset-y-0 z-0 opacity-[0.02]"
-          style="background-image: linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px); background-size: 50px 50px;">
-        </div>
 
         <!-- 🚀 SIDEBAR (OVERLAY MODE) -->
         <aside @mouseenter="handleSideBarHover" @mouseleave="handleSideBarLeave"
           :class="{ 'w-[260px]': hoverOnSideBar, 'w-24': !hoverOnSideBar }"
-          class="absolute left-0 top-0 z-30 pt-20 transition-[width] duration-300 h-screen flex flex-col items-center py-10 border-r border-white/5 bg-[#070b14] will-change-[width]">
+          class="absolute left-0 top-0 z-30 pt-20 transition-[width] duration-300 h-screen flex flex-col items-center py-10 border-r border-white/5 bg-[#09090b] will-change-[width]">
 
           <div class="mb-12">
             <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-2xl">

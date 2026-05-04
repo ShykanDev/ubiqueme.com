@@ -32,7 +32,7 @@ const dateStr = computed(() => formatDate(props.scanDate))
 
 const reasonMap: Record<string, { label: string, icon: string, color: string }> = {
   emergency: { label: 'EMERGENCIA', icon: 'emergency', color: 'text-rose-500' },
-  communication: { label: 'CONTACTO', icon: 'chat', color: 'text-primary' },
+  communication: { label: 'CONTACTO', icon: 'chat', color: 'text-amber-500' },
   informative: { label: 'INFO', icon: 'info', color: 'text-white/40' },
   other: { label: 'PERSONALIZADO', icon: 'edit_note', color: 'text-white/60' }
 }
@@ -85,7 +85,7 @@ import { ref } from 'vue'
 
 <template>
   <li
-    class="group relative bg-[#090b14] border border-white/5 rounded-2xl p-5 transition-all duration-300 hover:bg-black/60 hover:border-white/10 font-google-sans">
+    class="group relative bg-[#0f0f11] border border-white/5 rounded-2xl p-5 transition-all duration-300 hover:bg-black/60 hover:border-white/10 font-google-sans">
 
     <div class="flex flex-col space-y-4">
 
@@ -132,19 +132,19 @@ import { ref } from 'vue'
             Ubicación aproximada
           </p>
           <button v-if="!isMapActive" @click="activateMap"
-            class="text-[9px] font-black text-primary uppercase tracking-widest hover:underline transition-all cursor-pointer">
+            class="text-[9px] font-black text-amber-500 uppercase tracking-widest hover:underline transition-all cursor-pointer">
             Ver Mapa de Ubicación
           </button>
         </div>
 
         <div
-          class="relative w-full h-[280px] rounded-xl overflow-hidden border border-white/10 shadow-inner bg-black/40">
+          class="relative w-full h-[280px] rounded-xl overflow-hidden border border-white/10 bg-black/40">
           <!-- Placeholder State -->
           <div v-if="!isMapActive" @click="activateMap"
             class="absolute inset-0 flex flex-col items-center justify-center gap-3 cursor-pointer group/map hover:bg-white/2 transition-colors">
             <div
-              class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20 group-hover/map:scale-110 group-hover/map:bg-primary/20 transition-all">
-              <span class="material-symbols-outlined text-primary text-2xl">location_on</span>
+              class="w-12 h-12 rounded-full bg-amber-500/10 flex items-center justify-center border border-amber-500/20 group-hover/map:scale-110 group-hover/map:bg-amber-500/20 transition-all">
+              <span class="material-symbols-outlined text-amber-500 text-2xl">location_on</span>
             </div>
             <span
               class="text-[9px] text-white/30 font-black uppercase tracking-[0.2em] group-hover/map:text-white/50">Cargar

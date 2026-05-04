@@ -47,7 +47,7 @@ const formatDate = (timestamp: any) => {
     <!-- Header Section -->
     <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b border-white/10 pb-8">
       <div>
-        <p class="text-primary font-black tracking-[0.4em] text-[10px] uppercase mb-2">Perfil de Usuario</p>
+        <p class="text-amber-500 font-black tracking-[0.4em] text-[10px] uppercase mb-2">Perfil de Usuario</p>
         <h2 class="text-4xl md:text-5xl font-black tracking-tighter leading-none italic">
           Resumen de Cuenta
         </h2>
@@ -115,11 +115,11 @@ const formatDate = (timestamp: any) => {
       <!-- Right Column: Stats & Plan -->
       <div class="space-y-6 flex flex-col">
         <!-- Stats Card -->
-        <div class="bg-primary/10 border border-primary/20 rounded-[2rem] p-8 flex-1 flex flex-col justify-center items-center text-center relative overflow-hidden group">
-          <div class="absolute inset-0 bg-gradient-to-t from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-          <span class="material-symbols-outlined text-primary text-4xl mb-3 relative z-10">qr_code_2</span>
+        <div class="bg-amber-500/10 border border-amber-500/20 rounded-[2rem] p-8 flex-1 flex flex-col justify-center items-center text-center relative overflow-hidden group">
+          <div class="absolute inset-0 bg-gradient-to-t from-amber-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+          <span class="material-symbols-outlined text-amber-500 text-4xl mb-3 relative z-10">qr_code_2</span>
           <p class="text-6xl font-black text-white tracking-tighter relative z-10">{{ userData.totalQRs || 0 }}</p>
-          <p class="text-[10px] text-primary font-black uppercase tracking-widest mt-2 relative z-10">QRs Registrados</p>
+          <p class="text-[10px] text-amber-500 font-black uppercase tracking-widest mt-2 relative z-10">QRs Registrados</p>
         </div>
 
         <!-- Plan Card -->
@@ -147,38 +147,38 @@ const formatDate = (timestamp: any) => {
 
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
           
-          <div class="flex items-center justify-between p-5 bg-[#070b14] rounded-2xl border border-white/5">
+          <div class="flex items-center justify-between p-5 bg-[#0f0f11] rounded-2xl border border-white/5">
             <div class="flex items-center gap-3">
               <div class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center">
                 <span class="material-symbols-outlined text-white/60 text-lg">mail</span>
               </div>
               <span class="text-sm font-bold text-white/80">Email</span>
             </div>
-            <span class="material-symbols-outlined text-3xl" :class="userData.preferences?.emailNotifications ? 'text-primary' : 'text-white/20'">
+            <span class="material-symbols-outlined text-3xl" :class="userData.preferences?.emailNotifications ? 'text-amber-500' : 'text-white/20'">
               {{ userData.preferences?.emailNotifications ? 'toggle_on' : 'toggle_off' }}
             </span>
           </div>
 
-          <div class="flex items-center justify-between p-5 bg-[#070b14] rounded-2xl border border-white/5">
+          <div class="flex items-center justify-between p-5 bg-[#0f0f11] rounded-2xl border border-white/5">
             <div class="flex items-center gap-3">
               <div class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center">
                 <span class="material-symbols-outlined text-white/60 text-lg">sms</span>
               </div>
               <span class="text-sm font-bold text-white/80">SMS</span>
             </div>
-            <span class="material-symbols-outlined text-3xl" :class="userData.preferences?.smsNotifications ? 'text-primary' : 'text-white/20'">
+            <span class="material-symbols-outlined text-3xl" :class="userData.preferences?.smsNotifications ? 'text-amber-500' : 'text-white/20'">
               {{ userData.preferences?.smsNotifications ? 'toggle_on' : 'toggle_off' }}
             </span>
           </div>
 
-          <div class="flex items-center justify-between p-5 bg-[#070b14] rounded-2xl border border-white/5">
+          <div class="flex items-center justify-between p-5 bg-[#0f0f11] rounded-2xl border border-white/5">
             <div class="flex items-center gap-3">
               <div class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center">
                 <span class="material-symbols-outlined text-white/60 text-lg">chat</span>
               </div>
               <span class="text-sm font-bold text-white/80">WhatsApp</span>
             </div>
-            <span class="material-symbols-outlined text-3xl" :class="userData.preferences?.whatsappNotifications ? 'text-primary' : 'text-white/20'">
+            <span class="material-symbols-outlined text-3xl" :class="userData.preferences?.whatsappNotifications ? 'text-amber-500' : 'text-white/20'">
               {{ userData.preferences?.whatsappNotifications ? 'toggle_on' : 'toggle_off' }}
             </span>
           </div>

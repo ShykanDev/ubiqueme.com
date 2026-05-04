@@ -38,12 +38,12 @@ const submitForm = () => {
     </div>
 
     <div
-      class="bg-[#111324] rounded-2xl p-6 shadow-lg border border-white/5 relative overflow-hidden"
+      class="bg-[#0f0f11] rounded-2xl p-6 border border-white/5 relative overflow-hidden"
     >
       <!-- Overlay de éxito -->
       <div
         v-if="showSuccess"
-        class="absolute inset-0 bg-[#0F1222] flex flex-col items-center justify-center z-10"
+        class="absolute inset-0 bg-[#161618] flex flex-col items-center justify-center z-10"
       >
         <div
           class="w-16 h-16 bg-green-500/20 text-green-400 border border-green-500/20 rounded-full flex items-center justify-center mb-4"
@@ -74,7 +74,7 @@ const submitForm = () => {
             <select
               v-model="form.subject"
               required
-              class="w-full bg-[#0F1222] border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-blue-500 transition-colors appearance-none pr-10"
+              class="w-full bg-[#161618] border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-amber-500 transition-colors appearance-none pr-10"
             >
               <option value="" disabled selected>Selecciona un tema...</option>
               <option value="billing">Problemas de facturación / Pagos</option>
@@ -110,7 +110,7 @@ const submitForm = () => {
             v-model="form.message"
             required
             rows="5"
-            class="w-full bg-[#0F1222] border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-blue-500 transition-colors resize-none"
+            class="w-full bg-[#161618] border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-amber-500 transition-colors resize-none"
             placeholder="Describa su problema con detalle para que podamos ayudarle de la mejor manera..."
           ></textarea>
         </div>
@@ -118,7 +118,7 @@ const submitForm = () => {
         <button
           type="submit"
           :disabled="isSending"
-          class="w-full py-3 rounded-lg text-sm font-medium bg-blue-500/90 hover:bg-blue-500 disabled:opacity-70 disabled:cursor-not-allowed text-white transition-all cursor-pointer shadow-[0_0_15px_rgba(59,130,246,0.3)] flex items-center justify-center gap-2"
+          class="w-full py-3 rounded-lg text-sm font-medium bg-amber-600 hover:bg-amber-500 disabled:opacity-70 disabled:cursor-not-allowed text-white transition-all cursor-pointer active:scale-[0.98] flex items-center justify-center gap-2"
         >
           <svg
             v-if="isSending"
@@ -162,7 +162,7 @@ const submitForm = () => {
         />
       </svg>
       También puede escribirnos enviando un correo directo a:
-      <a href="mailto:soporte@ubiqueme.com" class="text-blue-400 hover:underline"
+      <a href="mailto:soporte@ubiqueme.com" class="text-amber-400 hover:underline"
         >soporte@ubiqueme.com</a
       >
     </div>

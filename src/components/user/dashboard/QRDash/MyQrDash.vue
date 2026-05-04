@@ -100,6 +100,8 @@ onMounted(() => {
     }
     userQRs.value = [];
     snapshot.docs.forEach(doc => {
+      console.log(`QR info: `, doc.data());
+
       userQRs.value.push({
         docId: doc.id,
         ...doc.data()
@@ -137,31 +139,30 @@ const images = imageStore.getImages;
       <img v-for="(src, index) in images" :key="index" :src="src">
     </viewer>
     <!-- Header Section -->
-    <header class="max-w-3xl mx-auto text-center space-y-4">
-      <div class="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 rounded-lg border border-primary/20">
-        <span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
-        <span class="text-[9px] font-black uppercase tracking-[0.4em] text-primary">Gestión de Activos</span>
+    <header class="max-w-3xl space-y-3">
+      <div class="inline-flex items-center gap-2 px-2.5 py-1 bg-white/5 rounded-md border border-white/10">
+        <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+        <span class="text-[10px] font-medium uppercase tracking-widest text-white/70">Gestión de Activos</span>
       </div>
-      <h1 class="text-4xl md:text-5xl font-black text-white tracking-tighter uppercase leading-none">
-        Códigos <span class="text-primary italic">QR</span>
+      <h1 class="text-3xl md:text-4xl font-semibold text-white tracking-tight">
+        Códigos QR
       </h1>
-      <p class="text-white/40 text-sm font-medium leading-relaxed">
+      <p class="text-white/40 text-sm font-normal">
         Administre y monitoree el rendimiento de sus etiquetas QR en tiempo real.
       </p>
     </header>
 
     <!-- Content Section -->
-    <div class="space-y-10">
+    <div class="space-y-6">
       <div
-        class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 pb-6 border-b border-white border-dotted">
+        class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 pb-4 border-b border-white/5">
         <div>
-          <p class="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] mb-1">Visión General</p>
-          <h2 class="text-2xl font-black text-white tracking-tight uppercase">Mis Registros</h2>
+          <h2 class="text-xl font-medium text-white/90 tracking-tight">Mis Registros</h2>
         </div>
         <button @click="createQR"
-          class="w-full cursor-pointer md:w-auto flex items-center justify-center gap-3 px-8 py-4 rounded-xl   font-black  text-xs  bg-primary-container text-primary transition-all active:scale-95">
-          <span class="material-symbols-outlined font-black">add</span>
-          Agregar nuevo QR
+          class="w-full cursor-pointer md:w-auto flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg font-medium text-sm bg-white text-black hover:bg-white/90 transition-colors active:scale-95">
+          <span class="material-symbols-outlined text-[18px]">add</span>
+          Crear QR
         </button>
       </div>
 

@@ -32,15 +32,15 @@ const props = defineProps({
       'relative flex items-center gap-3 rounded-[10px] transition-all duration-300 overflow-hidden',
       'min-h-[42px] px-3 cursor-pointer',
       active
-        ? 'bg-[rgba(99,140,255,0.13)] text-[#a8bfff]'
-        : 'text-[rgba(160,170,200,0.7)] hover:bg-[rgba(99,140,255,0.08)] hover:text-[rgba(200,210,240,0.95)]',
+        ? 'bg-[#ff9800]/10 text-amber-400'
+        : 'text-white/50 hover:bg-[#ff9800]/5 hover:text-white/90',
     ]"
     :style="{ width: isHover ? '184px' : '47px' }"
   >
     <!-- indicador activo -->
     <span
       v-if="active"
-      class="absolute left-0 top-[20%] bottom-[20%] w-0.5 rounded-full bg-[#6B8FFF]"
+      class="absolute left-0 top-[20%] bottom-[20%] w-0.5 rounded-full bg-[#ff9800]"
     ></span>
 
     <!-- ícono -->

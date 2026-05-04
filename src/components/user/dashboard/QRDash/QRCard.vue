@@ -53,9 +53,9 @@ const currentStatus = computed(() => {
 
 const cardStyle = computed(() => {
   if (props.isBanned) {
-    return 'grayscale opacity-50 brightness-[0.4] blur-[0.5px] cursor-not-allowed'
+    return 'grayscale opacity-50 brightness-[0.4] cursor-not-allowed'
   }
-  
+
   if (props.status === 'Canceled') {
     return 'grayscale opacity-60 brightness-75'
   }
@@ -65,7 +65,7 @@ const cardStyle = computed(() => {
   }
 
   if (props.status === 'Error') {
-    return 'border-rose-500/40 shadow-[0_0_15px_rgba(244,63,94,0.1)]'
+    return 'border-rose-500/40'
   }
 
   return ''
@@ -190,6 +190,7 @@ onMounted(() => {
     qrStatus.totalScans = docSnapshot.data().totalScans ?? 0;
     qrStatus.lastScan = docSnapshot.data().lastScan ?? 'No se ha escaneado aún';
     // toast.success(`Estado del QR actualizado`); // Silencing this success as it fires frequently
+
     loadCount.value++;
   }
     , (error) => {
@@ -276,123 +277,96 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div
-    :class="[cardStyle]"
-    class="relative w-full max-w-[700px] bg-[#04050a] rounded-[2.5rem] border border-white/5 overflow-hidden transition-all duration-300 hover:border-primary/20 shadow-lg group font-google-sans">
+  <div :class="[cardStyle]"
+    class="relative w-full bg-[#121214] border border-white/[0.08] rounded-2xl transition-colors duration-300 hover:bg-[#161619] hover:border-white/[0.12] group font-google-sans flex flex-col">
 
-
-    <!-- Hero Background Accent -->
-    <div
-      class="absolute -top-12 -right-12 w-32 h-32 bg-primary/5  rounded-full opacity-50 group-hover:scale-110 transition-transform">
-    </div>
-
-    <section v-if="isLoading" class="absolute inset-0 bg-black/80 flex items-center justify-center z-50 ">
+    <section v-if="isLoading"
+      class="absolute inset-0 bg-[#09090b]/80 rounded-2xl flex items-center justify-center z-50 backdrop-blur-sm">
       <CloudLoader></CloudLoader>
     </section>
 
-    <!-- Main Card Content -->
-    <div class="p-6 md:p-8 relative">
-      <!-- Actions Footer -->
-      <div class="flex absolute top-2 right-5">
-        <button @click="toggleMenu" :class="[
-          'p-2 rounded-xl transition-all duration-300 border flex items-center justify-center',
-          showMenu
-            ? 'bg-white/10 border-white/20'
-            : 'bg-white/5 border-white/10 hover:bg-white/10'
-        ]">
-          <span v-if="!showMenu" class="material-symbols-outlined text-white text-[20px]">more_vert</span>
-          <span v-else class="material-symbols-outlined text-white text-[20px]">close</span>
+    <div class="p-5 md:p-6 flex flex-col flex-1 relative z-10">
+
+      <!-- TOP: Thumbnail + Title + Menu -->
+      <div class="flex justify-between items-start mb-6">
+        <div class="flex items-center gap-4">
+          <!-- Thumbnail -->
+          <div
+            class="relative w-12 h-12 md:w-14 md:h-14 rounded-xl overflow-hidden bg-white/5 border border-white/10 flex-shrink-0 flex items-center justify-center">
+            <template v-if="propsComputed.img">
+              <img :src="propsComputed.img" class="w-full h-full object-cover" />
+            </template>
+            <template v-else>
+              <div class="w-full h-full flex items-center justify-center bg-white p-1">
+                <QrcodeVue :value="`https://ubiqueme.com/qr/${propsComputed.id}`" :size="40" class="w-full h-full"
+                  render-as="canvas" />
+              </div>
+            </template>
+          </div>
+
+          <!-- Title & ID -->
+          <div class="flex flex-col">
+            <h3 class="text-white/90 text-base md:text-lg font-medium tracking-tight leading-tight mb-0.5">{{
+              propsComputed.name
+              }}</h3>
+            <p class="text-white/40 text-xs font-mono tracking-wider">{{ propsComputed.id }}</p>
+          </div>
+        </div>
+
+        <button @click="toggleMenu"
+          class="text-white/40 hover:text-white transition-colors cursor-pointer w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/5 -mr-2">
+          <span class="material-symbols-outlined text-[20px]">more_horiz</span>
         </button>
       </div>
 
-      <!-- Header -->
-      <div class="flex justify-between items-start mb-6  px-10">
-        <div class="flex flex-col gap-1">
-          <h3 class="text-white text-xl font-black tracking-tight m-0 ">{{ propsComputed.name }}</h3>
-          <span class="text-[9px] text-white/30 font-black uppercase tracking-widest font-mono">ID: {{ propsComputed.id
-          }}</span>
-        </div>
-
-        <div
-          :class="['flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border border-white/5 ', currentStatus.bg, currentStatus.text]">
-          <span :class="['w-1.5 h-1.5 rounded-full shadow-[0_0_8px_currentColor]', currentStatus.dot]"></span>
-          {{ currentStatus.label }}
-        </div>
-      </div>
-
-      <!-- Content/Stats -->
-      <div
-        class="flex items-center justify-between bg-white/5 p-4 rounded-2xl mb-6 border border-white/5 overflow-hidden  font-google-sans">
-        <div class="flex flex-col gap-1">
-          <span class="text-[8px] text-white/30 font-black uppercase tracking-[0.2em]">Escaneos Totales</span>
-          <div class="flex items-center justify gap-1">
-            <span :key="qrStatus.totalScans" class="text-white font-black text-xl"
-              :class="{ 'animate-fade-up animate-delay-[500]': loadCount > 1 }">{{
-                qrStatus.totalScans }}</span>
-            <span class="material-symbols-outlined text-white">
-              qr_code_2
-            </span>
+      <!-- MIDDLE: Minimal Stats Grid -->
+      <div class="grid grid-cols-2 gap-4 mb-6">
+        <div class="flex flex-col gap-1.5">
+          <span class="text-white/40 text-[11px] uppercase tracking-wider font-medium">Estado</span>
+          <div class="flex items-center gap-1.5">
+            <span :class="['w-1.5 h-1.5 rounded-full', currentStatus.dot]"></span>
+            <span class="text-white/80 text-sm font-medium">{{ currentStatus.label }}</span>
           </div>
         </div>
-        <div class="w-px h-8 bg-white/10"></div>
-        <div class="flex flex-col gap-1 text-right">
-          <span class="text-[8px] text-white/30 font-black uppercase tracking-[0.2em]">Último escaneo</span>
-          <span :key="qrStatus.lastScan?.seconds || 'none'"
-            :class="{ 'animate-fade-up animate-delay-700': loadCount > 1 }"
-            class="text-white/60 font-black text-xs uppercase tracking-widest font-poppins">{{ timestampToDate()
+
+        <div class="flex flex-col gap-1.5">
+          <span class="text-white/40 text-[11px] uppercase tracking-wider font-medium">Escaneos</span>
+          <span :key="qrStatus.totalScans" class="text-white/80 text-sm font-medium">{{ qrStatus.totalScans }}</span>
+        </div>
+
+        <div class="col-span-2 flex flex-col gap-1.5">
+          <span class="text-white/40 text-[11px] uppercase tracking-wider font-medium">Última Actividad</span>
+          <span :key="qrStatus.lastScan?.seconds || 'none'" class="text-white/80 text-sm font-medium">{{
+            timestampToDate()
             }}</span>
         </div>
       </div>
 
-      <!-- Logs Section -->
-      <div class="space-y-3 mb-6">
-        <div class="flex items-center justify-between mb-2">
-          <h5 class="text-white/40 text-[10px] font-semibold m-0 font-google-sans flex items-center gap-1">
-            <span class="material-symbols-outlined text-white text-[10px]">history</span>
-            Historial de Escaneos
-          </h5>
-          <button v-if="!logsLoaded && !isLogsLoading" @click="loadLogs"
-            class="bg-primary-container text-secondary rounded-xl px-4 py-2 font-poppins text-xs font-normal cursor-pointer hover:bg-primary-container/80 transition-colors">
-            Mostrar registros
-          </button>
+      <!-- BOTTOM: Expand Logs -->
+      <div class="mt-auto pt-4 border-t border-white/5">
+        <button @click="loadLogs"
+          class="w-full flex items-center justify-between py-1.5 text-white/50 hover:text-white transition-colors group/btn cursor-pointer">
+          <span class="text-xs font-medium tracking-wide">Actividad Reciente</span>
+          <span
+            class="material-symbols-outlined text-[16px] transition-transform group-hover/btn:translate-y-0.5">expand_more</span>
+        </button>
+
+        <!-- Logs Content -->
+        <div v-if="isLogsLoading || logsLoaded" class="animate-fade-down mt-3">
+          <div v-if="isLogsLoading" class="flex flex-col space-y-2">
+            <QRCardLogSkeleton v-for="i in 2" :key="i" />
+          </div>
+
+          <TransitionGroup v-else name="list" tag="ul"
+            class="flex flex-col space-y-1.5 overflow-y-auto max-h-[250px] hide-scrollbar">
+            <QRCardLog v-for="e in qrLogs.slice(0, 5)" :key="e.id" v-bind="e" />
+          </TransitionGroup>
+
+          <p v-if="logsLoaded && qrLogs.length === 0" class="text-center text-xs text-white/30 py-3 font-medium">
+            No hay actividad reciente.
+          </p>
         </div>
-
-        <div v-if="isLogsLoading" class="flex flex-col space-y-4">
-          <QRCardLogSkeleton v-for="i in 2" :key="i" />
-        </div>
-
-        <TransitionGroup v-else name="list" tag="ul"
-          class="flex flex-col space-y-4 overflow-y-auto max-h-[500px] hide-scrollbar overflow-x-hidden rounded-[2rem] bg-black/40 p-4 border border-white/5">
-          <QRCardLog v-for="e in qrLogs.slice(0, 5)" :key="e.id" v-bind="e" />
-        </TransitionGroup>
-
-        <p v-if="logsLoaded && qrLogs.length === 0"
-          class="text-center text-[10px] text-white/20 italic py-2 font-google-sans">
-          Aún no se ha detectado actividad
-        </p>
       </div>
-
-
-      <!-- QR Code / Asset Image -->
-      <section
-        class="relative group/media flex justify-center bg-[#000000]/30 rounded-2xl overflow-hidden mb-6 border border-white/5 shadow-inner min-h-[220px]">
-        <Transition name="fade-slide" mode="out-in">
-          <div v-if="propsComputed.img" :key="propsComputed.img" class="w-full h-full">
-            <img :src="propsComputed.img"
-              class="w-full h-full object-cover opacity-80 group-hover/media:opacity-100 transition-opacity duration-500"
-              alt="Asset preview" />
-            <!-- Tiny overlay QR if image is present -->
-            <div class="absolute bottom-2 right-2 p-1.5 bg-white rounded-lg shadow-xl scale-75 origin-bottom-right">
-              <QrcodeVue :value="`https://ubiqueme.com/qr/${propsComputed.id}`" :size="40" render-as="canvas" />
-            </div>
-          </div>
-          <div v-else class="bg-white p-2 rounded-xl my-4">
-            <QrcodeVue :value="`https://ubiqueme.com/qr/${propsComputed.id}`" :size="200" render-as="canvas" />
-          </div>
-        </Transition>
-      </section>
-
-
     </div>
 
     <!-- Dropdown Menu -->
@@ -401,15 +375,15 @@ onUnmounted(() => {
       leave-active-class="transition-all duration-200 ease-in" leave-from-class="opacity-100 translate-y-0 scale-100"
       leave-to-class="opacity-0 -translate-y-2 scale-95">
       <div v-if="showMenu"
-        class="absolute top-20 right-6 w-[200px] bg-[#1a1d35] border border-white/10 rounded-2xl p-2 z-100">
+        class="absolute top-16 right-5 w-[200px] bg-[#1a1a1d] border border-white/10 rounded-xl p-1.5 z-30 shadow-2xl">
         <template v-for="(option, index) in menuOptions" :key="index">
-          <div v-if="option.divider" class="h-1px bg-white/5 my-1.5"></div>
+          <div v-if="option.divider" class="h-px bg-white/5 my-1 mx-2"></div>
           <button v-else @click="option.action" :class="[
-            'w-full flex items-center gap-3 cursor-pointer px-3 py-2.5 rounded-xl bg-transparent text-sm transition-colors text-left',
-            option.color || 'text-slate-200',
-            option.hoverBg || 'hover:bg-white/5'
+            'w-full flex items-center gap-3 cursor-pointer px-3 py-2 rounded-lg bg-transparent text-sm transition-colors text-left font-medium',
+            option.color || 'text-white/70',
+            option.hoverBg || 'hover:bg-white/10 hover:text-white'
           ]">
-            <span class="material-symbols-outlined text-[18px]">{{ option.icon }}</span>
+            <span class="material-symbols-outlined text-[16px]">{{ option.icon }}</span>
             {{ option.label }}
           </button>
         </template>
@@ -417,14 +391,15 @@ onUnmounted(() => {
     </Transition>
 
     <!-- Overlay Prompts -->
-    <Transition enter-active-class="transition-all duration-100 ease-out" enter-from-class="opacity-0"
+    <Transition enter-active-class="transition-all duration-200 ease-out" enter-from-class="opacity-0"
       enter-to-class="opacity-100" leave-active-class="transition-all duration-200 ease-in"
       leave-from-class="opacity-100" leave-to-class="opacity-0">
       <div v-if="activePrompt"
-        class="absolute inset-0 bg-[#0A0C1B]/95  z-200 p-6 flex flex-col justify-center items-center">
+        class="absolute inset-0 bg-[#09090b]/95 z-40 p-6 flex flex-col justify-center items-center rounded-2xl backdrop-blur-sm">
+
         <button @click="closeAll"
-          class="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/5 flex items-center justify-center text-slate-400 hover:bg-white/10 hover:text-white transition-all border-none">
-          <span class="material-symbols-outlined text-[20px]">close</span>
+          class="absolute top-4 right-4 w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-white/50 hover:bg-white/10 hover:text-white transition-all cursor-pointer">
+          <span class="material-symbols-outlined text-[18px]">close</span>
         </button>
 
         <!-- Cancel Prompt -->
@@ -432,19 +407,18 @@ onUnmounted(() => {
           enter-to-class="opacity-100 scale-100" leave-active-class="transition-all duration-200 ease-in"
           leave-from-class="opacity-100 scale-100" leave-to-class="opacity-0 scale-95">
           <div v-if="activePrompt === 'cancel'" class="w-full text-center">
-            <div class="w-14 h-14 rounded-2xl bg-rose-500/10 flex items-center justify-center mx-auto mb-4">
-              <span class="material-symbols-outlined text-rose-500 text-[28px]">warning</span>
+            <div class="w-12 h-12 rounded-full bg-rose-500/10 flex items-center justify-center mx-auto mb-4">
+              <span class="material-symbols-outlined text-rose-500 text-[24px]">warning</span>
             </div>
-            <h3 class="text-white text-xl font-bold mb-3">¿Desactivar QR?</h3>
-            <p class="text-slate-400 text-sm leading-relaxed mb-6">
-              Esta acción es <span class="text-rose-500 font-semibold">permanente</span>. El código dejará de funcionar
-              de inmediato.
+            <h3 class="text-white/90 text-lg font-medium mb-1.5">¿Desactivar código?</h3>
+            <p class="text-white/50 text-sm leading-relaxed mb-6 px-4">
+              Esta acción desactivará el código inmediatamente.
             </p>
-            <div class="flex flex-col gap-2.5 w-full">
+            <div class="flex gap-3 w-full">
               <button @click="closeAll"
-                class="px-3 py-3 bg-transparent text-slate-400 border border-white/10 rounded-xl font-semibold hover:bg-white/5 hover:text-white transition-colors">Cancelar</button>
+                class="flex-1 py-2.5 bg-white/5 text-white/70 rounded-lg font-medium text-sm hover:bg-white/10 hover:text-white transition-colors cursor-pointer">Cancelar</button>
               <button
-                class="px-3 py-3 bg-rose-500 text-white rounded-xl font-semibold hover:bg-rose-600 transition-colors">Confirmar</button>
+                class="flex-1 py-2.5 bg-rose-500 text-white rounded-lg font-medium text-sm hover:bg-rose-600 transition-colors active:scale-[0.98] cursor-pointer">Desactivar</button>
             </div>
           </div>
         </Transition>
@@ -454,18 +428,18 @@ onUnmounted(() => {
           enter-to-class="opacity-100 scale-100" leave-active-class="transition-all duration-200 ease-in"
           leave-from-class="opacity-100 scale-100" leave-to-class="opacity-0 scale-95">
           <div v-if="activePrompt === 'renew'" class="w-full text-center">
-            <div class="w-14 h-14 rounded-2xl bg-blue-500/10 flex items-center justify-center mx-auto mb-4">
-              <span class="material-symbols-outlined text-blue-500 text-[28px]">autorenew</span>
+            <div class="w-12 h-12 rounded-full bg-amber-500/10 flex items-center justify-center mx-auto mb-4">
+              <span class="material-symbols-outlined text-amber-500 text-[24px]">autorenew</span>
             </div>
-            <h3 class="text-white text-xl font-bold mb-3">Renovar QR</h3>
-            <p class="text-slate-400 text-sm leading-relaxed mb-6">
-              Se generará un nuevo pago. El QR actual será reemplazado por la nueva configuración.
+            <h3 class="text-white/90 text-lg font-medium mb-1.5">Renovar código</h3>
+            <p class="text-white/50 text-sm leading-relaxed mb-6 px-4">
+              Se iniciará el proceso de renovación.
             </p>
-            <div class="flex flex-col gap-2.5 w-full">
+            <div class="flex gap-3 w-full">
               <button @click="closeAll"
-                class="px-3 py-3 bg-transparent text-slate-400 border border-white/10 rounded-xl font-semibold hover:bg-white/5 hover:text-white transition-colors">Volver</button>
+                class="flex-1 py-2.5 bg-white/5 text-white/70 rounded-lg font-medium text-sm hover:bg-white/10 hover:text-white transition-colors cursor-pointer">Cancelar</button>
               <button
-                class="px-3 py-3 bg-blue-500 text-white rounded-xl font-semibold hover:bg-blue-600 transition-colors">Renovar</button>
+                class="flex-1 py-2.5 bg-white text-black rounded-lg font-medium text-sm hover:bg-white/90 transition-colors active:scale-[0.98] cursor-pointer">Renovar</button>
             </div>
           </div>
         </Transition>
@@ -474,28 +448,22 @@ onUnmounted(() => {
         <Transition enter-active-class="transition-all duration-300 ease-out" enter-from-class="opacity-0 scale-95"
           enter-to-class="opacity-100 scale-100" leave-active-class="transition-all duration-200 ease-in"
           leave-from-class="opacity-100 scale-100" leave-to-class="opacity-0 scale-95">
-          <div v-if="activePrompt === 'edit'" class="w-full text-center mt-4">
-            <h3 class="text-white text-xl font-bold mb-6">Editar nombre</h3>
-            <div class="text-left mb-6">
-              <label class="block text-xs text-slate-400 mb-2 uppercase tracking-wider">Nuevo nombre</label>
-              <input @keyup.enter="handleEdit" type="text" v-model="qrName" placeholder="Ej: Mi QR Personal"
-                class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-[15px] transition-colors focus:outline-none focus:border-blue-500 focus:bg-white/10" />
+          <div v-if="activePrompt === 'edit'" class="w-full">
+            <h3 class="text-white/90 text-lg font-medium mb-4 text-center">Editar nombre</h3>
+            <div class="mb-6">
+              <input @keyup.enter="handleEdit" type="text" v-model="qrName" placeholder="Nuevo nombre"
+                class="w-full bg-[#161619] border border-white/10 rounded-lg px-4 py-3 text-white text-sm transition-all focus:outline-none focus:border-white/30 placeholder:text-white/30" />
             </div>
-            <div class="flex flex-col gap-2.5 w-full">
+            <div class="flex gap-3 w-full">
               <button @click="closeAll"
-                class="px-3 py-3 bg-transparent text-slate-400 border border-white/10 rounded-xl font-semibold hover:bg-white/5 hover:text-white transition-colors">Descartar</button>
+                class="flex-1 py-2.5 bg-white/5 text-white/70 rounded-lg font-medium text-sm hover:bg-white/10 hover:text-white transition-colors cursor-pointer">Cancelar</button>
               <button @click="handleEdit"
-                class="px-3 py-3 bg-blue-500 text-white rounded-xl font-semibold hover:bg-blue-600 transition-colors">Guardar</button>
+                class="flex-1 py-2.5 bg-white text-black rounded-lg font-medium text-sm hover:bg-white/90 transition-colors active:scale-[0.98] cursor-pointer">Guardar</button>
             </div>
           </div>
         </Transition>
       </div>
     </Transition>
-
-
-    <!-- Footer separator -->
-
-
   </div>
 </template>
 
