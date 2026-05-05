@@ -1,40 +1,45 @@
 <script lang="ts" setup>
-import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
-import { collection, doc, getDoc, Timestamp, writeBatch, increment } from 'firebase/firestore'
+import { doc, getDoc } from 'firebase/firestore'
 import { db } from '@/firebase'
 import CloudLoader from '@/components/ui/CloudLoader.vue'
 import HomeLayout from '@/layouts/HomeLayout.vue'
-import type { IPublicQR, IQRScanMetrics } from '@/interfaces/IPublicQR'
-import imageCompression from 'browser-image-compression'
-import { useUserStore } from '@/stores/user'
+import type { IPublicQR } from '@/interfaces/IPublicQR'
 import { toast } from 'vue-sonner'
 
 const route = useRoute()
 const qrId = route.params.qrId as string
-const userStore = useUserStore()
 
 // State
 const loading = ref(true)
-const sending = ref(false)
-const isSuccess = ref(false)
 const qrData = ref<IPublicQR | null>(null)
 const errorMsg = ref('')
 const showContactForm = ref(false)
 
-// Form State
-const selectedReason = ref('')
-const messageText = ref('')
-const capturedImage = ref<string | null>(null)
-const imagePreviewUrl = ref('')
-const processingImage = ref(false)
-const contactEmail = ref('')
-const contactPhone = ref('')
-const contactMethod = ref<'email' | 'phone'>('email')
-
 const QRName = computed(() => qrData.value?.name || 'objeto')
-const reasons = ref<any[]>([])
-const ownerPlan = userStore.getPlan || 'epsilon'
+
+const mailtoData = computed(() => {
+  const email = 'soporte@ubiqueme.com'
+  const subject = `ID:[${qrId}]`
+  const body = `Hola, acabo de encontrar tu artículo protegido por Ubiqueme: "${QRName.value}".\n\nPor favor contáctame respondiendo a este correo para ponernos de acuerdo y devolvértelo.\n\n[Añade tus datos de contacto adicionales aquí si lo deseas]`
+  
+  return {
+    email,
+    subject,
+    body,
+    link: `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+  }
+})
+
+const copyToClipboard = async (text: string, field: string) => {
+  try {
+    await navigator.clipboard.writeText(text)
+    toast.success(`${field} copiado al portapapeles`)
+  } catch (err) {
+    toast.error('Error al copiar al portapapeles')
+  }
+}
 
 const loadQRData = async () => {
   try {
@@ -49,103 +54,9 @@ const loadQRData = async () => {
   }
 }
 
-const clearImage = () => {
-  if (imagePreviewUrl.value) URL.revokeObjectURL(imagePreviewUrl.value)
-  imagePreviewUrl.value = ''
-  capturedImage.value = null
-}
-
-const handleImageGet = async (e: Event) => {
-  const file = (e.target as HTMLInputElement).files?.[0]
-  if (!file) return
-  clearImage()
-  imagePreviewUrl.value = URL.createObjectURL(file)
-  try {
-    processingImage.value = true
-    const compressed = await imageCompression(file, { maxSizeMB: 0.14, maxWidthOrHeight: 900, useWebWorker: true })
-    const reader = new FileReader()
-    reader.readAsDataURL(compressed)
-    reader.onloadend = () => {
-      capturedImage.value = reader.result as string
-      processingImage.value = false
-    }
-  } catch (err) {
-    toast.error(`Error procesando la imagen: ${err}`)
-    processingImage.value = false
-  }
-}
-
-const selectPreset = (preset: string) => {
-  messageText.value = preset
-}
-
-const getMetrics = async (typePlan: string) => {
-  const metrics: IQRScanMetrics = { country: "", city: "", region: "" }
-  try {
-    const res = await fetch('https://ipapi.co/json/')
-    const d = await res.json()
-    metrics.country = d.country_name || ""
-    metrics.city = d.city || ""
-    metrics.region = d.region || ""
-    if (typePlan !== 'alpha') {
-      metrics.lat = d.latitude || ""
-      metrics.lon = d.longitude || ""
-      metrics.postal = d.postal || ""
-      metrics.timezone = d.timezone || ""
-    }
-    return metrics
-  } catch {
-    return metrics
-  }
-}
-
-const handleSubmitMessage = async () => {
-  if (!selectedReason.value) return
-  sending.value = true
-  try {
-    const metricData = await getMetrics(ownerPlan)
-    const batch = writeBatch(db)
-    const QRDoc = doc(db, 'publicQR', qrId)
-    const logDoc = doc(collection(db, 'publicQR', qrId, 'logs'), Date.now().toString())
-
-    batch.update(QRDoc, { totalScans: increment(1), lastScan: Timestamp.now() })
-    batch.set(logDoc, {
-      scanDate: Timestamp.now(),
-      scanMetrics: metricData,
-      interaction: {
-        reason: selectedReason.value,
-        message: messageText.value,
-        type: 'contact_request',
-        email: contactEmail.value,
-        phone: contactPhone.value
-      },
-      img: capturedImage.value
-    })
-
-    await batch.commit()
-    isSuccess.value = true
-    if (qrData.value) qrData.value.totalScans = (qrData.value.totalScans || 0) + 1
-  } catch (e) {
-    toast.error("Error al enviar el mensaje. Intenta de nuevo.")
-  } finally {
-    sending.value = false
-  }
-}
-
-const initReasons = () => {
-  reasons.value = [
-    { id: 'emergency', label: 'Urgente', icon: 'priority_high', color: '#ff5252', presets: [`He encontrado su "${QRName.value}" en riesgo.`, `¡Atención! Acción inmediata requerida para su "${QRName.value}".`] },
-    { id: 'return', label: 'Devolución', icon: 'handshake', color: '#ff9500', presets: [`Tengo su "${QRName.value}". ¿Cómo coordinamos la entrega?`, `He resguardado su "${QRName.value}". Está a salvo.`] },
-    { id: 'info', label: 'Aviso', icon: 'notifications', color: '#4facfe', presets: [`He visto su "${QRName.value}" y parece estar bien.`, `Escaneo de verificación de rutina.`] },
-    { id: 'other', label: 'Otro', icon: 'more_horiz', color: '#ffffff', presets: [] }
-  ]
-}
-
 onMounted(() => {
   loadQRData()
-  initReasons()
 })
-onUnmounted(clearImage)
 </script>
 
 <template>
@@ -277,7 +188,7 @@ onUnmounted(clearImage)
                 <Transition name="fade-slide" mode="out-in">
 
                   <!-- STEP 1: INITIAL BUTTON -->
-                  <div v-if="!showContactForm && !isSuccess" class="py-10 text-center space-y-8">
+                  <div v-if="!showContactForm" class="py-10 text-center space-y-8">
                     <div class="space-y-2">
                       <h3 class="text-xl font-black italic uppercase tracking-tighter">¿Encontró este objeto?</h3>
                       <p class="text-white/40 text-sm max-w-xs mx-auto">Notifique al propietario de forma segura y
@@ -288,87 +199,74 @@ onUnmounted(clearImage)
                       Ahora</button>
                   </div>
 
-                  <!-- STEP 2: THE FORM (Google Style) -->
-                  <div v-else-if="showContactForm && !isSuccess" class="space-y-10">
-
-                    <!-- Chips Selection -->
+                  <!-- STEP 2: MAILTO & FALLBACK OPTIONS -->
+                  <div v-else class="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    
                     <div class="space-y-4">
-                      <label class="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] ml-2">¿Cuál es el
-                        motivo?</label>
-                      <div class="flex flex-wrap gap-2">
-                        <button v-for="reason in reasons" :key="reason.id" @click="selectedReason = reason.id" :class="[
-                          'px-5 py-3 rounded-xl cursor-pointer border text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2',
-                          selectedReason === reason.id ? 'bg-[#ff9500] border-[#ff9500] text-black' : 'bg-white/5 border-white/10 text-white/50 hover:border-white/30'
-                        ]">
-                          <span class="material-symbols-outlined text-base">{{ reason.icon }}</span>
-                          {{ reason.label }}
-                        </button>
+                      <h3 class="text-xl font-black italic uppercase tracking-tighter text-center">Contactar al Propietario</h3>
+                      <p class="text-white/40 text-sm max-w-xs mx-auto text-center">
+                        Elija su método preferido para enviar el mensaje. Su privacidad está protegida.
+                      </p>
+                    </div>
+
+                    <!-- Option 1: Direct Mailto App -->
+                    <a :href="mailtoData.link"
+                      class="w-full h-16 bg-orange-500 text-[#09090b] rounded-2xl font-black text-xs uppercase tracking-widest hover:scale-[1.02] transition-all flex items-center justify-center gap-3 shadow-[0_10px_30px_rgba(249,115,22,0.2)]">
+                      <span class="material-symbols-outlined">mail</span>
+                      Abrir App de Correo
+                    </a>
+
+                    <div class="relative flex py-4 items-center">
+                      <div class="flex-grow border-t border-white/10"></div>
+                      <span class="flex-shrink-0 mx-4 text-white/30 text-[10px] font-black uppercase tracking-widest">O enviar manualmente</span>
+                      <div class="flex-grow border-t border-white/10"></div>
+                    </div>
+
+                    <!-- Option 2: Copy Data Manually -->
+                    <div class="space-y-4 bg-white/5 border border-white/10 rounded-[2rem] p-6">
+                      <p class="text-[10px] font-black text-white/40 uppercase tracking-widest text-center mb-4">
+                        Si usa otro proveedor web (Proton, Outlook, Yahoo), copie estos datos y envíe un correo:
+                      </p>
+
+                      <div class="space-y-3">
+                        <div class="flex items-center justify-between bg-black/40 rounded-xl p-3 border border-white/5 group">
+                          <div class="overflow-hidden">
+                            <label class="text-[9px] font-black text-orange-500 uppercase tracking-widest block mb-1">Para (Destinatario)</label>
+                            <span class="text-sm text-white/80 font-mono truncate block">{{ mailtoData.email }}</span>
+                          </div>
+                          <button @click="copyToClipboard(mailtoData.email, 'Correo')" class="p-3 bg-white/5 rounded-lg hover:bg-white/10 text-white/50 hover:text-white transition-colors">
+                            <span class="material-symbols-outlined text-sm">content_copy</span>
+                          </button>
+                        </div>
+
+                        <div class="flex items-center justify-between bg-black/40 rounded-xl p-3 border border-white/5 group">
+                          <div class="overflow-hidden">
+                            <label class="text-[9px] font-black text-orange-500 uppercase tracking-widest block mb-1">Asunto (¡Importante!)</label>
+                            <span class="text-sm text-white/80 font-mono truncate block">{{ mailtoData.subject }}</span>
+                          </div>
+                          <button @click="copyToClipboard(mailtoData.subject, 'Asunto')" class="p-3 bg-white/5 rounded-lg hover:bg-white/10 text-white/50 hover:text-white transition-colors">
+                            <span class="material-symbols-outlined text-sm">content_copy</span>
+                          </button>
+                        </div>
+
+                        <div class="flex items-start justify-between bg-black/40 rounded-xl p-3 border border-white/5 group">
+                          <div class="overflow-hidden w-full pr-4">
+                            <label class="text-[9px] font-black text-orange-500 uppercase tracking-widest block mb-1">Mensaje Sugerido</label>
+                            <p class="text-xs text-white/60 line-clamp-3">{{ mailtoData.body }}</p>
+                          </div>
+                          <button @click="copyToClipboard(mailtoData.body, 'Mensaje')" class="p-3 bg-white/5 rounded-lg hover:bg-white/10 text-white/50 hover:text-white transition-colors mt-2">
+                            <span class="material-symbols-outlined text-sm">content_copy</span>
+                          </button>
+                        </div>
                       </div>
                     </div>
 
-                    <!-- Contact Method Toggle -->
-                    <div class="space-y-4">
-                      <label class="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] ml-2">Método de contacto preferido</label>
-                      <div class="flex items-center p-1 bg-white/5 border border-white/10 rounded-2xl w-full max-w-xs relative overflow-hidden h-14">
-                        <div class="absolute inset-y-1 transition-all duration-300 bg-orange-500 rounded-xl w-[calc(50%-4px)]"
-                             :class="contactMethod === 'email' ? 'left-1' : 'left-[calc(50%+3px)]'"></div>
-                        <button @click="contactMethod = 'email'" 
-                                class="flex-1 h-full text-[10px] font-black uppercase tracking-widest relative z-10 transition-colors"
-                                :class="contactMethod === 'email' ? 'text-[#09090b]' : 'text-white/40'">Correo</button>
-                        <button @click="contactMethod = 'phone'" 
-                                class="flex-1 h-full text-[10px] font-black uppercase tracking-widest relative z-10 transition-colors"
-                                :class="contactMethod === 'phone' ? 'text-[#09090b]' : 'text-white/40'">Teléfono</button>
-                      </div>
-                    </div>
-
-                    <!-- Modern Inputs -->
-                    <div class="space-y-6">
-                      <div class="space-y-2 animate-in fade-in slide-in-from-left-4 duration-500" v-if="contactMethod === 'email'">
-                        <label class="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] ml-4">Su Correo Electrónico</label>
-                        <input v-model="contactEmail" type="email" autocomplete="email"
-                          placeholder="nombre@ejemplo.com"
-                          class="w-full bg-white/5 border border-white/10 rounded-2xl py-5 px-6 text-sm text-white focus:outline-none focus:border-orange-500/50 focus:bg-white/[0.08] transition-all" />
-                      </div>
-                      <div class="space-y-2 animate-in fade-in slide-in-from-right-4 duration-500" v-else>
-                        <label class="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] ml-4">Su Número de Teléfono</label>
-                        <input v-model="contactPhone" type="tel" autocomplete="tel" placeholder="+52 ..."
-                          class="w-full bg-white/5 border border-white/10 rounded-2xl py-5 px-6 text-sm text-white focus:outline-none focus:border-orange-500/50 focus:bg-white/[0.08] transition-all" />
-                      </div>
-
-                      <div class="space-y-2">
-                        <label class="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] ml-4">Mensaje Adicional (Opcional)</label>
-                        <textarea v-model="messageText" placeholder="Escriba aquí sus comentarios..."
-                          class="w-full bg-white/5 border border-white/10 rounded-3xl py-5 px-6 text-sm text-white focus:outline-none focus:border-orange-500/50 focus:bg-white/[0.08] transition-all min-h-[120px] resize-none"></textarea>
-                      </div>
-                    </div>
-
-                    <!-- Footer Actions -->
-                    <div class="flex flex-col gap-4">
-                      <button @click="handleSubmitMessage"
-                        :disabled="!selectedReason || sending || (contactMethod === 'email' ? !contactEmail : !contactPhone)"
-                        class="w-full h-16 bg-orange-500 text-[#09090b] rounded-2xl font-black text-xs uppercase tracking-widest disabled:opacity-20 transition-all flex items-center justify-center gap-3 shadow-[0_10px_30px_rgba(249,115,22,0.2)]">
-                        <span v-if="sending"
-                          class="w-5 h-5 border-3 border-black/20 border-t-black rounded-full animate-spin"></span>
-                        <span v-else>Enviar Notificación</span>
-                      </button>
+                    <div class="pt-2">
                       <button @click="showContactForm = false"
-                        class="text-[10px] font-black text-white/20 uppercase tracking-widest hover:text-white/40 transition-colors">Cancelar Operación</button>
+                        class="w-full text-center text-[10px] font-black text-white/20 uppercase tracking-widest hover:text-white/40 transition-colors">
+                        Volver
+                      </button>
                     </div>
-                  </div>
-
-                  <!-- STEP 3: SUCCESS -->
-                  <div v-else-if="isSuccess" class="py-12 text-center space-y-8 animate-in zoom-in duration-500">
-                    <div
-                      class="w-24 h-24 bg-green-500 rounded-full flex items-center justify-center mx-auto shadow-[0_0_50px_rgba(34,197,94,0.3)]">
-                      <span class="material-symbols-outlined text-[#09090b] text-5xl font-black">done_all</span>
-                    </div>
-                    <div class="space-y-2">
-                      <h3 class="text-3xl font-black italic uppercase tracking-tighter text-[#dce7ff]">¡Enviado!</h3>
-                      <p class="text-white/40 text-sm max-w-xs mx-auto">Gracias por su honestidad. El propietario ha
-                        sido notificado de su hallazgo.</p>
-                    </div>
-                    <button @click="$router.push('/')"
-                      class="px-10 py-4 bg-white/5 border border-white/10 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-white/10 transition-all">Finalizar</button>
                   </div>
 
                 </Transition>
