@@ -1,4 +1,5 @@
 import { SignJWT, importPKCS8 } from 'jose';
+import PostalMime from 'postal-mime';
 
 // Interfaz unificada para todas tus variables de entorno
 interface Env {
@@ -13,10 +14,19 @@ export default {
 	 * MANEJADOR DE EMAIL: El Relevo de Privacidad (Privacy Relay)
 	 * Cuando alguien escribe a soporte@ubiqueme.com con ID:[UID]
 	 */
-	async email(message: any, env: Env, ctx: ExecutionContext): Promise<void> {
+	async email(message: any, env: Env, _ctx: ExecutionContext): Promise<void> {
 		const subject = message.headers.get('subject') || '';
 		const sender = message.from; // El correo del que escaneó el QR
 		console.log(`[Worker] 📧 Email recibido de: ${sender} | Asunto: ${subject}`);
+
+		// Parseamos el email para obtener el mensaje real convirtiendo el stream a ArrayBuffer primero (más seguro en CF Workers)
+		const parser = new PostalMime();
+		const rawBuffer = await new Response(message.raw).arrayBuffer();
+		const parsedEmail = await parser.parse(rawBuffer);
+
+		let messageBody = parsedEmail.text || parsedEmail.html || 'No se pudo extraer el mensaje.';
+		// Limpiamos etiquetas html si extrajimos texto con formato
+		messageBody = messageBody.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>');
 
 		// Buscamos el ID del QR en el asunto del correo
 		const qrIdMatch = subject.match(/ID:\[(.*?)\]/);
@@ -38,63 +48,104 @@ export default {
 					console.log(`[Worker] 👤 Datos del dueño obtenidos:`, ownerData);
 
 					if (ownerData && ownerData.email) {
-					console.log(`[Worker] 🚀 Preparando envío de correo vía Resend a: ${ownerData.email}`);
-					// 2. Preparamos el email con diseño Premium AMOLED
-					const emailPayload = {
-						from: 'Ubiqueme Security <soporte@ubiqueme.com>',
-						to: ownerData.email,
-						subject: `🚨 Aviso de Escaneo: ${ownerData.displayName || 'Usuario'}`,
-						html: `
-              <div style="background-color: #09090b; color: #ffffff; font-family: sans-serif; padding: 40px; border-radius: 20px; max-width: 600px; margin: auto; border: 1px solid #27272a;">
-                <div style="text-align: center; margin-bottom: 30px;">
-                  <div style="display: inline-block; background: #f97316; color: #000; padding: 10px 20px; border-radius: 10px; font-weight: 900; letter-spacing: 2px; font-size: 14px;">
-                    UBIQUEME PROTOCOL
-                  </div>
+						console.log(`[Worker] 🚀 Preparando envío de correo vía Resend a: ${ownerData.email}`);
+						// 2. Preparamos el email con diseño Premium Vercel (Dark Mode obligatorio)
+						const emailPayload = {
+							from: 'ubiqueme.com <soporte@ubiqueme.com>',
+							to: ownerData.email,
+							subject: `Aviso de Escaneo: ${qrData.name || 'QR'}`,
+							html: `
+<!DOCTYPE html>
+<html lang="es" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <meta name="supported-color-schemes" content="light dark">
+  <title>Aviso de Escaneo</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      supported-color-schemes: dark;
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      width: 100% !important;
+      -webkit-text-size-adjust: 100%;
+      -ms-text-size-adjust: 100%;
+      background-color: #000000 !important;
+    }
+  </style>
+</head>
+<body style="margin: 0; padding: 0; background-color: #000000 !important; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+  <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #000000;">
+    <tr>
+      <td align="center" style="padding: 40px 20px;">
+        <!-- Card Container -->
+        <table width="100%" max-width="600" border="0" cellspacing="0" cellpadding="0" style="max-width: 600px; background-color: #0a0a0a; border: 1px solid #222222; border-radius: 8px;">
+          <tr>
+            <td style="padding: 32px;">
+
+              <div style="font-size: 14px; font-weight: 600; letter-spacing: -0.02em; color: #ededed; margin-bottom: 32px;">
+                ubiqueme.com
+              </div>
+
+              <div style="font-size: 15px; line-height: 1.6; color: #a1a1aa;">
+                <div style="color: #ededed; font-size: 18px; font-weight: 500; margin-bottom: 24px; letter-spacing: -0.01em;">
+                  Hola <span style="color: #ededed; font-weight: 500;">${ownerData.displayName || 'propietario'}</span>,
                 </div>
 
-                <h2 style="color: #ffffff; font-size: 24px; font-weight: 700; text-align: center; margin-bottom: 10px;">Hola, ${ownerData.displayName || 'propietario'}</h2>
-                <p style="color: #a1a1aa; text-align: center; font-size: 16px; margin-bottom: 30px;">
-                  Se ha detectado una actividad de contacto en uno de sus dispositivos protegidos.
+                <p style="margin: 0 0 16px 0;">
+                  Alguien escaneó su código QR <span style="color: #ededed; font-weight: 500;">${qrData.name || 'Desconocido'}</span> con el remitente <span style="color: #ededed; font-weight: 500;">${sender}</span> y con el siguiente mensaje:
                 </p>
 
-                <div style="background-color: #18181b; padding: 25px; border-radius: 15px; border: 1px solid #3f3f46; margin-bottom: 30px;">
-                  <p style="margin: 0 0 15px 0;"><strong style="color: #f97316; text-transform: uppercase; font-size: 11px; tracking: 1px;">Remitente:</strong><br /><span style="color: #fff; font-size: 15px;">${sender}</span></p>
-                  <p style="margin: 0 0 15px 0;"><strong style="color: #f97316; text-transform: uppercase; font-size: 11px; tracking: 1px;">Referencia:</strong><br /><span style="color: #fff; font-size: 15px;">${subject}</span></p>
-                  <p style="margin: 0;"><strong style="color: #f97316; text-transform: uppercase; font-size: 11px; tracking: 1px;">Mensaje Segregado:</strong><br />
-                    <span style="color: #e4e4e7; font-style: italic; font-size: 14px;">"Se ha recibido un mensaje a través de nuestro servidor de relevo de privacidad."</span>
-                  </p>
-                </div>
+                <div style="background-color: #111111; border: 1px solid #222222; border-radius: 6px; padding: 20px; margin: 24px 0; color: #ededed; font-size: 14px; word-break: break-word;">${messageBody}</div>
 
-                <div style="background-color: #451a03; border-left: 4px solid #f97316; padding: 20px; margin-bottom: 30px; border-radius: 4px;">
-                  <p style="color: #fdba74; font-size: 13px; margin: 0; line-height: 1.6;">
-                    <strong>🛡️ Aviso de Seguridad:</strong> Sus datos están protegidos con nosotros. Hasta este momento, su información personal permanece privada y segura.
-                    Si usted decide contactar por su cuenta al usuario remitente, usted asume los riesgos e implicaciones que esto significa.
-                    Cualquier respuesta directa es bajo su total responsabilidad.
+                <div style="font-size: 13px; color: #71717a; margin-top: 32px; padding-top: 24px; border-top: 1px solid #222222; line-height: 1.5;">
+                  <p style="margin: 0 0 16px 0;">
+                    Hasta este punto su correo y su información están protegidas y privadas, si usted desea responder proceda con precaución y no de información personal, al usted responder acepta que ubiqueme.com no es responsable conforme a nuestra política de privacidad y términos y condiciones.
                   </p>
-                </div>
-
-                <div style="text-align: center; font-size: 11px; color: #52525b; line-height: 1.5;">
-                  Este es un mensaje automático generado por el núcleo de seguridad de Ubiqueme.<br />
-                  Por favor, no responda directamente a este correo.<br />
-                  &copy; 2024 Ubiqueme Smart Tags.
+                  <p style="margin: 0;">
+                    Excelente día, para cualquier duda contáctenos en <a href="mailto:ayuda@ubiqueme.com" style="color: #ededed; text-decoration: none;">ayuda@ubiqueme.com</a>
+                  </p>
                 </div>
               </div>
+
+            </td>
+          </tr>
+        </table>
+        <!-- Footer -->
+        <table width="100%" max-width="600" border="0" cellspacing="0" cellpadding="0" style="max-width: 600px;">
+          <tr>
+            <td align="center" style="padding-top: 24px; font-size: 12px; color: #52525b;">
+              &copy; ${new Date().getFullYear()} ubiqueme.com derechos reservados.
+            </td>
+          </tr>
+        </table>
+
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
             `,
-					};
+						};
 
-					// 3. Enviamos el correo al dueño vía Resend
-					const res = await fetch('https://api.resend.com/emails', {
-						method: 'POST',
-						headers: {
-							Authorization: `Bearer ${env.RESEND_API_KEY}`,
-							'Content-Type': 'application/json',
-						},
-						body: JSON.stringify(emailPayload),
-					});
+						// 3. Enviamos el correo al dueño vía Resend
+						const res = await fetch('https://api.resend.com/emails', {
+							method: 'POST',
+							headers: {
+								Authorization: `Bearer ${env.RESEND_API_KEY}`,
+								'Content-Type': 'application/json',
+							},
+							body: JSON.stringify(emailPayload),
+						});
 
-					const resData: any = await res.json();
-					console.log('Resultado Resend:', resData);
-				}
+						const responseText = await res.text();
+						console.log(`[Worker] Resultado Resend Status: ${res.status}`);
+						console.log(`[Worker] Resultado Resend Body: ${responseText}`);
+					}
 				}
 			} catch (e) {
 				console.error('Error en Privacy Relay:', e);
