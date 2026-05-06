@@ -1,8 +1,9 @@
 <script lang="ts" setup>
 import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
-import { doc, getDoc } from 'firebase/firestore'
-import { db } from '@/firebase'
+import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore'
+import { auth, db } from '@/firebase'
+import { GoogleAuthProvider, signInWithCredential } from 'firebase/auth'
 import CloudLoader from '@/components/ui/CloudLoader.vue'
 import HomeLayout from '@/layouts/HomeLayout.vue'
 import type { IPublicQR } from '@/interfaces/IPublicQR'
@@ -13,6 +14,7 @@ const qrId = route.params.qrId as string
 
 // State
 const loading = ref(true)
+const isAuthenticating = ref(false)
 const qrData = ref<IPublicQR | null>(null)
 const errorMsg = ref('')
 const showContactForm = ref(false)
@@ -54,8 +56,67 @@ const loadQRData = async () => {
   }
 }
 
+const handleCredentialResponse = async (response: any) => {
+  try {
+    isAuthenticating.value = true
+    const credential = GoogleAuthProvider.credential(response.credential)
+    const userCredential = await signInWithCredential(auth, credential)
+    const user = userCredential.user
+
+    // Register scanner in DB silently
+    const userRef = doc(db, 'users', user.uid)
+    const userSnap = await getDoc(userRef)
+    
+    if (!userSnap.exists()) {
+      await setDoc(userRef, {
+        uid: user.uid,
+        email: user.email,
+        name: user.displayName || 'Escaneador QR',
+        role: 'scanner',
+        createdAt: serverTimestamp()
+      })
+    }
+
+    toast.success(`Identificado como ${user.email}`)
+    showContactForm.value = true
+  } catch (error: any) {
+    console.error("One Tap Error:", error)
+    toast.error('Error de autenticación. Intente de nuevo.')
+  } finally {
+    isAuthenticating.value = false
+  }
+}
+
+const triggerOneTap = () => {
+  // @ts-ignore
+  if (window.google && window.google.accounts && window.google.accounts.id) {
+    // @ts-ignore
+    window.google.accounts.id.prompt()
+  } else {
+    // Fallback if One Tap is blocked or failed to load
+    showContactForm.value = true
+  }
+}
+
 onMounted(() => {
   loadQRData()
+
+  // Initialize Google One Tap
+  setTimeout(() => {
+    // @ts-ignore
+    if (window.google && window.google.accounts && window.google.accounts.id) {
+      // @ts-ignore
+      window.google.accounts.id.initialize({
+        client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+        callback: handleCredentialResponse,
+        auto_select: false,
+      })
+      
+      // Auto prompt on load
+      // @ts-ignore
+      window.google.accounts.id.prompt()
+    }
+  }, 1000)
 })
 </script>
 
@@ -194,9 +255,11 @@ onMounted(() => {
                       <p class="text-white/40 text-sm max-w-xs mx-auto">Notifique al propietario de forma segura y
                         anónima para coordinar la recuperación.</p>
                     </div>
-                    <button @click="showContactForm = true"
-                      class="w-full max-w-xs h-16 bg-white text-[#09090b] rounded-2xl font-black text-xs uppercase tracking-widest hover:scale-[1.02] transition-all shadow-[0_10px_30px_rgba(255,255,255,0.1)]">Contactar
-                      Ahora</button>
+                    <button @click="triggerOneTap" :disabled="isAuthenticating"
+                      class="w-full max-w-xs h-16 bg-white text-[#09090b] rounded-2xl font-black text-xs uppercase tracking-widest hover:scale-[1.02] transition-all shadow-[0_10px_30px_rgba(255,255,255,0.1)] disabled:opacity-50 disabled:hover:scale-100 flex items-center justify-center gap-2 mx-auto">
+                      <span v-if="isAuthenticating" class="material-symbols-outlined animate-spin">refresh</span>
+                      {{ isAuthenticating ? 'Identificando...' : 'Contactar Ahora' }}
+                    </button>
                   </div>
 
                   <!-- STEP 2: MAILTO & FALLBACK OPTIONS -->
