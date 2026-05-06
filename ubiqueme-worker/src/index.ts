@@ -1,7 +1,5 @@
 import { SignJWT, importPKCS8 } from 'jose';
-import PostalMime from 'postal-mime';
 
-// Interfaz unificada para todas tus variables de entorno
 interface Env {
 	FIREBASE_PROJECT_ID: string;
 	FIREBASE_CLIENT_EMAIL: string;
@@ -9,52 +7,80 @@ interface Env {
 	RESEND_API_KEY: string;
 }
 
+const CORS_HEADERS = {
+	'Access-Control-Allow-Origin': '*',
+	'Access-Control-Allow-Methods': 'POST, OPTIONS',
+	'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+};
+
 export default {
-	/**
-	 * MANEJADOR DE EMAIL: El Relevo de Privacidad (Privacy Relay)
-	 * Cuando alguien escribe a soporte@ubiqueme.com con ID:[UID]
-	 */
-	async email(message: any, env: Env, _ctx: ExecutionContext): Promise<void> {
-		const subject = message.headers.get('subject') || '';
-		const sender = message.from; // El correo del que escaneó el QR
-		console.log(`[Worker] 📧 Email recibido de: ${sender} | Asunto: ${subject}`);
+	async fetch(request: Request, env: Env, _ctx: ExecutionContext): Promise<Response> {
+		// Handle CORS preflight
+		if (request.method === 'OPTIONS') {
+			return new Response(null, { headers: CORS_HEADERS });
+		}
 
-		// Parseamos el email para obtener el mensaje real convirtiendo el stream a ArrayBuffer primero (más seguro en CF Workers)
-		const parser = new PostalMime();
-		const rawBuffer = await new Response(message.raw).arrayBuffer();
-		const parsedEmail = await parser.parse(rawBuffer);
+		if (request.method !== 'POST') {
+			return new Response(JSON.stringify({ error: 'Method not allowed' }), { 
+				status: 405, 
+				headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' } 
+			});
+		}
 
-		let messageBody = parsedEmail.text || parsedEmail.html || 'No se pudo extraer el mensaje.';
-		// Limpiamos etiquetas html si extrajimos texto con formato
-		messageBody = messageBody.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>');
+		// MUST DO: CONFIGURAR RUTA DEL WORKER EN CLOUDFLARE PARA PRODUCCION
+		// Actualmente responde en la ruta por defecto de workers.dev, mapearlo a api.ubiqueme.com despues.
 
-		// Buscamos el ID del QR en el asunto del correo
-		const qrIdMatch = subject.match(/ID:\[(.*?)\]/);
+		/* =================================================================================================
+		 * SECURITY REQUIREMENT:
+		 * THIS ENDPOINT CURRENTLY ACCEPTS scannerEmail DIRECTLY FROM THE REQUEST BODY.
+		 * IN A PRODUCTION ENVIRONMENT, THIS IS VULNERABLE TO SPOOFING.
+		 * YOU MUST IMPLEMENT FIREBASE JWT VALIDATION.
+		 * THE FRONTEND SHOULD SEND THE FIREBASE ID TOKEN IN THE AUTHORIZATION HEADER.
+		 * THE WORKER MUST DECODE AND VERIFY THIS JWT TO EXTRACT THE REAL EMAIL INSTEAD OF TRUSTING THE BODY.
+		 * ================================================================================================= */
 
-		if (qrIdMatch && qrIdMatch[1]) {
-			const qrId = qrIdMatch[1].trim();
-			console.log(`[Worker] 🔍 QR ID Extraído: ${qrId}`);
+		try {
+			const body: any = await request.json();
+			const { qrId, message, scannerEmail } = body;
 
-			try {
-				const accessToken = await getGoogleAccessToken(env);
+			if (!qrId || !message || !scannerEmail) {
+				return new Response(JSON.stringify({ error: 'Missing parameters' }), { 
+					status: 400, 
+					headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' } 
+				});
+			}
 
-				// 1. Buscamos el QR para saber de quién es
-				const qrData = await getFirestoreQR(env.FIREBASE_PROJECT_ID, accessToken, qrId);
-				console.log(`[Worker] 📦 Datos del QR obtenidos:`, qrData);
+			console.log(`[Worker] 🚀 Fetch API recibido para QR: ${qrId} | De: ${scannerEmail}`);
 
-				if (qrData && qrData.uid) {
-					// 2. Buscamos quién es el dueño real en Firestore
-					const ownerData = await getFirestoreUser(env.FIREBASE_PROJECT_ID, accessToken, qrData.uid);
-					console.log(`[Worker] 👤 Datos del dueño obtenidos:`, ownerData);
+			const accessToken = await getGoogleAccessToken(env);
 
-					if (ownerData && ownerData.email) {
-						console.log(`[Worker] 🚀 Preparando envío de correo vía Resend a: ${ownerData.email}`);
-						// 2. Preparamos el email con diseño Premium Vercel (Dark Mode obligatorio)
-						const emailPayload = {
-							from: 'ubiqueme.com <soporte@ubiqueme.com>',
-							to: ownerData.email,
-							subject: `Aviso de Escaneo: ${qrData.name || 'QR'}`,
-							html: `
+			// 1. Get QR data
+			const qrData = await getFirestoreQR(env.FIREBASE_PROJECT_ID, accessToken, qrId);
+			if (!qrData || !qrData.uid) {
+				return new Response(JSON.stringify({ error: 'QR not found' }), { 
+					status: 404, 
+					headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' } 
+				});
+			}
+
+			// 2. Get Owner data
+			const ownerData = await getFirestoreUser(env.FIREBASE_PROJECT_ID, accessToken, qrData.uid);
+			if (!ownerData || !ownerData.email) {
+				return new Response(JSON.stringify({ error: 'Owner not found' }), { 
+					status: 404, 
+					headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' } 
+				});
+			}
+
+			// Format message for HTML safety
+			const safeMessage = message.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>');
+
+			// 3. Prepare Resend Payload
+			const emailPayload = {
+				from: 'ubiqueme.com <soporte@ubiqueme.com>',
+				to: ownerData.email,
+				subject: `Aviso de Escaneo: ${qrData.name || 'QR'}`,
+				html: `
 <!DOCTYPE html>
 <html lang="es" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
 <head>
@@ -82,7 +108,6 @@ export default {
   <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #000000;">
     <tr>
       <td align="center" style="padding: 40px 20px;">
-        <!-- Card Container -->
         <table width="100%" max-width="600" border="0" cellspacing="0" cellpadding="0" style="max-width: 600px; background-color: #0a0a0a; border: 1px solid #222222; border-radius: 8px;">
           <tr>
             <td style="padding: 32px;">
@@ -97,17 +122,22 @@ export default {
                 </div>
 
                 <p style="margin: 0 0 16px 0;">
-                  Alguien escaneó su código QR <span style="color: #ededed; font-weight: 500;">${qrData.name || 'Desconocido'}</span> con el remitente <span style="color: #ededed; font-weight: 500;">${sender}</span> y con el siguiente mensaje:
+                  Alguien escaneó su código QR <span style="color: #ededed; font-weight: 500;">${qrData.name || 'Desconocido'}</span> y le ha dejado el siguiente mensaje:
                 </p>
 
-                <div style="background-color: #111111; border: 1px solid #222222; border-radius: 6px; padding: 20px; margin: 24px 0; color: #ededed; font-size: 14px; word-break: break-word;">${messageBody}</div>
+                <div style="background-color: #111111; border: 1px solid #222222; border-radius: 6px; padding: 20px; margin: 24px 0; color: #ededed; font-size: 14px; word-break: break-word;">
+					${safeMessage}
+				</div>
 
                 <div style="font-size: 13px; color: #71717a; margin-top: 32px; padding-top: 24px; border-top: 1px solid #222222; line-height: 1.5;">
                   <p style="margin: 0 0 16px 0;">
-                    Hasta este punto su correo y su información están protegidas y privadas, si usted desea responder proceda con precaución y no de información personal, al usted responder acepta que ubiqueme.com no es responsable conforme a nuestra política de privacidad y términos y condiciones.
+                    Este mensaje fue enviado por el visitante: <strong style="color: #ededed; user-select: all;">${scannerEmail}</strong>
+                  </p>
+                  <p style="margin: 0 0 16px 0;">
+                    Por su seguridad y privacidad, hemos deshabilitado las respuestas automáticas. Si usted decide ponerse en contacto con esta persona para recuperar su objeto, <strong>deberá copiar el correo manualmente</strong> y escribirle bajo su propia responsabilidad. Al hacerlo, usted acepta que ubiqueme.com no es responsable de las interacciones fuera de esta plataforma.
                   </p>
                   <p style="margin: 0;">
-                    Excelente día, para cualquier duda contáctenos en <a href="mailto:ayuda@ubiqueme.com" style="color: #ededed; text-decoration: none;">ayuda@ubiqueme.com</a>
+                    Para cualquier duda contáctenos en ayuda@ubiqueme.com
                   </p>
                 </div>
               </div>
@@ -115,7 +145,6 @@ export default {
             </td>
           </tr>
         </table>
-        <!-- Footer -->
         <table width="100%" max-width="600" border="0" cellspacing="0" cellpadding="0" style="max-width: 600px;">
           <tr>
             <td align="center" style="padding-top: 24px; font-size: 12px; color: #52525b;">
@@ -129,30 +158,40 @@ export default {
   </table>
 </body>
 </html>
-            `,
-						};
+`
+			};
 
-						// 3. Enviamos el correo al dueño vía Resend
-						const res = await fetch('https://api.resend.com/emails', {
-							method: 'POST',
-							headers: {
-								Authorization: `Bearer ${env.RESEND_API_KEY}`,
-								'Content-Type': 'application/json',
-							},
-							body: JSON.stringify(emailPayload),
-						});
+			// 4. Send via Resend
+			const res = await fetch('https://api.resend.com/emails', {
+				method: 'POST',
+				headers: {
+					Authorization: `Bearer ${env.RESEND_API_KEY}`,
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify(emailPayload),
+			});
 
-						const responseText = await res.text();
-						console.log(`[Worker] Resultado Resend Status: ${res.status}`);
-						console.log(`[Worker] Resultado Resend Body: ${responseText}`);
-					}
-				}
-			} catch (e) {
-				console.error('Error en Privacy Relay:', e);
+			const responseText = await res.text();
+			
+			if (!res.ok) {
+				console.error(`[Worker] Resend Error: ${responseText}`);
+				return new Response(JSON.stringify({ error: 'Failed to send email' }), { 
+					status: 500, 
+					headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' } 
+				});
 			}
-		} else {
-			// Fallback: Si no tiene el formato ID:[], reenviar a tu backup
-			await message.forward('alejandrocarbajal@prasadam.mx');
+
+			return new Response(JSON.stringify({ success: true }), { 
+				status: 200, 
+				headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' } 
+			});
+
+		} catch (e: any) {
+			console.error('Error procesando peticion HTTP:', e);
+			return new Response(JSON.stringify({ error: 'Internal server error', details: e.message }), { 
+				status: 500, 
+				headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' } 
+			});
 		}
 	},
 };

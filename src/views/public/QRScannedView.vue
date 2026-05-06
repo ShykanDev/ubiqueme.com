@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore'
 import { auth, db } from '@/firebase'
@@ -8,8 +8,10 @@ import CloudLoader from '@/components/ui/CloudLoader.vue'
 import HomeLayout from '@/layouts/HomeLayout.vue'
 import type { IPublicQR } from '@/interfaces/IPublicQR'
 import { toast } from 'vue-sonner'
+import { useUserStore } from '@/stores/user'
 
 const route = useRoute()
+const userStore = useUserStore()
 const qrId = route.params.qrId as string
 
 // State
@@ -17,21 +19,26 @@ const loading = ref(true)
 const isAuthenticating = ref(false)
 const qrData = ref<IPublicQR | null>(null)
 const errorMsg = ref('')
-const showContactForm = ref(false)
-
 const QRName = computed(() => qrData.value?.name || 'objeto')
+const customMessage = ref('')
+const isSending = ref(false)
+const hasSent = ref(false)
 
-const mailtoData = computed(() => {
-  const email = 'soporte@ubiqueme.com'
-  const subject = `ID:[${qrId}]`
-  const body = `Hola, acabo de encontrar tu artículo protegido por Ubiqueme: "${QRName.value}".\n\nPor favor contáctame respondiendo a este correo para ponernos de acuerdo y devolvértelo.\n\n[Añade tus datos de contacto adicionales aquí si lo deseas]`
-  
-  return {
-    email,
-    subject,
-    body,
-    link: `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+const defaultBody = computed(() => {
+  return `Hola, acabo de encontrar tu artículo protegido por Ubiqueme: "${QRName.value}".\n\nPor favor contáctame respondiendo a este correo para ponernos de acuerdo y devolvértelo.\n\n[Añade tus datos de contacto adicionales aquí si lo deseas]`
+})
+
+watch(QRName, () => {
+  if (!customMessage.value || customMessage.value.startsWith('Hola, acabo de encontrar tu artículo protegido por Ubiqueme: "objeto"')) {
+    customMessage.value = defaultBody.value
   }
+})
+
+const buttonText = computed(() => {
+  if (isAuthenticating.value) return 'Identificando...'
+  if (isSending.value) return 'Enviando...'
+  if (hasSent.value) return '¡Enviado!'
+  return 'Enviar Mensaje'
 })
 
 const copyToClipboard = async (text: string, field: string) => {
@@ -70,53 +77,107 @@ const handleCredentialResponse = async (response: any) => {
     if (!userSnap.exists()) {
       await setDoc(userRef, {
         uid: user.uid,
+        name: user.displayName || 'Usuario QR',
         email: user.email,
-        name: user.displayName || 'Escaneador QR',
-        role: 'scanner',
+        phone: '',
+        role: 'scanner', // Mantenemos 'scanner' para diferenciar el origen
+        isActive: true,
+        isBanned: false,
+        banReason: '',
+        plan: 'alpha',
+        subscriptionStatus: 'active',
+        planPurchasedAt: serverTimestamp(),
+        planEndDate: null,
+        paymentProviderId: '',
+        totalQRs: 0,
+        preferences: {
+          emailNotifications: false,
+          smsNotifications: false,
+          whatsappNotifications: false
+        },
+        lastLoginAt: serverTimestamp(),
         createdAt: serverTimestamp()
       })
     }
 
     toast.success(`Identificado como ${user.email}`)
-    showContactForm.value = true
+    await sendMessageToAPI()
   } catch (error: any) {
     console.error("One Tap Error:", error)
-    toast.error('Error de autenticación. Intente de nuevo.')
+    if (error.code === 'auth/account-exists-with-different-credential') {
+      toast.error('Este correo ya está registrado con contraseña. Por favor inicie sesión tradicionalmente.')
+    } else {
+      toast.error('Error al identificar la cuenta. Intente de nuevo.')
+    }
   } finally {
     isAuthenticating.value = false
   }
 }
 
-const triggerOneTap = () => {
+const sendMessageToAPI = async () => {
+  try {
+    isSending.value = true
+    const workerUrl = import.meta.env.VITE_WORKER_URL || 'http://127.0.0.1:8787'
+    const res = await fetch(`${workerUrl}/api/notify`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        qrId,
+        message: customMessage.value,
+        scannerEmail: userStore.email
+      })
+    })
+
+    if (!res.ok) throw new Error('Error en el servidor')
+    
+    hasSent.value = true
+    toast.success('Mensaje enviado exitosamente. El propietario ha sido notificado.')
+  } catch (error) {
+    console.error(error)
+    toast.error('Ocurrió un error al enviar el mensaje. Intente de nuevo.')
+  } finally {
+    isSending.value = false
+  }
+}
+
+const handleSendClick = async () => {
+  if (!customMessage.value.trim()) {
+    toast.error('Por favor escribe un mensaje.')
+    return
+  }
+
+  if (userStore.isAuthenticated) {
+    await sendMessageToAPI()
+    return
+  }
+  
   // @ts-ignore
   if (window.google && window.google.accounts && window.google.accounts.id) {
     // @ts-ignore
     window.google.accounts.id.prompt()
   } else {
-    // Fallback if One Tap is blocked or failed to load
-    showContactForm.value = true
+    toast.error('Error al cargar autenticación. Refresque la página.')
   }
 }
 
 onMounted(() => {
+  customMessage.value = defaultBody.value
   loadQRData()
 
-  // Initialize Google One Tap
-  setTimeout(() => {
-    // @ts-ignore
-    if (window.google && window.google.accounts && window.google.accounts.id) {
+  // Si NO está autenticado, pre-inicializamos Google One Tap
+  if (!userStore.isAuthenticated) {
+    setTimeout(() => {
       // @ts-ignore
-      window.google.accounts.id.initialize({
-        client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
-        callback: handleCredentialResponse,
-        auto_select: false,
-      })
-      
-      // Auto prompt on load
-      // @ts-ignore
-      window.google.accounts.id.prompt()
-    }
-  }, 1000)
+      if (window.google && window.google.accounts && window.google.accounts.id) {
+        // @ts-ignore
+        window.google.accounts.id.initialize({
+          client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+          callback: handleCredentialResponse,
+          auto_select: false,
+        })
+      }
+    }, 1000)
+  }
 })
 </script>
 
@@ -248,88 +309,41 @@ onMounted(() => {
 
                 <Transition name="fade-slide" mode="out-in">
 
-                  <!-- STEP 1: INITIAL BUTTON -->
-                  <div v-if="!showContactForm" class="py-10 text-center space-y-8">
+                  <!-- MESSAGE FORM HOOK -->
+                  <div v-if="!hasSent" class="space-y-6 text-center animate-in fade-in duration-500 w-full">
                     <div class="space-y-2">
-                      <h3 class="text-xl font-black italic uppercase tracking-tighter">¿Encontró este objeto?</h3>
-                      <p class="text-white/40 text-sm max-w-xs mx-auto">Notifique al propietario de forma segura y
-                        anónima para coordinar la recuperación.</p>
+                      <h3 class="text-xl font-black italic uppercase tracking-tighter">Enviar Mensaje</h3>
+                      <p class="text-white/40 text-sm max-w-xs mx-auto">Notifique al propietario de forma segura para coordinar la recuperación.</p>
                     </div>
-                    <button @click="triggerOneTap" :disabled="isAuthenticating"
-                      class="w-full max-w-xs h-16 bg-white text-[#09090b] rounded-2xl font-black text-xs uppercase tracking-widest hover:scale-[1.02] transition-all shadow-[0_10px_30px_rgba(255,255,255,0.1)] disabled:opacity-50 disabled:hover:scale-100 flex items-center justify-center gap-2 mx-auto">
-                      <span v-if="isAuthenticating" class="material-symbols-outlined animate-spin">refresh</span>
-                      {{ isAuthenticating ? 'Identificando...' : 'Contactar Ahora' }}
-                    </button>
-                  </div>
 
-                  <!-- STEP 2: MAILTO & FALLBACK OPTIONS -->
-                  <div v-else class="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                    
                     <div class="space-y-4">
-                      <h3 class="text-xl font-black italic uppercase tracking-tighter text-center">Contactar al Propietario</h3>
-                      <p class="text-white/40 text-sm max-w-xs mx-auto text-center">
-                        Elija su método preferido para enviar el mensaje. Su privacidad está protegida.
-                      </p>
-                    </div>
-
-                    <!-- Option 1: Direct Mailto App -->
-                    <a :href="mailtoData.link"
-                      class="w-full h-16 bg-orange-500 text-[#09090b] rounded-2xl font-black text-xs uppercase tracking-widest hover:scale-[1.02] transition-all flex items-center justify-center gap-3 shadow-[0_10px_30px_rgba(249,115,22,0.2)]">
-                      <span class="material-symbols-outlined">mail</span>
-                      Abrir App de Correo
-                    </a>
-
-                    <div class="relative flex py-4 items-center">
-                      <div class="flex-grow border-t border-white/10"></div>
-                      <span class="flex-shrink-0 mx-4 text-white/30 text-[10px] font-black uppercase tracking-widest">O enviar manualmente</span>
-                      <div class="flex-grow border-t border-white/10"></div>
-                    </div>
-
-                    <!-- Option 2: Copy Data Manually -->
-                    <div class="space-y-4 bg-white/5 border border-white/10 rounded-[2rem] p-6">
-                      <p class="text-[10px] font-black text-white/40 uppercase tracking-widest text-center mb-4">
-                        Si usa otro proveedor web (Proton, Outlook, Yahoo), copie estos datos y envíe un correo:
-                      </p>
-
-                      <div class="space-y-3">
-                        <div class="flex items-center justify-between bg-black/40 rounded-xl p-3 border border-white/5 group">
-                          <div class="overflow-hidden">
-                            <label class="text-[9px] font-black text-orange-500 uppercase tracking-widest block mb-1">Para (Destinatario)</label>
-                            <span class="text-sm text-white/80 font-mono truncate block">{{ mailtoData.email }}</span>
-                          </div>
-                          <button @click="copyToClipboard(mailtoData.email, 'Correo')" class="p-3 bg-white/5 rounded-lg hover:bg-white/10 text-white/50 hover:text-white transition-colors">
-                            <span class="material-symbols-outlined text-sm">content_copy</span>
-                          </button>
-                        </div>
-
-                        <div class="flex items-center justify-between bg-black/40 rounded-xl p-3 border border-white/5 group">
-                          <div class="overflow-hidden">
-                            <label class="text-[9px] font-black text-orange-500 uppercase tracking-widest block mb-1">Asunto (¡Importante!)</label>
-                            <span class="text-sm text-white/80 font-mono truncate block">{{ mailtoData.subject }}</span>
-                          </div>
-                          <button @click="copyToClipboard(mailtoData.subject, 'Asunto')" class="p-3 bg-white/5 rounded-lg hover:bg-white/10 text-white/50 hover:text-white transition-colors">
-                            <span class="material-symbols-outlined text-sm">content_copy</span>
-                          </button>
-                        </div>
-
-                        <div class="flex items-start justify-between bg-black/40 rounded-xl p-3 border border-white/5 group">
-                          <div class="overflow-hidden w-full pr-4">
-                            <label class="text-[9px] font-black text-orange-500 uppercase tracking-widest block mb-1">Mensaje Sugerido</label>
-                            <p class="text-xs text-white/60 line-clamp-3">{{ mailtoData.body }}</p>
-                          </div>
-                          <button @click="copyToClipboard(mailtoData.body, 'Mensaje')" class="p-3 bg-white/5 rounded-lg hover:bg-white/10 text-white/50 hover:text-white transition-colors mt-2">
-                            <span class="material-symbols-outlined text-sm">content_copy</span>
-                          </button>
-                        </div>
+                      <div class="text-left w-full">
+                        <label class="text-[9px] font-black text-orange-500 uppercase tracking-widest ml-2">Tu Mensaje</label>
+                        <textarea v-model="customMessage" rows="5" :disabled="isSending || isAuthenticating"
+                          class="w-full mt-1 p-4 bg-[#09090b] border border-white/20 hover:border-white/30 rounded-2xl text-sm text-white/80 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-colors resize-none placeholder:text-white/20"
+                          placeholder="Escribe tu mensaje aquí..."></textarea>
                       </div>
-                    </div>
 
-                    <div class="pt-2">
-                      <button @click="showContactForm = false"
-                        class="w-full text-center text-[10px] font-black text-white/20 uppercase tracking-widest hover:text-white/40 transition-colors">
-                        Volver
+                      <button @click="handleSendClick" :disabled="isAuthenticating || isSending"
+                        class="w-full h-16 bg-white text-[#09090b] rounded-2xl font-black text-xs uppercase tracking-widest hover:scale-[1.02] transition-all shadow-[0_10px_30px_rgba(255,255,255,0.1)] disabled:opacity-50 disabled:hover:scale-100 flex items-center justify-center gap-2">
+                        <span v-if="isAuthenticating || isSending" class="material-symbols-outlined animate-spin">refresh</span>
+                        <span v-else class="material-symbols-outlined">send</span>
+                        {{ buttonText }}
                       </button>
                     </div>
+                  </div>
+
+                  <!-- SUCCESS STATE -->
+                  <div v-else class="py-10 text-center space-y-6 animate-in zoom-in duration-500">
+                    <div class="w-24 h-24 bg-green-500/10 border border-green-500/20 rounded-[2rem] flex items-center justify-center mx-auto">
+                      <span class="material-symbols-outlined text-green-500 text-5xl">check_circle</span>
+                    </div>
+                    <div class="space-y-2">
+                      <h3 class="text-2xl font-black italic uppercase tracking-tighter text-green-400">Mensaje Enviado</h3>
+                      <p class="text-white/60 text-sm max-w-xs mx-auto">El propietario ha sido notificado exitosamente. Le responderá a su correo.</p>
+                    </div>
+                    <button @click="$router.push('/')"
+                      class="px-10 py-4 mt-4 bg-white/5 border border-white/10 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-white/10 transition-all">Volver al Inicio</button>
                   </div>
 
                 </Transition>
