@@ -5,6 +5,9 @@ interface Env {
 	FIREBASE_CLIENT_EMAIL: string;
 	FIREBASE_PRIVATE_KEY: string;
 	RESEND_API_KEY: string;
+	WHATSAPP_PHONE_NUMBER_ID: string;
+	WHATSAPP_VERIFY_TOKEN: string;
+	WHATSAPP_ACCESS_TOKEN: string;
 }
 
 const CORS_HEADERS = {
@@ -15,72 +18,254 @@ const CORS_HEADERS = {
 
 export default {
 	async fetch(request: Request, env: Env, _ctx: ExecutionContext): Promise<Response> {
+		const url = new URL(request.url);
+		const cleanPath = url.pathname.replace(/\/$/, '');
+		console.log(`[Worker] Petición: ${request.method} ${cleanPath} | Agent: ${request.headers.get('user-agent')}`);
+
 		// Handle CORS preflight
 		if (request.method === 'OPTIONS') {
 			return new Response(null, { headers: CORS_HEADERS });
 		}
 
+		// Verificación de Webhook (Solo para Meta / GET)
+		if (request.method === 'GET' && cleanPath === '/api/whatsapp') {
+			return handleMetaVerification(request, env);
+		}
+
 		if (request.method !== 'POST') {
-			return new Response(JSON.stringify({ error: 'Method not allowed' }), { 
-				status: 405, 
-				headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' } 
+			return new Response(JSON.stringify({ error: 'Method not allowed' }), {
+				status: 405,
+				headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
 			});
 		}
 
-		// MUST DO: CONFIGURAR RUTA DEL WORKER EN CLOUDFLARE PARA PRODUCCION
-		// Actualmente responde en la ruta por defecto de workers.dev, mapearlo a api.ubiqueme.com despues.
+		// Enrutador
+		if (cleanPath === '/api/whatsapp') {
+			return await handleWhatsAppWebhook(request, env);
+		}
 
-		/* =================================================================================================
-		 * SECURITY REQUIREMENT:
-		 * THIS ENDPOINT CURRENTLY ACCEPTS scannerEmail DIRECTLY FROM THE REQUEST BODY.
-		 * IN A PRODUCTION ENVIRONMENT, THIS IS VULNERABLE TO SPOOFING.
-		 * YOU MUST IMPLEMENT FIREBASE JWT VALIDATION.
-		 * THE FRONTEND SHOULD SEND THE FIREBASE ID TOKEN IN THE AUTHORIZATION HEADER.
-		 * THE WORKER MUST DECODE AND VERIFY THIS JWT TO EXTRACT THE REAL EMAIL INSTEAD OF TRUSTING THE BODY.
-		 * ================================================================================================= */
+		// Fallback a la notificación por correo (Para el botón "Enviar Anónimo por Correo")
+		return await handleEmailNotification(request, env);
+	},
+};
 
-		try {
-			const body: any = await request.json();
-			const { qrId, message, scannerEmail } = body;
+/**
+ * Verificación obligatoria para WhatsApp Cloud API (Meta)
+ */
+function handleMetaVerification(request: Request, env: Env): Response {
+	const url = new URL(request.url);
+	const mode = url.searchParams.get('hub.mode');
+	const token = url.searchParams.get('hub.verify_token');
+	const challenge = url.searchParams.get('hub.challenge');
 
-			if (!qrId || !message || !scannerEmail) {
-				return new Response(JSON.stringify({ error: 'Missing parameters' }), { 
-					status: 400, 
-					headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' } 
-				});
-			}
+	if (mode === 'subscribe' && token === env.WHATSAPP_VERIFY_TOKEN) {
+		console.log('[Worker] Webhook de Meta verificado con éxito.');
+		return new Response(challenge, { status: 200 });
+	}
 
-			console.log(`[Worker] 🚀 Fetch API recibido para QR: ${qrId} | De: ${scannerEmail}`);
+	return new Response('Verification failed', { status: 403 });
+}
 
-			const accessToken = await getGoogleAccessToken(env);
+/**
+ * Endpoint para Webhook de WhatsApp (Soporta Twilio y Meta)
+ */
+async function handleWhatsAppWebhook(request: Request, env: Env): Promise<Response> {
+	try {
+		const contentType = request.headers.get('content-type') || '';
+		let bodyText = '';
+		let senderPhone = '';
 
-			// 1. Get QR data
-			const qrData = await getFirestoreQR(env.FIREBASE_PROJECT_ID, accessToken, qrId);
-			if (!qrData || !qrData.uid) {
-				return new Response(JSON.stringify({ error: 'QR not found' }), { 
-					status: 404, 
-					headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' } 
-				});
-			}
+		// 1. Detectar si es Meta (JSON) o Twilio (Form)
+		if (contentType.includes('application/json')) {
+			const json: any = await request.json();
+			// Estructura de Meta Cloud API
+			const message = json.entry?.[0]?.changes?.[0]?.value?.messages?.[0];
+			if (!message) return new Response('No message found', { status: 200 });
 
-			// 2. Get Owner data
-			const ownerData = await getFirestoreUser(env.FIREBASE_PROJECT_ID, accessToken, qrData.uid);
-			if (!ownerData || !ownerData.email) {
-				return new Response(JSON.stringify({ error: 'Owner not found' }), { 
-					status: 404, 
-					headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' } 
-				});
-			}
+			bodyText = message.text?.body || '';
+			senderPhone = `whatsapp:${message.from}`;
+		} else {
+			// Estructura de Twilio
+			const formData = await request.formData();
+			bodyText = formData.get('Body') as string;
+			senderPhone = formData.get('From') as string;
+		}
 
-			// Format message for HTML safety
-			const safeMessage = message.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>');
+		if (!bodyText || !senderPhone) {
+			return new Response('Missing data', { status: 200 });
+		}
 
-			// 3. Prepare Resend Payload
-			const emailPayload = {
-				from: 'ubiqueme.com <soporte@ubiqueme.com>',
-				to: ownerData.email,
-				subject: `Aviso de Escaneo: ${qrData.name || 'QR'}`,
-				html: `
+		console.log(`[Worker] 🚀 WhatsApp recibido de ${senderPhone}: ${bodyText.substring(0, 20)}...`);
+
+		// Extraer el ID del QR usando Regex (Busca "ID: ABC123")
+		const idMatch = bodyText.match(/ID:\s*([A-Za-z0-9_-]+)/i);
+		if (!idMatch || !idMatch[1]) {
+			console.log('[Worker] No se encontró un ID de QR en el mensaje.');
+			return new Response('OK', { status: 200 });
+		}
+		const qrId = idMatch[1];
+		console.log(`[Worker] QR ID detectado: ${qrId}`);
+
+		// Extraer el mensaje adicional usando Regex
+		const msgMatch = bodyText.match(/Mensaje:\s*([\s\S]*)/i);
+		const customMessage = msgMatch && msgMatch[1] ? msgMatch[1].trim() : 'Sin mensaje adicional.';
+
+		console.log('[Worker] Obteniendo token de Google...');
+		const accessToken = await getGoogleAccessToken(env);
+
+		// 1. Obtener datos del QR
+		console.log(`[Worker] Buscando QR ${qrId} en Firestore...`);
+		const qrData = await getFirestoreQR(env.FIREBASE_PROJECT_ID, accessToken, qrId);
+		if (!qrData || !qrData.uid) {
+			const errorMsg = `[Worker] ERROR: QR ${qrId} no encontrado en Firestore.`;
+			console.log(errorMsg);
+			return new Response(errorMsg, { status: 200 });
+		}
+		console.log(`[Worker] QR encontrado. UID del dueño: ${qrData.uid}`);
+
+		// 2. Obtener datos del dueño
+		console.log(`[Worker] Buscando datos del dueño ${qrData.uid}...`);
+		const ownerData = await getFirestoreUser(env.FIREBASE_PROJECT_ID, accessToken, qrData.uid);
+		if (!ownerData || !ownerData.phone) {
+			const errorMsg = `[Worker] ERROR: El dueño ${qrData.uid} no existe o no tiene teléfono.`;
+			console.log(errorMsg);
+			return new Response(errorMsg, { status: 200 });
+		}
+		console.log(`[Worker] Dueño encontrado: ${ownerData.displayName}. Teléfono: ${ownerData.phone}`);
+
+		let ownerWhatsApp = ownerData.phone;
+		if (!ownerWhatsApp.startsWith('+')) ownerWhatsApp = `+${ownerWhatsApp}`;
+		if (!ownerWhatsApp.startsWith('whatsapp:')) ownerWhatsApp = `whatsapp:${ownerWhatsApp}`;
+
+		const scannerCleanPhone = senderPhone.replace('whatsapp:', '');
+
+		// 3. Preparar Mensaje para el Dueño
+		const notificationText = `*Aviso de ubiqueme.com*\n\nHola ${ownerData.displayName || 'propietario'},\n\nEl número *${scannerCleanPhone}* escaneó su código QR *${qrData.name || 'Desconocido'}* y dejó este mensaje:\n\n_"${customMessage}"_\n\n⚠️ _Interacción segura. Actúe con cuidado si responde._`;
+
+		// 4. Enviar vía Meta Cloud API
+		const url = `https://graph.facebook.com/v20.0/${env.WHATSAPP_PHONE_NUMBER_ID}/messages`;
+		const payload = {
+			messaging_product: 'whatsapp',
+			recipient_type: 'individual',
+			to: ownerWhatsApp.replace('whatsapp:', '').replace('+', ''),
+			type: 'text',
+			text: { preview_url: false, body: notificationText },
+		};
+
+		const response = await fetch(url, {
+			method: 'POST',
+			headers: {
+				Authorization: `Bearer ${env.WHATSAPP_ACCESS_TOKEN}`,
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify(payload),
+		});
+
+		const result: any = await response.json();
+
+		if (!response.ok) {
+			const metaError = result.error?.message || JSON.stringify(result);
+			const errorMsg = `[Worker] ERROR de Meta: ${metaError}`;
+			console.error(errorMsg);
+			return new Response(errorMsg, { status: 200 });
+		}
+
+		return new Response(`[Worker] ÉXITO: Notificación enviada al dueño (${ownerData.displayName}) al número ${ownerWhatsApp}`, { status: 200 });
+	} catch (e: any) {
+		console.error('Error procesando Webhook:', e);
+		return new Response('Error', { status: 200 });
+	}
+}
+
+/**
+ * Función para enviar mensajes usando Meta Cloud API
+ */
+async function sendMetaWhatsApp(env: Env, to: string, text: string): Promise<boolean> {
+	// Limpiar el número (quitar 'whatsapp:' y '+')
+	const cleanNumber = to.replace('whatsapp:', '').replace('+', '');
+
+	const url = `https://graph.facebook.com/v20.0/${env.WHATSAPP_PHONE_NUMBER_ID}/messages`;
+
+	const payload = {
+		messaging_product: 'whatsapp',
+		recipient_type: 'individual',
+		to: cleanNumber,
+		type: 'text',
+		text: { preview_url: false, body: text },
+	};
+
+	try {
+		const response = await fetch(url, {
+			method: 'POST',
+			headers: {
+				Authorization: `Bearer ${env.WHATSAPP_ACCESS_TOKEN}`,
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify(payload),
+		});
+
+		const result: any = await response.json();
+
+		if (!response.ok) {
+			const metaError = result.error?.message || JSON.stringify(result);
+			console.error('[Meta API Error]', metaError);
+			return false; // El error detallado lo manejaremos arriba
+		}
+
+		console.log('[Worker] Mensaje enviado con éxito vía Meta.');
+		return true;
+	} catch (error: any) {
+		console.error('[Meta API Fetch Error]', error);
+		return false;
+	}
+}
+
+/**
+ * Endpoint Original de Notificación por Correo (Resend)
+ */
+async function handleEmailNotification(request: Request, env: Env): Promise<Response> {
+	try {
+		const body: any = await request.json();
+		const { qrId, message, scannerEmail } = body;
+
+		if (!qrId || !message || !scannerEmail) {
+			return new Response(JSON.stringify({ error: 'Missing parameters' }), {
+				status: 400,
+				headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+			});
+		}
+
+		console.log(`[Worker]  Fetch API recibido para QR: ${qrId} | De: ${scannerEmail}`);
+
+		const accessToken = await getGoogleAccessToken(env);
+
+		// 1. Get QR data
+		const qrData = await getFirestoreQR(env.FIREBASE_PROJECT_ID, accessToken, qrId);
+		if (!qrData || !qrData.uid) {
+			return new Response(JSON.stringify({ error: 'QR not found' }), {
+				status: 404,
+				headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+			});
+		}
+
+		// 2. Get Owner data
+		const ownerData = await getFirestoreUser(env.FIREBASE_PROJECT_ID, accessToken, qrData.uid);
+		if (!ownerData || !ownerData.email) {
+			return new Response(JSON.stringify({ error: 'Owner not found' }), {
+				status: 404,
+				headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+			});
+		}
+
+		// Format message for HTML safety
+		const safeMessage = message.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>');
+
+		// 3. Prepare Resend Payload
+		const emailPayload = {
+			from: 'ubiqueme.com <soporte@ubiqueme.com>',
+			to: ownerData.email,
+			subject: `Aviso de Escaneo: ${qrData.name || 'QR'}`,
+			html: `
 <!DOCTYPE html>
 <html lang="es" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
 <head>
@@ -158,43 +343,41 @@ export default {
   </table>
 </body>
 </html>
-`
-			};
+`,
+		};
 
-			// 4. Send via Resend
-			const res = await fetch('https://api.resend.com/emails', {
-				method: 'POST',
-				headers: {
-					Authorization: `Bearer ${env.RESEND_API_KEY}`,
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify(emailPayload),
-			});
+		// 4. Send via Resend
+		const res = await fetch('https://api.resend.com/emails', {
+			method: 'POST',
+			headers: {
+				Authorization: `Bearer ${env.RESEND_API_KEY}`,
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify(emailPayload),
+		});
 
-			const responseText = await res.text();
-			
-			if (!res.ok) {
-				console.error(`[Worker] Resend Error: ${responseText}`);
-				return new Response(JSON.stringify({ error: 'Failed to send email' }), { 
-					status: 500, 
-					headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' } 
-				});
-			}
+		const responseText = await res.text();
 
-			return new Response(JSON.stringify({ success: true }), { 
-				status: 200, 
-				headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' } 
-			});
-
-		} catch (e: any) {
-			console.error('Error procesando peticion HTTP:', e);
-			return new Response(JSON.stringify({ error: 'Internal server error', details: e.message }), { 
-				status: 500, 
-				headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' } 
+		if (!res.ok) {
+			console.error(`[Worker] Resend Error: ${responseText}`);
+			return new Response(JSON.stringify({ error: 'Failed to send email' }), {
+				status: 500,
+				headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
 			});
 		}
-	},
-};
+
+		return new Response(JSON.stringify({ success: true }), {
+			status: 200,
+			headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+		});
+	} catch (e: any) {
+		console.error('Error procesando peticion HTTP:', e);
+		return new Response(JSON.stringify({ error: 'Internal server error', details: e.message }), {
+			status: 500,
+			headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+		});
+	}
+}
 
 /**
  * Helpers Root (Firebase)
@@ -232,6 +415,7 @@ async function getFirestoreUser(projectId: string, token: string, uid: string) {
 	return {
 		email: fields.email?.stringValue,
 		displayName: fields.displayName?.stringValue || fields.name?.stringValue,
+		phone: fields.phone?.stringValue, // <-- Añadido para sacar el teléfono
 	};
 }
 

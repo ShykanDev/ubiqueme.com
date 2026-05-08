@@ -78,6 +78,30 @@ const router = createRouter({
       component: () => import('@/views/public/HelpView.vue'),
     },
     {
+      path: '/privacy',
+      name: 'privacy',
+      meta: {
+        requiresAuth: false,
+      },
+      component: () => import('@/views/public/PrivacyView.vue'),
+    },
+    {
+      path: '/terms',
+      name: 'terms',
+      meta: {
+        requiresAuth: false,
+      },
+      component: () => import('@/views/public/TermsView.vue'),
+    },
+    {
+      path: '/delete',
+      name: 'delete-data',
+      meta: {
+        requiresAuth: false,
+      },
+      component: () => import('@/views/public/DeleteAccountView.vue'),
+    },
+    {
       path: '/:pathMatch(.*)*',
       name: 'not-found',
       meta: {

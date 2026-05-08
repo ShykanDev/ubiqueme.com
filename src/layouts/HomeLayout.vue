@@ -108,18 +108,21 @@ onUnmounted(() => {
         </span>
 
         <div class="flex gap-6">
-          <a class="font-body text-xs uppercase tracking-widest text-slate-500 hover:text-amber-500 transition-colors duration-300 cursor-pointer"
-            href="#">
+          <RouterLink
+            class="font-body text-xs uppercase tracking-widest text-slate-500 hover:text-orange-500 transition-colors duration-300 cursor-pointer"
+            :to="{ name: 'privacy' }">
             Política de Privacidad
-          </a>
-          <a class="font-body text-xs uppercase tracking-widest text-slate-500 hover:text-amber-500 transition-colors duration-300 cursor-pointer"
-            href="#">
+          </RouterLink>
+          <RouterLink
+            class="font-body text-xs uppercase tracking-widest text-slate-500 hover:text-orange-500 transition-colors duration-300 cursor-pointer"
+            :to="{ name: 'terms' }">
             Términos de Servicio
-          </a>
-          <a class="font-body text-xs uppercase tracking-widest text-slate-500 hover:text-amber-500 transition-colors duration-300 cursor-pointer"
-            href="#">
+          </RouterLink>
+          <RouterLink
+            class="font-body text-xs uppercase tracking-widest text-slate-500 hover:text-orange-500 transition-colors duration-300 cursor-pointer"
+            :to="{ name: 'help' }">
             Contacto
-          </a>
+          </RouterLink>
         </div>
 
       </div>

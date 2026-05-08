@@ -27,6 +27,9 @@ export default defineConfig({
     }),
     tailwindcss(),
   ],
+  server: {
+    allowedHosts: true,
+  },
   base: '/',
   resolve: {
     alias: {
