@@ -20,6 +20,10 @@ export default {
 	async fetch(request: Request, env: Env, _ctx: ExecutionContext): Promise<Response> {
 		const url = new URL(request.url);
 		const cleanPath = url.pathname.replace(/\/$/, '');
+		
+		// LOG DE EMERGENCIA: Capturar CUALQUIER intento de conexión
+		console.log(`[TRAFICO] ${request.method} ${request.url} | IP: ${request.headers.get('cf-connecting-ip')} | UA: ${request.headers.get('user-agent')}`);
+
 		console.log(`[Worker] Petición: ${request.method} ${cleanPath} | Agent: ${request.headers.get('user-agent')}`);
 
 		// Handle CORS preflight
@@ -78,6 +82,7 @@ async function handleWhatsAppWebhook(request: Request, env: Env): Promise<Respon
 		// 1. Detectar si es Meta (JSON) o Twilio (Form)
 		if (contentType.includes('application/json')) {
 			const json: any = await request.json();
+			console.log('[DEBUG] Payload de Meta:', JSON.stringify(json, null, 2));
 			// Estructura de Meta Cloud API
 			const message = json.entry?.[0]?.changes?.[0]?.value?.messages?.[0];
 			if (!message) return new Response('No message found', { status: 200 });
