@@ -49,29 +49,27 @@ const currentStatus = computed(() => {
     dot: 'bg-slate-400',
     label: 'Desconocido'
   }
-})
 
-const cardStyle = computed(() => {
-  if (props.isBanned) {
-    return 'grayscale opacity-50 brightness-[0.4] cursor-not-allowed'
-  }
+  const cardStyle = computed(() => {
+    if (props.isBanned) {
+      return 'grayscale opacity-50 brightness-[0.4] cursor-not-allowed'
+    }
 
-  if (props.status === 'Canceled') {
-    return 'grayscale opacity-60 brightness-75'
-  }
+    if (props.status === 'Canceled') {
+      return 'grayscale opacity-60 brightness-75'
+    }
 
-  if (props.status === 'Paused' || !props.isActive) {
-    return 'grayscale-[0.8] opacity-80 brightness-90'
-  }
+    if (props.status === 'Paused' || !props.isActive) {
+      return 'grayscale-[0.8] opacity-80 brightness-90'
+    }
 
-  if (props.status === 'Error') {
-    return 'border-rose-500/40'
-  }
+    if (props.status === 'Error') {
+      return 'border-rose-500/40'
+    }
 
-  return ''
-})
+    return ''
+  })
 
-const toggleMenu = (e: Event) => {
 
   const target = e.target as HTMLElement;
 
@@ -346,7 +344,7 @@ onUnmounted(() => {
             <div class="flex items-center gap-1.5">
               <span :class="['w-1.5 h-1.5 rounded-full shadow-lg', currentStatus.dot]"></span>
               <span class="text-white/90 text-[10px] font-bold uppercase tracking-wider">{{ currentStatus.label
-                }}</span>
+              }}</span>
             </div>
           </div>
         </div>
