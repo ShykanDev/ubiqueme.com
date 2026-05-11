@@ -133,38 +133,37 @@ const images = imageStore.getImages;
 </script>
 
 <template>
-  <div class="space-y-12 font-google-sans ">
+  <div class="font-google-sans text-white  space-y-10 pb-20 relative lg:pl-12 pl-6 ">
+
+    <!-- Decoración de Fondo (Watermark tipo Home) -->
+    <div
+      class="absolute top-[5%] right-[-15%] opacity-5 pointer-events-none select-none z-[-1] overflow-hidden rotate-12">
+      <span class="material-symbols-outlined text-[400px]">qr_code_2</span>
+    </div>
+
     <!-- component -->
     <viewer :images="images">
       <img v-for="(src, index) in images" :key="index" :src="src">
     </viewer>
+
     <!-- Header Section -->
-    <header class="max-w-3xl space-y-3">
-      <div class="inline-flex items-center gap-2 px-2.5 py-1 bg-white/5 rounded-md border border-white/10">
-        <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
-        <span class="text-[10px] font-medium uppercase tracking-widest text-white/70">Gestión de Activos</span>
+    <div
+      class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b border-white/10 pb-8 animate-fade-up">
+      <div>
+        <p class="text-amber-500 font-black tracking-[0.4em] text-[10px] uppercase mb-2">Gestión de Activos</p>
+        <h2 class="text-4xl md:text-5xl font-black tracking-tighter leading-none italic">
+          Códigos QR
+        </h2>
       </div>
-      <h1 class="text-3xl md:text-4xl font-semibold text-white tracking-tight">
-        Códigos QR
-      </h1>
-      <p class="text-white/40 text-sm font-normal">
-        Administre y monitoree el rendimiento de sus etiquetas QR en tiempo real.
-      </p>
-    </header>
+      <button @click="createQR"
+        class="w-full cursor-pointer md:w-auto flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg font-black text-sm bg-white text-black hover:bg-white/90 transition-colors active:scale-95">
+        <span class="material-symbols-outlined text-[18px]">add</span>
+        Crear Nuevo QR
+      </button>
+    </div>
 
     <!-- Content Section -->
     <div class="space-y-6">
-      <div
-        class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 pb-4 border-b border-white/5">
-        <div>
-          <h2 class="text-xl font-medium text-white/90 tracking-tight">Mis Registros</h2>
-        </div>
-        <button @click="createQR"
-          class="w-full cursor-pointer md:w-auto flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg font-medium text-sm bg-white text-black hover:bg-white/90 transition-colors active:scale-95">
-          <span class="material-symbols-outlined text-[18px]">add</span>
-          Crear QR
-        </button>
-      </div>
 
       <div class="relative">
         <!-- Loading Grid -->
@@ -175,7 +174,7 @@ const images = imageStore.getImages;
 
         <!-- Content Grid -->
         <div v-show="userQRs.length > 0" key="content"
-          class="grid grid-cols-1 lg:grid-cols-2 gap-12 relative z-0 max-w-[1500px] mx-auto animate-fade-up">
+          class="grid grid-cols-1 xl:grid-cols-2 gap-8 relative z-0 animate-fade-up">
           <QRCard v-for="qr in userQRs" :key="qr.id" v-memo="[qr.status, qr.name, qr.scans, qr.lastScan]" :id="qr.id"
             :name="qr.name" :status="qr.status" :scans="qr.scans" :lastScan="qr.lastScan" :docId="qr.docId"
             :link="qr.link" :isActive="qr.isActive" :isBanned="qr.isBanned" :banReason="qr.banReason"

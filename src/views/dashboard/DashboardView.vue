@@ -89,8 +89,9 @@ const changeComponent = (component: ComponentName) => {
         </aside>
 
         <!-- 🚀 MAIN CONTENT AREA (FIXED OFFSET) -->
-        <div class="relative z-10 flex-1 h-screen overflow-y-auto scrollbar-hide p-8 md:p-12 lg:p-16 ml-24 pt-24!">
-          <section class="max-w-6xl mx-auto">
+        <div
+          class="relative z-10 flex-1 h-screen overflow-y-auto scrollbar-hide p-8 md:p-12 lg:p-2 ml-24 lg:pt-16 pt-24">
+          <section class="w-full ">
             <component :is="currentComponent"></component>
           </section>
         </div>

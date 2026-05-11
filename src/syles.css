@@ -40,3 +40,21 @@
   --color-surface-container-highest: #2e3447;
   --color-surface-container-high: #23293c;
 }
+
+/* Floating Vue Custom Theme */
+.v-popper--theme-tooltip .v-popper__inner {
+  background: #0c0500 !important;
+  border: 1px solid rgba(249, 115, 22, 0.2) !important;
+  color: rgba(255, 255, 255, 0.7) !important;
+  border-radius: 8px !important;
+  padding: 10px !important;
+  box-shadow: 0 8px 30px rgba(249, 115, 22, 0.1) !important;
+  font-family: var(--font-google-sans) !important;
+  font-size: 11px !important;
+}
+.v-popper--theme-tooltip .v-popper__arrow-inner {
+  border-color: #0c0500 !important;
+}
+.v-popper--theme-tooltip .v-popper__arrow-outer {
+  border-color: rgba(249, 115, 22, 0.2) !important;
+}

@@ -24,8 +24,11 @@ const customMessage = ref('')
 const isSending = ref(false)
 const hasSent = ref(false)
 
+// Configurar el número oficial de Meta WhatsApp en tu archivo .env
+const whatsappNumber = '+15556322742'
+
 const defaultBody = computed(() => {
-  return `Hola, acabo de encontrar tu artículo protegido por Ubiqueme: "${QRName.value}".\n\nPor favor contáctame respondiendo a este correo para ponernos de acuerdo y devolvértelo.\n\n[Añade tus datos de contacto adicionales aquí si lo deseas]`
+  return `Hola, acabo de encontrar su artículo protegido por Ubiqueme: "${QRName.value}".`
 })
 
 watch(QRName, () => {
@@ -73,7 +76,7 @@ const handleCredentialResponse = async (response: any) => {
     // Register scanner in DB silently
     const userRef = doc(db, 'users', user.uid)
     const userSnap = await getDoc(userRef)
-    
+
     if (!userSnap.exists()) {
       await setDoc(userRef, {
         uid: user.uid,
@@ -129,7 +132,7 @@ const sendMessageToAPI = async () => {
     })
 
     if (!res.ok) throw new Error('Error en el servidor')
-    
+
     hasSent.value = true
     toast.success('Mensaje enviado exitosamente. El propietario ha sido notificado.')
   } catch (error) {
@@ -150,7 +153,7 @@ const handleSendClick = async () => {
     await sendMessageToAPI()
     return
   }
-  
+
   // @ts-ignore
   if (window.google && window.google.accounts && window.google.accounts.id) {
     // @ts-ignore
@@ -254,7 +257,8 @@ onMounted(() => {
               <div class="flex justify-between items-center border-b border-white/10 pb-4">
                 <div class="flex items-center gap-2">
                   <div class="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></div>
-                  <span class="text-[10px] font-black uppercase tracking-[0.3em] text-white/50">Reporte de Seguridad</span>
+                  <span class="text-[10px] font-black uppercase tracking-[0.3em] text-white/50">Reporte de
+                    Seguridad</span>
                 </div>
                 <span class="text-[9px] font-mono text-orange-500/60 tracking-widest">v4.0.2 // UBIQUEME</span>
               </div>
@@ -313,27 +317,35 @@ onMounted(() => {
                   <div v-if="!hasSent" class="space-y-6 text-center animate-in fade-in duration-500 w-full">
                     <div class="space-y-2">
                       <h3 class="text-xl font-black italic uppercase tracking-tighter">Enviar Mensaje</h3>
-                      <p class="text-white/40 text-sm max-w-xs mx-auto">Notifique al propietario de forma segura para coordinar la recuperación.</p>
+                      <p class="text-white/40 text-sm max-w-xs mx-auto">Notifique al propietario de forma segura para
+                        coordinar la recuperación.</p>
                     </div>
 
                     <div class="space-y-4">
                       <div class="text-left w-full">
-                        <label class="text-[9px] font-black text-orange-500 uppercase tracking-widest ml-2">Tu Mensaje</label>
+                        <label class="text-[9px] font-black text-orange-500 uppercase tracking-widest ml-2">Tu
+                          Mensaje</label>
                         <textarea v-model="customMessage" rows="5" :disabled="isSending || isAuthenticating"
                           class="w-full mt-1 p-4 bg-[#09090b] border border-white/20 hover:border-white/30 rounded-2xl text-sm text-white/80 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-colors resize-none placeholder:text-white/20"
                           placeholder="Escribe tu mensaje aquí..."></textarea>
                       </div>
 
                       <div class="flex flex-col gap-3">
-                        <a :href="`https://wa.me/14155238886?text=Hola,%20acabo%20de%20escanear%20el%20QR%20con%20ID:%20${qrId}%0A%0AMensaje:%20${encodeURIComponent(customMessage)}`" target="_blank"
+                        <a :href="`https://wa.me/${whatsappNumber}?text=Hola,%20te%20escribo%20porque%20encontré%20tu%20artículo.%0A%0AID:%20${qrId}%0A%0AMensaje:%20${encodeURIComponent(customMessage)}`"
+                          target="_blank"
                           class="w-full h-16 bg-[#25D366] text-[#09090b] rounded-2xl font-black text-xs uppercase tracking-widest hover:scale-[1.02] transition-all shadow-[0_10px_30px_rgba(37,211,102,0.2)] flex items-center justify-center gap-2">
-                          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path
+                              d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+                          </svg>
                           Enviar vía WhatsApp
                         </a>
 
                         <button @click="handleSendClick" :disabled="isAuthenticating || isSending"
                           class="w-full h-14 bg-white/5 border border-white/10 text-white rounded-2xl font-bold text-xs uppercase tracking-widest hover:bg-white/10 transition-all disabled:opacity-50 flex items-center justify-center gap-2">
-                          <span v-if="isAuthenticating || isSending" class="material-symbols-outlined animate-spin text-[18px]">refresh</span>
+                          <span v-if="isAuthenticating || isSending"
+                            class="material-symbols-outlined animate-spin text-[18px]">refresh</span>
                           <span v-else class="material-symbols-outlined text-[18px]">mail</span>
                           O Enviar Anónimo por Correo
                         </button>
@@ -343,15 +355,19 @@ onMounted(() => {
 
                   <!-- SUCCESS STATE -->
                   <div v-else class="py-10 text-center space-y-6 animate-in zoom-in duration-500">
-                    <div class="w-24 h-24 bg-green-500/10 border border-green-500/20 rounded-[2rem] flex items-center justify-center mx-auto">
+                    <div
+                      class="w-24 h-24 bg-green-500/10 border border-green-500/20 rounded-[2rem] flex items-center justify-center mx-auto">
                       <span class="material-symbols-outlined text-green-500 text-5xl">check_circle</span>
                     </div>
                     <div class="space-y-2">
-                      <h3 class="text-2xl font-black italic uppercase tracking-tighter text-green-400">Mensaje Enviado</h3>
-                      <p class="text-white/60 text-sm max-w-xs mx-auto">El propietario ha sido notificado exitosamente. Le responderá a su correo.</p>
+                      <h3 class="text-2xl font-black italic uppercase tracking-tighter text-green-400">Mensaje Enviado
+                      </h3>
+                      <p class="text-white/60 text-sm max-w-xs mx-auto">El propietario ha sido notificado exitosamente.
+                        Le responderá a su correo.</p>
                     </div>
                     <button @click="$router.push('/')"
-                      class="px-10 py-4 mt-4 bg-white/5 border border-white/10 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-white/10 transition-all">Volver al Inicio</button>
+                      class="px-10 py-4 mt-4 bg-white/5 border border-white/10 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-white/10 transition-all">Volver
+                      al Inicio</button>
                   </div>
 
                 </Transition>

@@ -20,13 +20,15 @@ export default {
 	async fetch(request: Request, env: Env, _ctx: ExecutionContext): Promise<Response> {
 		const url = new URL(request.url);
 		const cleanPath = url.pathname.replace(/\/$/, '');
-		
+
 		// LOG DE EMERGENCIA: Capturar CUALQUIER intento de conexión
-		console.log(`[TRAFICO] ${request.method} ${request.url} | IP: ${request.headers.get('cf-connecting-ip')} | UA: ${request.headers.get('user-agent')}`);
+		console.log(
+			`[TRAFICO] ${request.method} ${request.url} | IP: ${request.headers.get('cf-connecting-ip')} | UA: ${request.headers.get('user-agent')}`,
+		);
 
 		console.log(`[Worker] Petición: ${request.method} ${cleanPath} | Agent: ${request.headers.get('user-agent')}`);
 
-		// Handle CORS preflight
+		// Handle CORS preflightj
 		if (request.method === 'OPTIONS') {
 			return new Response(null, { headers: CORS_HEADERS });
 		}
@@ -36,6 +38,7 @@ export default {
 			return handleMetaVerification(request, env);
 		}
 
+		//
 		if (request.method !== 'POST') {
 			return new Response(JSON.stringify({ error: 'Method not allowed' }), {
 				status: 405,
@@ -175,7 +178,9 @@ async function handleWhatsAppWebhook(request: Request, env: Env): Promise<Respon
 			return new Response(errorMsg, { status: 200 });
 		}
 
-		return new Response(`[Worker] ÉXITO: Notificación enviada al dueño (${ownerData.displayName}) al número ${ownerWhatsApp}`, { status: 200 });
+		return new Response(`[Worker] ÉXITO: Notificación enviada al dueño (${ownerData.displayName}) al número ${ownerWhatsApp}`, {
+			status: 200,
+		});
 	} catch (e: any) {
 		console.error('Error procesando Webhook:', e);
 		return new Response('Error', { status: 200 });

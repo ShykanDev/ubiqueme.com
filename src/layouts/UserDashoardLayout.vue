@@ -1,53 +1,80 @@
 <script lang="ts" setup>
 import { useUserStore } from '@/stores/user';
-import { RouterLink } from 'vue-router'
+import { RouterLink, useRouter } from 'vue-router'
+import { onMounted, onUnmounted, ref } from 'vue';
 
 const navLinks = [
-  {
-    name: 'Inicio',
-    pathName: 'home',
-  },
-  {
-    name: 'Mis Códigos',
-    pathName: 'home', // ← pon aquí tu ruta real
-  },
-  {
-    name: 'Avisos',
-    pathName: 'home',
-  },
+  { name: 'Inicio', pathName: 'home', icon: 'home' },
+  { name: 'Ayuda', pathName: 'help', icon: 'help' },
+  { name: 'Precios', pathName: 'pricing', icon: 'payments' },
 ]
+
+const domains = ['ubiqueme.com', 'contactomio.com', 'localizarme.com'];
+const currentDomainIndex = ref(0);
+let intervalId: any;
+
+onMounted(() => {
+  intervalId = setInterval(() => {
+    currentDomainIndex.value = (currentDomainIndex.value + 1) % domains.length;
+  }, 5000);
+});
+
+onUnmounted(() => {
+  if (intervalId) clearInterval(intervalId);
+});
 </script>
 
 <template>
-  <div>
+  <div class="font-google-sans">
     <!-- TopNavBar -->
-    <nav class="fixed top-0 w-full z-50 bg-[#09090b] border-b border-white/5">
-      <div class="flex justify-between items-center h-20 px-8 md:px-24 w-full max-w-screen-2xl mx-auto">
-        <!-- Logo -->
-        <div class="text-xl font-bold text-slate-100 tracking-tight">
-          Ubiqueme.com
-        </div>
+    <nav class="fixed top-0 w-full z-50 bg-[#09090b] border-b border-white/5 transition-all duration-300">
+
+      <!-- Subtle Orange Top Line -->
+      <div
+        class="absolute bottom-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-orange-500/40 to-transparent">
+      </div>
+
+      <div class="flex justify-between items-center h-20 px-6 md:px-16 w-full max-w-screen-2xl mx-auto">
+
+        <!-- Logo con animación (Match Home) -->
+        <RouterLink :to="{ name: 'home' }" class="flex items-center gap-2 group cursor-pointer z-50">
+          <span
+            class="material-symbols-outlined text-orange-500 text-[2.5rem] group-hover:rotate-12 transition-transform">location_on</span>
+          <div class="hidden sm:flex flex-col justify-center h-10 overflow-hidden relative min-w-[220px]">
+            <Transition name="slide-up">
+              <div :key="currentDomainIndex"
+                class="absolute left-0 flex items-baseline text-[#dce7ff] font-black tracking-tighter text-[22px] lowercase leading-none whitespace-nowrap">
+                <span>{{ domains[currentDomainIndex]?.split('.com')[0] }}</span>
+                <span class="text-orange-500">.com</span>
+              </div>
+            </Transition>
+          </div>
+        </RouterLink>
 
         <!-- Menu -->
-        <div class="hidden md:flex items-center space-x-10 tracking-tight">
+        <div class="hidden lg:flex items-center space-x-2 tracking-tight">
           <RouterLink v-for="link in navLinks" :key="link.name" :to="{ name: link.pathName }"
-            class="text-slate-400 hover:text-white transition-all duration-300 hover:-translate-y-0.5 p-1 px-2 rounded-full">
-            {{ link.name }}
+            class="flex items-center gap-2 text-white/40 hover:text-orange-500 px-4 py-2 rounded-xl transition-all duration-300 group relative">
+            <span class="material-symbols-outlined text-[20px] group-hover:scale-110 transition-transform">{{ link.icon
+            }}</span>
+            <span class="text-[11px] font-black uppercase tracking-widest">{{ link.name }}</span>
+
+            <!-- Indicator Line -->
+            <div
+              class="absolute bottom-0 left-4 right-4 h-[2px] bg-orange-500 scale-x-0 group-hover:scale-x-100 transition-transform origin-center">
+            </div>
           </RouterLink>
         </div>
 
-
-        <!-- Buttons -->
-        <div class="flex items-center space-x-6 font-rubik" v-if="!useUserStore().getUserId">
-          <RouterLink :to="{ name: 'login' }" class="text-slate-400 hover:text-slate-100 transition-all text-sm ">
-            Iniciar Sesión
-          </RouterLink>
-
-          <RouterLink :to="{ name: 'register' }"
-            class="bg-sky-950 border-white/30 border text-white px-6 py-2.5 rounded-full text-sm  hover:opacity-80 active:scale-95 transition-all">
-            Registrarse
+        <!-- Opciones de Usuario Autenticado -->
+        <div class="flex items-center space-x-4 z-50">
+          <RouterLink :to="{ name: 'home' }"
+            class="bg-white/5 border border-white/10 text-white px-6 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-widest hover:bg-orange-500 hover:text-[#09090b] hover:border-orange-500 transition-all duration-300 cursor-pointer flex items-center gap-2">
+            <span class="material-symbols-outlined text-sm">logout</span>
+            Salir del Panel
           </RouterLink>
         </div>
+
       </div>
     </nav>
 
@@ -56,32 +83,33 @@ const navLinks = [
       <slot name="main"></slot>
     </main>
 
-    <!-- Footer -->
-    <footer
-      class="bg-slate-950 hidden border-t border-white/5 w-full justify-center gap-8 px-12 py-8 z-40 text-sky-300">
-      <div
-        class="flex flex-col md:flex-row gap-4 md:gap-12 items-center opacity-80 hover:opacity-100 transition-opacity">
-        <span class="text-xs uppercase tracking-widest text-slate-500">
-          ©{{ new Date().getFullYear() }} ubiqueme.com
-        </span>
-
-        <div class="flex gap-6">
-          <a class="text-xs uppercase tracking-widest text-slate-500 hover:text-slate-300 transition-colors" href="#">
-            Política de Privacidad
-          </a>
-          <a class="text-xs uppercase tracking-widest text-slate-500 hover:text-slate-300 transition-colors" href="#">
-            Términos de Servicio
-          </a>
-          <a class="text-xs uppercase tracking-widest text-slate-500 hover:text-slate-300 transition-colors" href="#">
-            Contacto
-          </a>
-        </div>
-      </div>
-    </footer>
   </div>
 </template>
 
 <style scoped>
+.font-google-sans {
+  font-family: 'Google Sans', sans-serif;
+}
+
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 1, 'wght' 600, 'GRAD' 0, 'opsz' 24;
+}
+
+.slide-up-enter-active,
+.slide-up-leave-active {
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.slide-up-enter-from {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.slide-up-leave-to {
+  opacity: 0;
+  transform: translateY(-20px);
+}
+
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }

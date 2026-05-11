@@ -42,8 +42,8 @@ const formatDate = (timestamp: any) => {
 </script>
 
 <template>
-  <div class="font-google-sans text-white max-w-5xl mx-auto space-y-10 pb-20">
-    
+  <div class="font-google-sans text-white space-y-10 pb-20">
+
     <!-- Header Section -->
     <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b border-white/10 pb-8">
       <div>
@@ -52,7 +52,8 @@ const formatDate = (timestamp: any) => {
           Resumen de Cuenta
         </h2>
       </div>
-      <div v-if="userData?.isActive" class="px-4 py-2 bg-green-500/10 border border-green-500/20 rounded-full flex items-center gap-2">
+      <div v-if="userData?.isActive"
+        class="px-4 py-2 bg-green-500/10 border border-green-500/20 rounded-full flex items-center gap-2">
         <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
         <span class="text-[10px] text-green-400 font-black uppercase tracking-widest">Servicio Activo</span>
       </div>
@@ -65,14 +66,16 @@ const formatDate = (timestamp: any) => {
 
     <!-- Main Content -->
     <div v-else-if="userData" class="grid grid-cols-1 md:grid-cols-3 gap-6 animate-fade-up">
-      
+
       <!-- Identity Card -->
-      <div class="md:col-span-2 bg-white/5 border border-white/10 rounded-[2rem] p-8 md:p-10 flex flex-col justify-between relative overflow-hidden group hover:border-white/20 transition-all duration-500">
+      <div
+        class="md:col-span-2 bg-white/5 border border-white/10 rounded-[2rem] p-8 md:p-10 flex flex-col justify-between relative overflow-hidden group hover:border-white/20 transition-all duration-500">
         <!-- Background Decoration -->
-        <div class="absolute top-[-20%] right-[-10%] opacity-5 group-hover:opacity-10 transition-opacity duration-500 rotate-12">
+        <div
+          class="absolute top-[-20%] right-[-10%] opacity-5 group-hover:opacity-10 transition-opacity duration-500 rotate-12">
           <span class="material-symbols-outlined text-[200px]">fingerprint</span>
         </div>
-        
+
         <div>
           <h3 class="text-2xl font-black tracking-tight mb-8">Identidad Verificada</h3>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-8 relative z-10">
@@ -115,38 +118,46 @@ const formatDate = (timestamp: any) => {
       <!-- Right Column: Stats & Plan -->
       <div class="space-y-6 flex flex-col">
         <!-- Stats Card -->
-        <div class="bg-amber-500/10 border border-amber-500/20 rounded-[2rem] p-8 flex-1 flex flex-col justify-center items-center text-center relative overflow-hidden group">
-          <div class="absolute inset-0 bg-gradient-to-t from-amber-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        <div
+          class="bg-amber-500/10 border border-amber-500/20 rounded-[2rem] p-8 flex-1 flex flex-col justify-center items-center text-center relative overflow-hidden group">
+          <div
+            class="absolute inset-0 bg-gradient-to-t from-amber-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+          </div>
           <span class="material-symbols-outlined text-amber-500 text-4xl mb-3 relative z-10">qr_code_2</span>
           <p class="text-6xl font-black text-white tracking-tighter relative z-10">{{ userData.totalQRs || 0 }}</p>
-          <p class="text-[10px] text-amber-500 font-black uppercase tracking-widest mt-2 relative z-10">QRs Registrados</p>
+          <p class="text-[10px] text-amber-500 font-black uppercase tracking-widest mt-2 relative z-10">QRs Registrados
+          </p>
         </div>
 
         <!-- Plan Card -->
-        <div class="bg-white/5 border border-white/10 rounded-[2rem] p-8 flex-1 relative overflow-hidden hover:bg-white/10 transition-colors">
+        <div
+          class="bg-white/5 border border-white/10 rounded-[2rem] p-8 flex-1 relative overflow-hidden hover:bg-white/10 transition-colors">
           <h3 class="text-[10px] font-black text-white/40 uppercase tracking-widest mb-4">Suscripción</h3>
           <div class="flex flex-col gap-2">
             <div class="flex items-center gap-3">
               <span class="material-symbols-outlined text-white text-3xl">workspace_premium</span>
               <p class="text-3xl font-black tracking-tight capitalize text-white">{{ userData.plan || 'N/A' }}</p>
             </div>
-            <div class="inline-flex items-center gap-1.5 px-3 py-1 bg-white/5 border border-white/10 rounded-lg w-fit mt-2">
+            <div
+              class="inline-flex items-center gap-1.5 px-3 py-1 bg-white/5 border border-white/10 rounded-lg w-fit mt-2">
               <span class="material-symbols-outlined text-[12px] text-white/60">credit_card</span>
-              <p class="text-[9px] text-white/60 uppercase tracking-widest font-black">{{ userData.subscriptionStatus || 'Unknown' }}</p>
+              <p class="text-[9px] text-white/60 uppercase tracking-widest font-black">{{ userData.subscriptionStatus ||
+                'Unknown' }}</p>
             </div>
           </div>
         </div>
       </div>
 
       <!-- Bottom Row: Preferences -->
-      <div class="md:col-span-3 bg-white/5 border border-white/10 rounded-[2rem] p-8 md:p-10 hover:border-white/20 transition-colors">
+      <div
+        class="md:col-span-3 bg-white/5 border border-white/10 rounded-[2rem] p-8 md:p-10 hover:border-white/20 transition-colors">
         <div class="mb-8">
           <h3 class="text-xl font-black tracking-tight mb-1">Preferencias de Comunicación</h3>
           <p class="text-xs text-white/40 font-medium">Configuración de notificaciones del sistema (Solo lectura)</p>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          
+
           <div class="flex items-center justify-between p-5 bg-[#0f0f11] rounded-2xl border border-white/5">
             <div class="flex items-center gap-3">
               <div class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center">
@@ -154,7 +165,8 @@ const formatDate = (timestamp: any) => {
               </div>
               <span class="text-sm font-bold text-white/80">Email</span>
             </div>
-            <span class="material-symbols-outlined text-3xl" :class="userData.preferences?.emailNotifications ? 'text-amber-500' : 'text-white/20'">
+            <span class="material-symbols-outlined text-3xl"
+              :class="userData.preferences?.emailNotifications ? 'text-amber-500' : 'text-white/20'">
               {{ userData.preferences?.emailNotifications ? 'toggle_on' : 'toggle_off' }}
             </span>
           </div>
@@ -166,7 +178,8 @@ const formatDate = (timestamp: any) => {
               </div>
               <span class="text-sm font-bold text-white/80">SMS</span>
             </div>
-            <span class="material-symbols-outlined text-3xl" :class="userData.preferences?.smsNotifications ? 'text-amber-500' : 'text-white/20'">
+            <span class="material-symbols-outlined text-3xl"
+              :class="userData.preferences?.smsNotifications ? 'text-amber-500' : 'text-white/20'">
               {{ userData.preferences?.smsNotifications ? 'toggle_on' : 'toggle_off' }}
             </span>
           </div>
@@ -178,7 +191,8 @@ const formatDate = (timestamp: any) => {
               </div>
               <span class="text-sm font-bold text-white/80">WhatsApp</span>
             </div>
-            <span class="material-symbols-outlined text-3xl" :class="userData.preferences?.whatsappNotifications ? 'text-amber-500' : 'text-white/20'">
+            <span class="material-symbols-outlined text-3xl"
+              :class="userData.preferences?.whatsappNotifications ? 'text-amber-500' : 'text-white/20'">
               {{ userData.preferences?.whatsappNotifications ? 'toggle_on' : 'toggle_off' }}
             </span>
           </div>
@@ -189,4 +203,3 @@ const formatDate = (timestamp: any) => {
     </div>
   </div>
 </template>
-
