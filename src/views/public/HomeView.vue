@@ -14,7 +14,6 @@ import QrcodeVue from 'qrcode.vue'
 const heroVideos = [
   { src: new URL('../../assets/videos/vid04.mp4', import.meta.url).href, id: 'hero-vid-1' },
   { src: new URL('../../assets/videos/vid02.mp4', import.meta.url).href, id: 'hero-vid-2' },
-  // { src: new URL('../../assets/videos/vid03.mp4', import.meta.url).href, id: 'hero-vid-3' },
 ];
 
 const mutedStates = ref(heroVideos.map(() => true));
@@ -177,13 +176,15 @@ const toggleSound = (index: number) => {
           <!-- Right Content: Responsive Video Grid -->
           <section class="w-full lg:w-1/2 flex flex-col gap-6 lg:gap-8 items-center">
             <div v-for="(video, index) in heroVideos" :key="index"
-              class="relative w-full max-w-sm rounded-[2rem] overflow-hidden group border border-white/10 bg-[#09090b] aspect-[9/16]">
-              
+              class="relative w-full max-w-md lg:max-w-none rounded-[2rem] overflow-hidden group border border-white/10 bg-[#09090b]">
+
               <!-- Main video -->
-              <video :id="video.id" :src="video.src" autoplay muted loop playsinline class="w-full h-full object-cover drop-shadow-2xl main-video">
+              <video :id="video.id" :src="video.src" autoplay muted loop playsinline
+                class="w-full h-auto object-cover drop-shadow-2xl main-video">
               </video>
-              
-              <div class="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors pointer-events-none z-20">
+
+              <div
+                class="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors pointer-events-none z-20">
               </div>
 
               <!-- Sound Toggle Button -->
@@ -192,7 +193,7 @@ const toggleSound = (index: number) => {
                 <span>Haga click para {{ !mutedStates[index] ? 'apagar' :
                   'encender' }} el sonido</span>
                 <span class="material-symbols-outlined text-xl">{{ mutedStates[index] ? 'volume_off' : 'volume_up'
-                }}</span>
+                  }}</span>
               </button>
             </div>
           </section>

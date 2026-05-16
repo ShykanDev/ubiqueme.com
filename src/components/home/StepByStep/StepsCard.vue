@@ -8,9 +8,9 @@ const props = defineProps<{
 
 <template>
   <!-- Step  -->
-  <div class="relative group rounded-3xl overflow-hidden bg-[#09090b] aspect-[9/16]" data-aos="fade-up" :data-aos-delay="(steps.number - 1) * 100">
+  <div class="relative group rounded-3xl overflow-hidden bg-[#09090b]" data-aos="fade-up" :data-aos-delay="(steps.number - 1) * 100">
     <!-- Main Video -->
-    <video class="w-full h-full object-cover" v-lazy-video="steps.video"
+    <video class="w-full h-auto object-cover" v-lazy-video="steps.video"
       autoplay loop muted playsinline></video>
 
     <div

@@ -24,11 +24,11 @@
 
         <!-- Video Card -->
         <div
-          class="relative bg-[#09090b] border border-white/10 rounded-[2rem] overflow-hidden group aspect-[9/16]"
+          class="relative bg-[#09090b] border border-white/10 rounded-[2rem] overflow-hidden group"
           :id="`video-${i}`">
           <!-- User's Main Video -->
           <video
-            class="w-full h-full aspect-[9/16] object-cover transition-transform duration-700 group-hover:scale-105 main-video"
+            class="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-105 main-video"
             v-lazy-video="v.src" autoplay loop muted playsinline>
           </video>
 
