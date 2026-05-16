@@ -50,32 +50,7 @@ const currentStatus = computed(() => {
     label: 'Desconocido'
   }
 
-  const cardStyle = computed(() => {
-    if (props.isBanned) {
-      return 'grayscale opacity-50 brightness-[0.4] cursor-not-allowed'
-    }
-
-    if (props.status === 'Canceled') {
-      return 'grayscale opacity-60 brightness-75'
-    }
-
-    if (props.status === 'Paused' || !props.isActive) {
-      return 'grayscale-[0.8] opacity-80 brightness-90'
-    }
-
-    if (props.status === 'Error') {
-      return 'border-rose-500/40'
-    }
-
-    return ''
-  })
-
-
-  const target = e.target as HTMLElement;
-
-  showMenu.value = !showMenu.value
-  activePrompt.value = null
-}
+})
 
 const openPrompt = (type: 'cancel' | 'renew' | 'edit') => {
   showMenu.value = false
@@ -85,6 +60,11 @@ const openPrompt = (type: 'cancel' | 'renew' | 'edit') => {
 const closeAll = () => {
   showMenu.value = false
   activePrompt.value = null
+}
+
+const toggleMenu = (event: Event) => {
+  event.stopPropagation()
+  showMenu.value = !showMenu.value
 }
 
 const userStore = useUserStore();
@@ -279,8 +259,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div :class="[cardStyle]"
-    class="relative w-full bg-[#0a0401] border border-white/10 rounded-[2rem] flex flex-col sm:flex-row hover:border-orange-500/40 transition-all duration-500 overflow-hidden font-google-sans group">
+  <div class="relative w-full bg-[#0a0401] border border-white/10 rounded-[2rem] flex flex-col sm:flex-row hover:border-orange-500/40 transition-all duration-500 overflow-hidden font-google-sans group">
 
     <!-- Patrón de Fondo Cuadrícula -->
     <div class="absolute inset-0 z-0 opacity-[0.04] pointer-events-none"
@@ -344,7 +323,7 @@ onUnmounted(() => {
             <div class="flex items-center gap-1.5">
               <span :class="['w-1.5 h-1.5 rounded-full shadow-lg', currentStatus.dot]"></span>
               <span class="text-white/90 text-[10px] font-bold uppercase tracking-wider">{{ currentStatus.label
-              }}</span>
+                }}</span>
             </div>
           </div>
         </div>

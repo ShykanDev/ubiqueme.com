@@ -177,10 +177,13 @@ const toggleSound = (index: number) => {
           <!-- Right Content: Responsive Video Grid -->
           <section class="w-full lg:w-1/2 flex flex-col gap-6 lg:gap-8 items-center">
             <div v-for="(video, index) in heroVideos" :key="index"
-              class="relative w-full max-w-md lg:max-w-none aspect-video sm:aspect-[21/9] lg:aspect-video rounded-[2rem] overflow-hidden group border border-white/10">
-              <video :id="video.id" :src="video.src" autoplay muted loop playsinline class="w-full h-full object-cover">
+              class="relative w-full max-w-sm rounded-[2rem] overflow-hidden group border border-white/10 bg-[#09090b] aspect-[9/16]">
+              
+              <!-- Main video -->
+              <video :id="video.id" :src="video.src" autoplay muted loop playsinline class="w-full h-full object-cover drop-shadow-2xl main-video">
               </video>
-              <div class="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors pointer-events-none">
+              
+              <div class="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors pointer-events-none z-20">
               </div>
 
               <!-- Sound Toggle Button -->

@@ -24,12 +24,12 @@
 
         <!-- Video Card -->
         <div
-          class="relative aspect-[4/5] bg-white/5 border border-white/10 rounded-[2rem] overflow-hidden group"
+          class="relative bg-[#09090b] border border-white/10 rounded-[2rem] overflow-hidden group aspect-[9/16]"
           :id="`video-${i}`">
-          <!-- User's Video -->
+          <!-- User's Main Video -->
           <video
-            class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-            :src="v.src" autoplay loop muted playsinline>
+            class="w-full h-full aspect-[9/16] object-cover transition-transform duration-700 group-hover:scale-105 main-video"
+            v-lazy-video="v.src" autoplay loop muted playsinline>
           </video>
 
           <!-- Hover Overlay for Description -->
@@ -121,7 +121,7 @@ onMounted(() => {
 const mutedStates = ref(videoSources.map(() => true))
 
 const activateSound = (videoId: number) => {
-  const videoSelected = document.querySelector(`#video-${videoId} video`) as HTMLVideoElement;
+  const videoSelected = document.querySelector(`#video-${videoId} .main-video`) as HTMLVideoElement;
 
   if (!videoSelected) return;
 
@@ -132,7 +132,7 @@ const activateSound = (videoId: number) => {
     // Silenciar los demás videos
     videoSources.forEach((_, index) => {
       if (index !== videoId) {
-        const otherVideo = document.querySelector(`#video-${index} video`) as HTMLVideoElement;
+        const otherVideo = document.querySelector(`#video-${index} .main-video`) as HTMLVideoElement;
         if (otherVideo && !otherVideo.muted) {
           otherVideo.muted = true;
           mutedStates.value[index] = true;
