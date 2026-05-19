@@ -7,16 +7,16 @@ const plans = [
   {
     id: 'alpha',
     name: 'Alpha',
-    tagline: 'Para empezar a proteger',
-    price: 'Gratis',
-    priceNote: 'Sin tarjeta requerida',
+    tagline: 'Protección básica esencial',
+    price: '$50',
+    priceNote: 'MXN / mes · 1 Mes Gratis',
     accent: 'rgba(255,255,255,0.15)',
     accentBorder: 'rgba(255,255,255,0.1)',
     accentText: '#ffffff',
-    badge: null,
-    cta: 'Comenzar Gratis',
+    badge: 'Básico',
+    cta: 'Activar Alpha',
     features: [
-      { label: 'Hasta 3 códigos QR activos', included: true },
+      { label: 'Hasta 1 código QR activo', included: true },
       { label: 'Contador de escaneos básico', included: true },
       { label: 'Página pública de contacto', included: true },
       { label: 'Mensajes predefinidos de contacto', included: true },
@@ -31,15 +31,15 @@ const plans = [
     id: 'beta',
     name: 'Beta',
     tagline: 'Para quienes toman en serio sus bienes',
-    price: '$79',
-    priceNote: 'MXN / mes · Cancela cuando quieras',
+    price: '$100',
+    priceNote: 'MXN / mes · 1 Mes Gratis',
     accent: 'rgba(249,115,22,0.12)',
     accentBorder: 'rgba(249,115,22,0.35)',
     accentText: '#f97316',
     badge: 'Más Popular',
     cta: 'Activar Beta',
     features: [
-      { label: 'Hasta 15 códigos QR activos', included: true },
+      { label: 'Hasta 3 códigos QR activos', included: true },
       { label: 'Contador de escaneos en tiempo real', included: true },
       { label: 'Página pública de contacto', included: true },
       { label: '3 Regeneraciones digitales sin costo', included: true },
@@ -54,15 +54,15 @@ const plans = [
     id: 'epsilon',
     name: 'Epsilon',
     tagline: 'Control total. Sin compromisos.',
-    price: '$199',
-    priceNote: 'MXN / mes · Facturación mensual',
+    price: '$200',
+    priceNote: 'MXN / mes · 1 Mes Gratis',
     accent: 'rgba(255,210,100,0.08)',
     accentBorder: 'rgba(255,210,100,0.3)',
     accentText: '#ffd264',
     badge: 'Premium',
     cta: 'Activar Epsilon',
     features: [
-      { label: 'Códigos QR ilimitados', included: true },
+      { label: 'Hasta 5 códigos QR activos', included: true },
       { label: 'Ubicación con Mapa dinámico incluido', included: true },
       { label: 'Ubicación aproximada del escaneo', included: true },
       { label: '5 Regeneraciones digitales sin costo', included: true },
@@ -115,7 +115,7 @@ const plans = [
         <!-- Badge -->
         <div v-if="plan.badge" class="absolute -top-4 left-1/2 -translate-x-1/2">
           <div
-            class="px-5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.3em] border"
+            class="px-5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.3em] border whitespace-nowrap"
             :style="{ color: plan.accentText, borderColor: plan.accentBorder, background: '#09090b' }"
           >
             {{ plan.badge }}
@@ -148,7 +148,7 @@ const plans = [
         <div class="mb-8 pb-8 border-b border-white/[0.06]">
           <div class="flex items-baseline gap-2">
             <span class="text-5xl font-black text-white tracking-tighter">{{ plan.price }}</span>
-            <span v-if="plan.id !== 'alpha'" class="text-white/20 text-xs font-black uppercase tracking-widest">/mo</span>
+            <span class="text-white/20 text-xs font-black uppercase tracking-widest">/mo</span>
           </div>
           <p class="text-white/30 text-[10px] font-bold uppercase tracking-widest mt-2">{{ plan.priceNote }}</p>
         </div>
@@ -181,9 +181,9 @@ const plans = [
         <!-- CTA Button -->
         <button
           @click="$router.push({ name: 'checkout', params: { planId: plan.id } })"
-          class="w-full h-14 rounded-2xl font-black text-xs uppercase tracking-widest transition-all duration-300 active:scale-[0.97] border"
+          class="w-full h-14 rounded-2xl font-black text-xs uppercase tracking-widest transition-all duration-300 active:scale-[0.97] border cursor-pointer"
           :style="plan.id === 'alpha'
-            ? { background: 'rgba(255,255,255,0.05)', borderColor: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.5)' }
+            ? { background: 'rgba(255,255,255,0.08)', borderColor: 'rgba(255,255,255,0.15)', color: '#ffffff' }
             : { background: plan.accentText, borderColor: plan.accentText, color: '#09090b' }"
         >
           {{ plan.cta }}

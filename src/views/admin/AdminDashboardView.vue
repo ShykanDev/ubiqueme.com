@@ -1,180 +1,3 @@
-<script lang="ts" setup>
-import { ref, onMounted } from 'vue'
-import UserDashoardLayout from '@/layouts/UserDashoardLayout.vue'
-import QRNamePrompt from '@/components/admin/QRNamePrompt.vue'
-import BanConfirmPrompt from '@/components/admin/BanConfirmPrompt.vue'
-import ChangePlanPrompt from '@/components/admin/ChangePlanPrompt.vue'
-import { toast } from 'vue-sonner'
-import { collection, onSnapshot } from 'firebase/firestore'
-import { db as firestoreDb } from '@/firebase'
-
-// ==========================================
-// 🚀 17-FIELD MOCK DATA & TYPES
-// ==========================================
-interface MockUser {
-  uid: string
-  name: string
-  email: string
-  phone: string
-  role: 'scanner' | 'admin' | 'user'
-  isActive: boolean
-  isBanned: boolean
-  banReason: string
-  plan: 'alpha' | 'beta' | 'epsilon'
-  subscriptionStatus: 'active' | 'inactive' | 'canceled'
-  planPurchasedAt: string
-  planEndDate: string | null
-  paymentProviderId: string
-  totalQRs: number
-  preferences: {
-    emailNotifications: boolean
-    smsNotifications: boolean
-    whatsappNotifications: boolean
-  }
-  lastLoginAt: string
-  createdAt: string
-}
-
-const users = ref<MockUser[]>([])
-const loading = ref(true)
-
-// ==========================================
-// ⚙️ SIMULATED FUNCTIONS
-// ==========================================
-
-const fetchUsers = () => {
-  console.log('🔄 [fetchUsers] Extrayendo los 17 campos por usuario de la base de datos...')
-  loading.value = true
-
-  setTimeout(() => {
-    users.value = [
-      {
-        uid: 'asjdbaj86538127tgiasudg976323', name: 'Frida', email: 'frida@ejemplo.com', phone: '+52555555555', role: 'user',
-        isActive: true, isBanned: false, banReason: '',
-        plan: 'alpha', subscriptionStatus: 'active', planPurchasedAt: '30 Abr 2026', planEndDate: null, paymentProviderId: '',
-        totalQRs: 1, preferences: { emailNotifications: true, smsNotifications: false, whatsappNotifications: true },
-        lastLoginAt: '30 Abr 2026, 11:18 AM', createdAt: '30 Abr 2026'
-      },
-      {
-        uid: 'xyz987654321qwertyuiopasdfg', name: 'Carlos Mendoza', email: 'cmendoza@empresa.com', phone: '+1234567890', role: 'admin',
-        isActive: true, isBanned: false, banReason: '',
-        plan: 'epsilon', subscriptionStatus: 'active', planPurchasedAt: '15 Mar 2026', planEndDate: '15 Mar 2027', paymentProviderId: 'sub_J3LKs92Ndx',
-        totalQRs: 142, preferences: { emailNotifications: true, smsNotifications: true, whatsappNotifications: true },
-        lastLoginAt: '12 May 2026, 09:00 AM', createdAt: '01 Ene 2026'
-      },
-      {
-        uid: 'banneduser99999999999999999', name: 'Malory Archer', email: 'malory@isis.com', phone: '+15550001111', role: 'user',
-        isActive: true, isBanned: true, banReason: 'Comportamiento de escaneo fraudulento.',
-        plan: 'beta', subscriptionStatus: 'canceled', planPurchasedAt: '01 Feb 2026', planEndDate: '01 Mar 2026', paymentProviderId: 'sub_X92Kk1aPq',
-        totalQRs: 5, preferences: { emailNotifications: false, smsNotifications: false, whatsappNotifications: false },
-        lastLoginAt: '28 Feb 2026, 04:20 PM', createdAt: '15 Ene 2026'
-      },
-      {
-        uid: 'scanner12312312312312312312', name: 'Usuario QR (Anónimo)', email: 'anonimo_qr@temp.com', phone: '', role: 'scanner',
-        isActive: false, isBanned: false, banReason: '',
-        plan: 'alpha', subscriptionStatus: 'inactive', planPurchasedAt: '12 May 2026', planEndDate: null, paymentProviderId: '',
-        totalQRs: 0, preferences: { emailNotifications: false, smsNotifications: false, whatsappNotifications: false },
-        lastLoginAt: '12 May 2026, 02:15 PM', createdAt: '12 May 2026'
-      }
-    ]
-    loading.value = false
-    console.log('✅ [fetchUsers] Data sincronizada exitosamente:', users.value)
-  }, 1200)
-}
-
-
-// ==========================================
-// MODAL: SUSPENDER/REACTIVAR
-// ==========================================
-const isBanModalOpen = ref(false)
-const selectedUserForBan = ref<{ id: string, name: string, isBanned: boolean } | null>(null)
-
-const openBanModal = (user: MockUser) => {
-  selectedUserForBan.value = { id: user.uid, name: user.name, isBanned: user.isBanned }
-  isBanModalOpen.value = true
-}
-
-const handleBanSubmit = (reason: string) => {
-  if (!selectedUserForBan.value) return
-  const userId = selectedUserForBan.value.id
-  const newStatus = !selectedUserForBan.value.isBanned
-
-  const userIndex = users.value.findIndex(u => u.uid === userId)
-  if (userIndex !== -1) {
-    const user = users.value[userIndex]
-    if (user) {
-      user.isBanned = newStatus
-      user.banReason = newStatus ? reason : ''
-    }
-  }
-  isBanModalOpen.value = false
-  selectedUserForBan.value = null
-}
-
-// ==========================================
-// MODAL: CAMBIAR PLAN
-// ==========================================
-const isPlanModalOpen = ref(false)
-const selectedUserForPlan = ref<{ id: string, name: string, plan: string } | null>(null)
-
-const openPlanModal = (user: MockUser) => {
-  selectedUserForPlan.value = { id: user.uid, name: user.name, plan: user.plan }
-  isPlanModalOpen.value = true
-}
-
-const handlePlanSubmit = (newPlan: string) => {
-  if (!selectedUserForPlan.value) return
-  const userId = selectedUserForPlan.value.id
-
-  const userIndex = users.value.findIndex(u => u.uid === userId)
-  if (userIndex !== -1) {
-    const user = users.value[userIndex]
-    if (user) {
-      user.plan = newPlan as any
-      // Si asiganmos un plan premium, cambiamos el status simulado a active
-      if (newPlan !== 'alpha') user.subscriptionStatus = 'active'
-    }
-  }
-  isPlanModalOpen.value = false
-  selectedUserForPlan.value = null
-}
-
-// ==========================================
-// MODAL: ASIGNAR NUEVO QR
-// ==========================================
-const isQRModalOpen = ref(false)
-const selectedUserForQR = ref<{ id: string, name: string } | null>(null)
-
-const openQRModal = (userId: string, userName: string) => {
-  selectedUserForQR.value = { id: userId, name: userName }
-  isQRModalOpen.value = true
-}
-
-const handleQRSubmit = (qrName: string) => {
-  if (!selectedUserForQR.value) return
-  const userId = selectedUserForQR.value.id
-
-  const userIndex = users.value.findIndex(u => u.uid === userId)
-  if (userIndex !== -1) {
-    const user = users.value[userIndex]
-    if (user) {
-      user.totalQRs += 1
-    }
-  }
-  isQRModalOpen.value = false
-  selectedUserForQR.value = null
-}
-
-
-onMounted(() => {
-  const db = firestoreDb;
-  const usersCollection = collection(db, `users`);
-  onSnapshot((usersCollection), (doc) => {
-    console.log(doc)
-  })
-})
-</script>
-
 <template>
   <UserDashoardLayout>
     <template #main>
@@ -189,11 +12,7 @@ onMounted(() => {
           </div>
 
           <div class="flex items-center gap-4">
-            <button @click="fetchUsers"
-              class="flex items-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 px-4 py-2 rounded-xl transition-colors">
-              <span class="material-symbols-outlined text-[18px]" :class="{ 'animate-spin': loading }">sync</span>
-              <span class="text-xs font-bold uppercase tracking-widest">Sincronizar DB</span>
-            </button>
+
           </div>
         </div>
 
@@ -226,15 +45,15 @@ onMounted(() => {
               </thead>
 
               <!-- Body -->
-              <tbody>
-                <tr v-if="loading">
+              <tbody v-if="!loading && usersData && usersData.length > 0">
+                <tr class="hidden">
                   <td colspan="5" class="p-10 text-center text-white/40">
                     <span class="material-symbols-outlined animate-spin text-3xl mb-2">settings</span>
                     <p class="text-xs font-bold uppercase tracking-widest">Recopilando Datos de Firestore...</p>
                   </td>
                 </tr>
 
-                <tr v-else v-for="user in users" :key="user.uid"
+                <tr v-for="user in usersData" :key="user.uid"
                   class="border-b border-white/5 hover:bg-white/[0.02] transition-colors group align-top">
 
                   <!-- 1. IDENTIDAD / CONTACTO -->
@@ -379,7 +198,7 @@ onMounted(() => {
 
                       <div class="flex gap-2">
                         <!-- Asignar QR -->
-                        <button @click="openQRModal(user.uid, user.name)" v-tooltip="'Asignar Código QR'"
+                        <button @click="openQRModal(user)" v-tooltip="'Asignar Código QR'"
                           class="inline-flex items-center justify-center h-8 px-3 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-white transition-colors">
                           <span class="material-symbols-outlined text-[14px] mr-1.5 text-white/50">qr_code</span>
                           <span class="text-[9px] font-black uppercase tracking-widest">+ QR</span>
@@ -428,6 +247,221 @@ onMounted(() => {
     </template>
   </UserDashoardLayout>
 </template>
+
+<script lang="ts" setup>
+import { ref, onMounted } from 'vue'
+import UserDashoardLayout from '@/layouts/UserDashoardLayout.vue'
+import QRNamePrompt from '@/components/admin/QRNamePrompt.vue'
+import BanConfirmPrompt from '@/components/admin/BanConfirmPrompt.vue'
+import ChangePlanPrompt from '@/components/admin/ChangePlanPrompt.vue'
+import { toast } from 'vue-sonner'
+import { collection, doc, increment, onSnapshot, runTransaction, Timestamp, writeBatch } from 'firebase/firestore'
+import { db as firestoreDb } from '@/firebase'
+import type { IUser } from '@/interfaces/IUser'
+import { nanoid } from 'nanoid'
+
+// ==========================================
+// 🚀 17-FIELD MOCK DATA & TYPES
+// ==========================================
+interface MockUser {
+  uid: string
+  name: string
+  email: string
+  phone: string
+  role: 'scanner' | 'admin' | 'user'
+  isActive: boolean
+  isBanned: boolean
+  banReason: string
+  plan: 'alpha' | 'beta' | 'epsilon'
+  subscriptionStatus: 'active' | 'inactive' | 'canceled'
+  planPurchasedAt: string
+  planEndDate: string | null
+  paymentProviderId: string
+  totalQRs: number
+  preferences: {
+    emailNotifications: boolean
+    smsNotifications: boolean
+    whatsappNotifications: boolean
+  }
+  lastLoginAt: string
+  createdAt: string
+}
+
+const loading = ref(true)
+
+const usersData = ref<IUser[]>([])
+
+onMounted(() => {
+  const db = firestoreDb;
+  const usersCollection = collection(db, `users`);
+  onSnapshot((usersCollection), (snapshot) => {
+    usersData.value = []
+    snapshot.forEach((doc) => {
+      usersData.value.push(doc.data() as IUser)
+    })
+    loading.value = false
+  })
+})
+
+//===============================
+//Values for dynamics componenrs (Ban, Plan, AddQR)
+//===============================
+
+//ADD QR
+const isQRModalOpen = ref(false)
+const selectedUserForQR = ref<IUser | null>(null)
+const openQRModal = (user: IUser) => {
+  selectedUserForQR.value = user;
+  isQRModalOpen.value = true;
+}
+const handleQRSubmit = async (qrName: string) => {
+  const user = selectedUserForQR.value
+
+  if (!qrName || qrName.trim() === '') return toast.error(`Error al crear código QR no se especifico un nombre`);
+  if (!user?.uid) return toast.error(`Error al crear código QR no se encontro el usuario`);
+
+  // Validar límites de QR activos según el plan de usuario
+  const userPlan = (user.plan || 'alpha')
+  const maxQRs = userPlan === 'epsilon' ? 5 : userPlan === 'beta' ? 3 : 1
+
+  if (user.totalQRs >= maxQRs) {
+    toast.error(`Límite alcanzado: El plan del usuario ${user.name}, ${userPlan.toUpperCase()} permite un máximo de ${maxQRs} código(s) QR activos. Por favor, actualice su suscripción en la sección de Precios para registrar más.`)
+    return
+  }
+
+  try {
+    await runTransaction(firestoreDb, async (transaction) => {
+      // 1. Generamos el ID
+      const newQRId = nanoid(15);
+
+      // 2. Referencias a los documentos (Público y Privado)
+      const publicQrRef = doc(firestoreDb, `publicQR/${newQRId}`);
+      const userQrRef = doc(firestoreDb, `users/${user.uid}/qrs/${newQRId}`);
+
+      // 3. Verificamos idempotencia (Que no exista en la base de datos pública globalmente)
+      const qrDoc = await transaction.get(publicQrRef);
+      if (qrDoc.exists()) {
+        throw new Error("Colisión de ID. La transacción se cancelará y puede reintentar.");
+      }
+
+      // 4. Si no existe, creamos el documento en ambas colecciones atómicamente
+      // Colección Pública (Para cuando lo escaneen)
+      transaction.set(publicQrRef, {
+        id: newQRId,
+        name: 'Nuevo QR (Prueba)',
+        status: 'Active',
+        lastScan: null,
+        totalScans: 0,
+        isBanned: false,
+        banReason: '',
+        docId: newQRId,
+        uid: user.uid,
+        tier: 'free',
+        createdAt: Timestamp.now()
+      });
+
+      // Subcolección del Usuario (Para su Dashboard)
+      transaction.set(userQrRef, {
+        id: newQRId,
+        uid: user.uid,
+        name: qrName ?? 'QR name',
+        status: 'Active',
+        scans: 0,
+        lastScan: "",
+        isActive: true,
+        isBanned: false,
+        banReason: '',
+        planEndDate: null,
+        planPurchasedAt: null,
+        createdAt: Timestamp.now()
+      });
+
+      // Incrementamos el contador global de QRs en el documento PRINCIPAL del usuario
+      const userRootRef = doc(firestoreDb, `users/${user.uid}`);
+      transaction.update(userRootRef, {
+        totalQRs: increment(1)
+      });
+
+    });
+
+    toast.success(`Se ha creado el nuevo QR con nombre ${qrName} para el usuario ${user.name}`);
+    isQRModalOpen.value = false;
+    selectedUserForQR.value = null;
+  } catch (error) {
+    toast.error(`Fallo al crear el QR: ${error}`);
+  }
+}
+
+
+
+
+//BAN USER
+const isBanModalOpen = ref(false)
+const openBanModal = (user: IUser) => {
+  selectedUserForBan.value = user;
+  isBanModalOpen.value = true;
+}
+const selectedUserForBan = ref<IUser | null>(null)
+const handleBanSubmit = async (reason: string) => {
+  if (!selectedUserForBan.value?.uid) return;
+  const userRef = doc(firestoreDb, 'users', selectedUserForBan.value.uid);
+  const batch = writeBatch(firestoreDb);
+  try {
+    batch.update(userRef, {
+      isBanned: !selectedUserForBan.value.isBanned,
+      banReason: reason ?? 'No se especificó un motivo para la suspensión'
+    });
+    await batch.commit();
+    toast.success('Usuario ' + selectedUserForBan.value.name + ' suspendido exitosamente');
+    isBanModalOpen.value = false;
+    selectedUserForBan.value = null;
+  } catch (error) {
+    toast.error('Error al suspender usuario: ' + error);
+  }
+}
+
+
+//MANAGE USER PLAN
+const isPlanModalOpen = ref(false)
+const selectedUserForPlan = ref<IUser | null>(null)
+const openPlanModal = (user: IUser) => {
+  selectedUserForPlan.value = user;
+  isPlanModalOpen.value = true;
+}
+
+
+const handlePlanSubmit = async (plan: string) => {
+  if (!selectedUserForPlan.value?.uid) return;
+  const now = new Date();
+  const nextMonth = new Date(now);
+  nextMonth.setMonth(nextMonth.getMonth() + 1);
+
+  const userRef = doc(firestoreDb, 'users', selectedUserForPlan.value.uid);
+  const batch = writeBatch(firestoreDb);
+  try {
+    batch.update(userRef, {
+      plan,
+      planPurchasedAt: Timestamp.fromDate(now),
+      planEndDate: Timestamp.fromDate(nextMonth),
+      subscriptionStatus: 'active',
+      paymentProviderId: 'admin',
+    });
+    await batch.commit();
+    toast.success('Plan del usuario ' + selectedUserForPlan.value.name + ' actualizado exitosamente');
+    isPlanModalOpen.value = false;
+    selectedUserForPlan.value = null;
+  } catch (error) {
+    toast.error('Error al actualizar el plan del usuario: ' + error);
+  }
+}
+
+//===============================
+//functions to control the modals
+//===============================
+
+
+
+</script>
 
 <style scoped>
 .font-google-sans {

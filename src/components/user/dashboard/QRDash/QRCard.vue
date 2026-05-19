@@ -333,13 +333,34 @@ onUnmounted(() => {
     <!-- Código QR (Derecho) -->
     <!-- Fondo oscuro naranja casi café/negro -->
     <div
-      class="w-full sm:w-[220px] bg-[#0c0500] border-t sm:border-t-0 sm:border-l border-white/5 flex flex-col items-center justify-center p-6 shrink-0 relative z-10 overflow-hidden">
+      class="w-full sm:w-[220px] bg-[#0c0500] border-t sm:border-t-0 sm:border-l border-white/5 flex flex-col items-center justify-center p-6 shrink-0 relative z-10">
 
       <!-- Menú de Acciones -->
       <button data-name="hamMenu" @click="toggleMenu($event)"
         class="text-orange-500/90 hover:text-white transition-colors cursor-pointer w-10 h-10 flex items-center justify-center rounded-xl hover:bg-white/10  active:scale-95 absolute top-4 right-4">
         <span data-name="hamMenu" class="material-symbols-outlined text-[24px] hamMenu">more_horiz</span>
       </button>
+
+      <!-- Dropdown Menu -->
+      <Transition enter-active-class="transition-all duration-200 ease-out"
+        enter-from-class="opacity-0 -translate-y-2 scale-95" enter-to-class="opacity-100 translate-y-0 scale-100"
+        leave-active-class="transition-all duration-200 ease-in" leave-from-class="opacity-100 translate-y-0 scale-100"
+        leave-to-class="opacity-0 -translate-y-2 scale-95">
+        <div v-if="showMenu"
+          class="absolute top-12 right-4 w-[200px] bg-[#0c0500] border border-orange-500/20 rounded-xl p-1.5 z-30 shadow-[0_8px_30px_rgb(249,115,22,0.1)]">
+          <template v-for="(option, index) in menuOptions" :key="index">
+            <div v-if="option.divider" class="h-px bg-orange-500/10 my-1 mx-2"></div>
+            <button v-else @click="option.action" v-tooltip="{ content: option.description, placement: 'top' }" :class="[
+              'w-full flex items-center gap-3 cursor-pointer px-3 py-2 rounded-lg bg-transparent text-sm transition-colors text-left font-medium',
+              option.color || 'text-white/70',
+              option.hoverBg || 'hover:bg-orange-500/10 hover:text-orange-400'
+            ]">
+              <span class="material-symbols-outlined text-[16px]">{{ option.icon }}</span>
+              {{ option.label }}
+            </button>
+          </template>
+        </div>
+      </Transition>
 
       <!-- Resplandor sutil detrás del QR -->
       <div
@@ -363,27 +384,6 @@ onUnmounted(() => {
 
     <!-- Overlay invisible para cerrar el menú al hacer clic afuera -->
     <div v-if="showMenu" @click="showMenu = false" class="fixed inset-0 z-20 cursor-default"></div>
-
-    <!-- Dropdown Menu -->
-    <Transition enter-active-class="transition-all duration-200 ease-out"
-      enter-from-class="opacity-0 -translate-y-2 scale-95" enter-to-class="opacity-100 translate-y-0 scale-100"
-      leave-active-class="transition-all duration-200 ease-in" leave-from-class="opacity-100 translate-y-0 scale-100"
-      leave-to-class="opacity-0 -translate-y-2 scale-95">
-      <div v-if="showMenu"
-        class="absolute top-12 right-4 w-[200px] bg-[#0c0500] border border-orange-500/20 rounded-xl p-1.5 z-30 shadow-[0_8px_30px_rgb(249,115,22,0.1)]">
-        <template v-for="(option, index) in menuOptions" :key="index">
-          <div v-if="option.divider" class="h-px bg-orange-500/10 my-1 mx-2"></div>
-          <button v-else @click="option.action" v-tooltip="{ content: option.description, placement: 'top' }" :class="[
-            'w-full flex items-center gap-3 cursor-pointer px-3 py-2 rounded-lg bg-transparent text-sm transition-colors text-left font-medium',
-            option.color || 'text-white/70',
-            option.hoverBg || 'hover:bg-orange-500/10 hover:text-orange-400'
-          ]">
-            <span class="material-symbols-outlined text-[16px]">{{ option.icon }}</span>
-            {{ option.label }}
-          </button>
-        </template>
-      </div>
-    </Transition>
 
     <!-- Overlay Prompts -->
     <Transition enter-active-class="transition-all duration-200 ease-out" enter-from-class="opacity-0"

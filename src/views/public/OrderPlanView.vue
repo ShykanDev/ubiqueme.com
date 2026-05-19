@@ -24,12 +24,12 @@ const plans = [
   {
     id: 'alpha',
     name: 'Alpha',
-    price: 'Gratis',
+    price: '$50 MXN',
     icon: 'shield',
     color: '#ffffff',
-    description: 'Esencial para QRs domésticos de bajo riesgo.',
+    description: 'Esencial para protección individual y doméstica.',
     features: [
-      { t: 'Capacidad', v: 'Hasta 3 QRs', d: 'Límite de dispositivos vinculados.', i: 'inventory_2', c: '#ffffff' },
+      { t: 'Capacidad', v: 'Hasta 1 QR', d: 'Límite de códigos activos vinculados.', i: 'inventory_2', c: '#ffffff' },
       { t: 'Métricas', v: 'Contador Escaneos', d: 'Estadísticas básicas de acceso.', i: 'analytics', c: '#ffffff' },
       { t: 'Privacidad', v: 'Registro Básico', d: 'Protocolo estándar de protección.', i: 'vpn_lock', c: '#ffffff' }
     ]
@@ -37,27 +37,27 @@ const plans = [
   {
     id: 'beta',
     name: 'Beta',
-    price: '$79 MXN',
+    price: '$100 MXN',
     icon: 'verified_user',
     color: '#7bd0ff',
     description: 'Seguridad profesional con alertas y logs avanzados.',
     features: [
+      { t: 'Capacidad', v: 'Hasta 3 QRs', d: 'Límite de códigos activos vinculados.', i: 'inventory_2', c: '#7bd0ff' },
       { t: 'Historial', v: '30 Días de Log', d: 'Registro detallado de actividad.', i: 'history', c: '#7bd0ff' },
       { t: 'Evidencia', v: 'Foto del escaneo', d: 'Se permite al usuario subir una foto al momento de reportar el QR.', i: 'photo_camera', c: '#7bd0ff' },
-      { t: 'Alertas', v: 'Email Instantáneo', d: 'Notificaciones en tiempo real.', i: 'notifications_active', c: '#7bd0ff' },
-      { t: 'Repos', v: '3 Digitales', d: 'Reposiciones digitales del QR inmediatas sin costo.', i: 'autorenew', c: '#7bd0ff' }
+      { t: 'Alertas', v: 'Email Instantáneo', d: 'Notificaciones en tiempo real.', i: 'notifications_active', c: '#7bd0ff' }
     ]
   },
   {
     id: 'epsilon',
     name: 'Epsilon',
-    price: '$199 MXN',
+    price: '$200 MXN',
     icon: 'military_tech',
     color: '#ffd264',
-    description: 'Control absoluto con todas las características premium (historial, mensajes códigos QR ilimitados) y soporte prioritario.',
+    description: 'Control absoluto con todas las características de protección avanzada y soporte prioritario.',
     features: [
+      { t: 'Capacidad', v: 'Hasta 5 QRs', d: 'Límite de códigos activos vinculados.', i: 'inventory_2', c: '#ffd264' },
       { t: 'Tracking', v: 'Mapa / ScanLoc', d: 'Rastreo geográfico interactivo.', i: 'map', c: '#ffd264' },
-      { t: 'Capacidad+', v: 'QRs Ilimitados', d: 'Sin restricciones de volumen.', i: 'all_inclusive', c: '#ffd264' },
       { t: 'Soporte', v: 'Prioritario', d: 'Atención técnica especializada y prioritaria.', i: 'support_agent', c: '#ffd264' },
       { t: 'Logs', v: 'Historial Ilimitado', d: 'Almacenamiento sin caducidad.', i: 'database', c: '#ffd264' }
     ]

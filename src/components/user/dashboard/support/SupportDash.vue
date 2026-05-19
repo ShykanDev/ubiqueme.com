@@ -146,7 +146,7 @@ const submitForm = () => {
       </form>
     </div>
 
-    <div class="mt-6 flex items-center justify-center gap-2 text-xs text-gray-500">
+    <div class="mt-6 flex flex-wrap items-center justify-center gap-2 text-xs text-gray-500 text-center">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         class="h-4 w-4"

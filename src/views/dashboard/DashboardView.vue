@@ -29,6 +29,14 @@ const dashButtons = [
   { name: 'Cerrar Sesión', icon: 'io-log-in', iconActive: 'ri-logout-box-r-line' },
 ]
 
+const mobileButtons = [
+  { name: 'Mis QR', label: 'QRs', icon: 'co-qr-code', iconActive: 'md-qrcodescanner-round' },
+  { name: 'Notificaciones', label: 'Alertas', icon: 'md-notificationsnone-outlined', iconActive: 'fa-bell' },
+  { name: 'Configuración', label: 'Ajustes', icon: 'co-settings', iconActive: 'md-settings' },
+  { name: 'Soporte', label: 'Ayuda', icon: 'bi-question-circle', iconActive: 'md-help-sharp' },
+  { name: 'Perfil', label: 'Perfil', icon: 'bi-person-fill', iconActive: 'bi-person-circle' },
+]
+
 type ComponentName = 'Perfil' | 'Mis QR' | 'Notificaciones' | 'Configuración' | 'Cerrar Sesión' | 'Soporte'
 
 const withLoader = (viewPath: () => Promise<any>) => {
@@ -65,10 +73,10 @@ const changeComponent = (component: ComponentName) => {
       <div class="flex relative min-h-screen bg-[#09090b] overflow-hidden font-google-sans">
 
 
-        <!-- 🚀 SIDEBAR (OVERLAY MODE) -->
+        <!-- 🚀 SIDEBAR (OVERLAY MODE) - Desktop Only -->
         <aside @mouseenter="handleSideBarHover" @mouseleave="handleSideBarLeave"
           :class="{ 'w-[260px]': hoverOnSideBar, 'w-24': !hoverOnSideBar }"
-          class="absolute left-0 top-0 z-30 pt-20 transition-[width] duration-300 h-screen flex flex-col items-center py-10 border-r border-white/5 bg-[#09090b] will-change-[width]">
+          class="hidden lg:flex absolute left-0 top-0 z-30 pt-20 transition-[width] duration-300 h-screen flex-col items-center py-10 border-r border-white/5 bg-[#09090b] will-change-[width]">
 
           <div class="mb-12">
             <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-2xl">
@@ -90,11 +98,24 @@ const changeComponent = (component: ComponentName) => {
 
         <!-- 🚀 MAIN CONTENT AREA (FIXED OFFSET) -->
         <div
-          class="relative z-10 flex-1 h-screen overflow-y-auto scrollbar-hide p-8 md:p-12 lg:p-2 ml-24 lg:pt-16 pt-24">
+          class="relative z-10 flex-1 h-screen overflow-y-auto scrollbar-hide p-4 sm:p-8 lg:p-2 ml-0 lg:ml-24 lg:pt-16 pt-24 pb-28 lg:pb-8">
           <section class="w-full ">
             <component :is="currentComponent"></component>
           </section>
         </div>
+
+        <!-- 📱 FLOATING BOTTOM NAVIGATION BAR - Mobile Only -->
+        <nav class="lg:hidden fixed bottom-4 left-4 right-4 bg-[#09090b]/90 backdrop-blur-xl border border-white/10 rounded-[24px] h-16 px-4 z-40 flex items-center justify-around shadow-[0_8px_32px_0_rgba(249,115,22,0.15)] transition-all duration-300">
+          <button v-for="btn in mobileButtons" :key="btn.name"
+            @click="changeComponent(btn.name as ComponentName)"
+            class="flex flex-col items-center justify-center text-center gap-1 cursor-pointer transition-all duration-300 w-12 h-12 rounded-xl active:scale-95"
+            :class="componentsMap[btn.name] === currentComponent ? 'text-orange-500 scale-105' : 'text-white/40 hover:text-white/70'"
+          >
+            <v-icon :name="componentsMap[btn.name] === currentComponent ? btn.iconActive : btn.icon" scale="1.2" />
+            <span class="text-[9px] font-bold tracking-tight uppercase">{{ btn.label }}</span>
+          </button>
+        </nav>
+
       </div>
     </template>
   </UserDashoardLayout>

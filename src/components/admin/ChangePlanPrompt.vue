@@ -58,7 +58,7 @@ const handleCancel = () => {
                   :class="selectedPlan === 'alpha' ? 'bg-white/10 border-white/30' : 'bg-transparent border-white/10 hover:border-white/20'">
             <div class="flex flex-col">
               <span class="text-xs font-bold uppercase tracking-widest text-white/80">Alpha</span>
-              <span class="text-[10px] text-white/40">Plan básico gratuito</span>
+              <span class="text-[10px] text-white/40">Plan básico ($50 MXN/mes - Máx 1 QR)</span>
             </div>
             <span v-if="selectedPlan === 'alpha'" class="material-symbols-outlined text-white text-[18px]">check_circle</span>
           </button>
@@ -68,7 +68,7 @@ const handleCancel = () => {
                   :class="selectedPlan === 'beta' ? 'bg-blue-500/10 border-blue-500/30' : 'bg-transparent border-white/10 hover:border-white/20'">
             <div class="flex flex-col">
               <span class="text-xs font-bold uppercase tracking-widest text-blue-400">Beta</span>
-              <span class="text-[10px] text-white/40">Plan intermedio / avanzado</span>
+              <span class="text-[10px] text-white/40">Plan intermedio ($100 MXN/mes - Máx 3 QRs)</span>
             </div>
             <span v-if="selectedPlan === 'beta'" class="material-symbols-outlined text-blue-400 text-[18px]">check_circle</span>
           </button>
@@ -78,7 +78,7 @@ const handleCancel = () => {
                   :class="selectedPlan === 'epsilon' ? 'bg-orange-500/10 border-orange-500/30' : 'bg-transparent border-white/10 hover:border-white/20'">
             <div class="flex flex-col">
               <span class="text-xs font-bold uppercase tracking-widest text-orange-500">Epsilon</span>
-              <span class="text-[10px] text-white/40">Plan premium / ilimitado</span>
+              <span class="text-[10px] text-white/40">Plan premium ($200 MXN/mes - Máx 5 QRs)</span>
             </div>
             <span v-if="selectedPlan === 'epsilon'" class="material-symbols-outlined text-orange-500 text-[18px]">check_circle</span>
           </button>

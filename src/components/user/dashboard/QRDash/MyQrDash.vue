@@ -22,6 +22,15 @@ const userQrsCollection = collection(db, `users/${userId}/qrs`);
 
 //Add QR doc to user ATENTION THIS MUST BE ONLY FOR ADMIN ITS CREATED HERE FOR TEST PURPOUSE ONLY
 const createQR = async () => {
+  // Validar límites de QR activos según el plan de usuario
+  const userPlan = (userStore.getPlan || 'alpha').toLowerCase()
+  const maxQRs = userPlan === 'epsilon' ? 5 : userPlan === 'beta' ? 3 : 1
+  
+  if (userQRs.value.length >= maxQRs) {
+    toast.error(`Límite alcanzado: Su plan ${userPlan.toUpperCase()} permite un máximo de ${maxQRs} código(s) QR activos. Por favor, actualice su suscripción en la sección de Precios para registrar más.`)
+    return
+  }
+
   try {
     await runTransaction(db, async (transaction) => {
       // 1. Generamos el ID
@@ -133,7 +142,7 @@ const images = imageStore.getImages;
 </script>
 
 <template>
-  <div class="font-google-sans text-white  space-y-10 pb-20 relative lg:pl-12 pl-6 ">
+  <div class="font-google-sans text-white  space-y-10 pb-20 relative lg:pl-12 pl-0">
 
     <!-- Decoración de Fondo (Watermark tipo Home) -->
     <div

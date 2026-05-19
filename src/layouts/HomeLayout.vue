@@ -13,6 +13,7 @@ const navLinks = [
 
 const domains = ['ubiqueme.com', 'contactomio.com', 'localizarme.com'];
 const currentDomainIndex = ref(0);
+const isMobileMenuOpen = ref(false);
 let intervalId: any;
 
 onMounted(() => {
@@ -39,13 +40,13 @@ onUnmounted(() => {
       <div class="flex justify-between items-center h-20 px-6 md:px-16 w-full max-w-screen-2xl mx-auto">
 
         <!-- Logo -->
-        <RouterLink :to="{ name: 'home' }" class="flex items-center gap-2 group cursor-pointer">
+        <RouterLink :to="{ name: 'home' }" class="flex items-center gap-2 group cursor-pointer z-50">
           <span
             class="material-symbols-outlined text-orange-500 text-[2.5rem] group-hover:rotate-12 transition-transform">location_on</span>
-          <div class="hidden sm:flex flex-col justify-center h-10 overflow-hidden relative min-w-[220px]">
+          <div class="flex flex-col justify-center h-10 overflow-hidden relative min-w-[155px] sm:min-w-[220px]">
             <Transition name="slide-up">
               <div :key="currentDomainIndex"
-                class="absolute left-0 flex items-baseline text-[#dce7ff] font-black tracking-tighter text-[22px] lowercase leading-none whitespace-nowrap">
+                class="absolute left-0 flex items-baseline text-[#dce7ff] font-black tracking-tighter text-[17px] sm:text-[22px] lowercase leading-none whitespace-nowrap">
                 <span>{{ domains[currentDomainIndex]?.split('.com')[0] }}</span>
                 <span class="text-orange-500">.com</span>
               </div>
@@ -69,8 +70,8 @@ onUnmounted(() => {
           </RouterLink>
         </div>
 
-        <!-- Buttons -->
-        <div class="flex items-center space-x-4">
+        <!-- Buttons (Desktop Only) -->
+        <div class="hidden lg:flex items-center space-x-4 z-50">
           <template v-if="!useUserStore().getUserId">
             <RouterLink :to="{ name: 'login' }"
               class="text-white/40 hover:text-white transition-colors duration-300 text-[11px] font-black uppercase tracking-widest px-4 py-2 cursor-pointer">
@@ -91,7 +92,50 @@ onUnmounted(() => {
           </template>
         </div>
 
+        <!-- Hamburger Button (Mobile Only) -->
+        <button @click="isMobileMenuOpen = !isMobileMenuOpen" class="lg:hidden flex items-center justify-center p-2 text-white/60 hover:text-orange-500 transition-colors z-50 cursor-pointer">
+          <span class="material-symbols-outlined text-[28px]">{{ isMobileMenuOpen ? 'close' : 'menu' }}</span>
+        </button>
+
       </div>
+
+      <!-- Mobile Menu Overlay -->
+      <Transition name="fade-slide">
+        <div v-if="isMobileMenuOpen" class="fixed top-20 left-0 w-full h-[calc(100vh-80px)] bg-[#09090b]/95 backdrop-blur-xl z-40 border-t border-white/5 flex flex-col justify-between p-8 lg:hidden">
+          <!-- Links -->
+          <div class="flex flex-col space-y-4">
+            <RouterLink v-for="link in navLinks" :key="link.name" :to="{ name: link.pathName }"
+              @click="isMobileMenuOpen = false"
+              :class="{ 'hidden': !useUserStore().getUserId && link.requiredLogin }"
+              class="flex items-center gap-3 text-white/60 hover:text-orange-500 py-3.5 border-b border-white/[0.03] transition-all duration-300">
+              <span class="material-symbols-outlined text-[22px]">{{ link.icon }}</span>
+              <span class="text-xs font-black uppercase tracking-widest">{{ link.name }}</span>
+            </RouterLink>
+          </div>
+
+          <!-- Actions -->
+          <div class="flex flex-col gap-4 mt-auto">
+            <template v-if="!useUserStore().getUserId">
+              <RouterLink :to="{ name: 'login' }" @click="isMobileMenuOpen = false"
+                class="w-full flex items-center justify-center border border-white/10 hover:border-white/20 text-white/80 hover:text-white py-4 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-colors duration-300 cursor-pointer">
+                Iniciar sesión
+              </RouterLink>
+
+              <RouterLink :to="{ name: 'register' }" @click="isMobileMenuOpen = false"
+                class="w-full flex items-center justify-center bg-orange-500 hover:bg-orange-600 text-[#09090b] py-4 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all duration-300 active:scale-95 shadow-[0_10px_20px_rgba(249,115,22,0.15)] cursor-pointer">
+                Registrarse
+              </RouterLink>
+            </template>
+            <template v-else>
+              <RouterLink :to="{ name: 'dashboard' }" @click="isMobileMenuOpen = false"
+                class="w-full flex items-center justify-center bg-white/5 border border-white/10 hover:border-orange-500 hover:bg-orange-500 hover:text-[#09090b] text-white py-4 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all duration-300 cursor-pointer gap-2">
+                <span class="material-symbols-outlined text-sm">dashboard</span>
+                Panel de Control
+              </RouterLink>
+            </template>
+          </div>
+        </div>
+      </Transition>
     </nav>
 
     <main>
@@ -148,5 +192,20 @@ onUnmounted(() => {
 .slide-up-leave-to {
   opacity: 0;
   transform: translateY(-20px);
+}
+
+.fade-slide-enter-active,
+.fade-slide-leave-active {
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.fade-slide-enter-from {
+  opacity: 0;
+  transform: translateY(-15px);
+}
+
+.fade-slide-leave-to {
+  opacity: 0;
+  transform: translateY(-15px);
 }
 </style>
